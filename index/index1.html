@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZoPlanner_Prototype 2</title>
+    <link rel="stylesheet" href="/styles/style1.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <div class="logo">
+                    <span class="logo-icon">📊</span>
+                    ZoPlanner
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary">📥 Exportera</button>
+                    <button class="btn btn-primary">+ Ny klass</button>
+                </div>
+            </div>
+            <div class="tabs">
+                <button class="tab active">📊 Gantt-vy</button>
+                <button class="tab">👥 Kunder</button>
+                <button class="tab">🎓 Lärare</button>
+                <button class="tab">📈 Rapporter</button>
+                <button class="tab">⚙️ Inställningar</button>
+            </div>
+        </div>
+
+        <!-- Filter Panel -->
+        <div class="filter-panel">
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label>🔍 Sök lärare</label>
+                    <input type="text" placeholder="Skriv namn eller ID...">
+                </div>
+                <div class="filter-group">
+                    <label>📍 Plats</label>
+                    <select>
+                        <option>Alla platser</option>
+                        <option>Stockholm</option>
+                        <option>Göteborg</option>
+                        <option>Malmö</option>
+                        <option>Distans</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>📅 Vecka</label>
+                    <input type="text" placeholder="t.ex. 35-40">
+                </div>
+                <div class="filter-group">
+                    <label>🏢 Kund</label>
+                    <select>
+                        <option>Alla kunder</option>
+                        <option>Kund 1</option>
+                        <option>Kund 2</option>
+                        <option>Kund 3</option>
+                        <option>Kund 4</option>
+                    </select>
+                </div>
+                <button class="btn btn-filter">Tillämpa filter</button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value">14</div>
+                <div class="stat-label">Aktiva lärare</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">4</div>
+                <div class="stat-label">Kunder</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Pågående klasser</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">18</div>
+                <div class="stat-label">Veckor kvar</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="section-header">
+                <h2 class="section-title">Schemaöversikt - Hösttermin 2025</h2>
+                <div class="view-options">
+                    <button class="view-btn active">📊 Veckovy</button>
+                    <button class="view-btn">📅 Månadsvy</button>
+                    <button class="view-btn">📋 Listvy</button>
+                </div>
+            </div>
+
+            <!-- Gantt Chart -->
+            <div class="gantt-wrapper">
+                <div class="gantt-container">
+                    <table class="gantt-table">
+                        <thead class="gantt-header">
+                            <tr>
+                                <th>Kund / Klass</th>
+                                <th>
+                                    <div class="week-header">
+                                        <span class="week-number">V35</span>
+                                        <span class="week-date">28/8-1/9</span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="week-header">
+                                        <span class="week-number">V36</span>
+                                        <span class="week-date">4/9-8/9</span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="week-header">
+                                        <span class="week-number">V37</span>
+                                        <span class="week-date">11/9-15/9</span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="week-header">
+                                        <span class="week-number">V38</span>
+                                        <span class="week-date">18/9-22/9</span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="week-header">
+                                        <span class="week-number">V39</span>
+                                        <span class="week-date">25/9-29/9</span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="week-header">
+                                        <span class="week-number">V40</span>
+                                        <span class="week-date">2/10-6/10</span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="week-header">
+                                        <span class="week-number">V41</span>
+                                        <span class="week-date">9/10-13/10</span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="week-header">
+                                        <span class="week-number">V42</span>
+                                        <span class="week-date">16/10-20/10</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Kund 1 -->
+                            <tr>
+                                <td colspan="9" class="customer-group-header">
+                                    🏢 Kund 1 - Stockholm
+                                </td>
+                            </tr>
+                            <tr class="gantt-row">
+                                <td>
+                                    <div class="class-info">
+                                        <span class="class-name">Klass 1</span>
+                                        <span class="class-details">Distans • V35-50</span>
+                                    </div>
+                                </td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                            </tr>
+                            <tr class="gantt-row">
+                                <td>
+                                    <div class="class-info">
+                                        <span class="class-name">Klass 2</span>
+                                        <span class="class-details">Distans • V35-50</span>
+                                    </div>
+                                </td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 9 - Stockholm">9</div></td>
+                            </tr>
+                            <tr class="gantt-row">
+                                <td>
+                                    <div class="class-info">
+                                        <span class="class-name">Klass 3</span>
+                                        <span class="class-details">Stockholm • V34-50</span>
+                                    </div>
+                                </td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 15 - Malmö">15</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 15 - Malmö">15</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 15 - Malmö">15</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 15 - Malmö">15</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 15 - Malmö">15</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 15 - Malmö">15</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 15 - Malmö">15</div></td>
+                                <td><div class="consultant-cell kund-1" data-tooltip="Konsult 15 - Malmö">15</div></td>
+                            </tr>
+
+                            <!-- Kund 2 -->
+                            <tr>
+                                <td colspan="9" class="customer-group-header">
+                                    🏢 Kund 2 - Göteborg
+                                </td>
+                            </tr>
+                            <tr class="gantt-row">
+                                <td>
+                                    <div class="class-info">
+                                        <span class="class-name">Klass 1</span>
+                                        <span class="class-details">Göteborg • V34-46</span>
+                                    </div>
+                                </td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                            </tr>
+                            <tr class="gantt-row">
+                                <td>
+                                    <div class="class-info">
+                                        <span class="class-name">Klass 2</span>
+                                        <span class="class-details">Göteborg • V35-51</span>
+                                    </div>
+                                </td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                                <td><div class="consultant-cell kund-2" data-tooltip="Konsult 16 - Göteborg">16</div></td>
+                            </tr>
+
+                            <!-- Kund 3 -->
+                            <tr>
+                                <td colspan="9" class="customer-group-header">
+                                    🏢 Kund 3 - Malmö
+                                </td>
+                            </tr>
+                            <tr class="gantt-row">
+                                <td>
+                                    <div class="class-info">
+                                        <span class="class-name">Klass 1</span>
+                                        <span class="class-details">Distans • V34-21</span>
+                                    </div>
+                                </td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                            </tr>
+                            <tr class="gantt-row">
+                                <td>
+                                    <div class="class-info">
+                                        <span class="class-name">Klass 2</span>
+                                        <span class="class-details">Distans • V36-22</span>
+                                    </div>
+                                </td>
+                                <td><div class="empty-cell">-</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                                <td><div class="consultant-cell kund-3" data-tooltip="Konsult 14 - Malmö">14</div></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!--
+            <div class="legend">
+                <div class="legend-title">🎨 Färgförklaring</div>
+                <div class="legend-grid">
+                    <div class="legend-item">
+                        <div class="legend-color kund-1"></div>
+                        <span class="legend-text">Kund 1 - Stockholm</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color kund-2"></div>
+                        <span class="legend-text">Kund 2 - Göteborg</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color kund-3"></div>
+                        <span class="legend-text">Kund 3 - Malmö</span>
+                    </div>
+        
+                </div>
+            </div>-->
+        </div>
+    </div>
+</body>
+</html>
