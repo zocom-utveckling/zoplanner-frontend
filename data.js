@@ -1,12 +1,3 @@
-import "./App.css"
-import Header from "./Header.jsx"
-import GanttChart from './ganttChart/GanttChart.jsx'
-
-
-const weeks = {
-    start: 36,
-    end: 38
-}
 const data = {
     weeks: {
         start: 36,
@@ -52,19 +43,3 @@ const data = {
         }
     ]
 };
-
-function App() {
-    return (
-        <div className="container">
-            <Header />
-            <main>
-                <div className="content-header">
-                    <h1 className="title">Översikt</h1>
-                </div>
-                <GanttChart weeks={weeks}/>
-            </main>
-        </div>
-    )
-}
-
-export default App
