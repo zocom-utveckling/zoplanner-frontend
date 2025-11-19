@@ -1,10 +1,17 @@
 FROM node:24.11.1-alpine
-WORKDIR /
+
+WORKDIR /app
+
 COPY package.json .
+
 RUN npm install
+
+RUN npm i -g serve
 
 COPY . .
 
+RUN npm run build
+
 EXPOSE 3000
 
-CMD ["npx", "vite", "--host", "--port", "3000"]
+CMD [ "serve", "-s", "dist" ]
