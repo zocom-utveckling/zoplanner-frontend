@@ -1,24 +1,20 @@
-import { useState } from 'react'
-import './App.css'
+import "./App.css"
+import Header from "./Header.jsx"
+import GanttChart from './ganttChart/GanttChart.jsx'
 
 function App() {
-    const [number, setNumber] = useState("Klicka för att slumpa ett tal")
 
-    //Slumpar ett tal mellan 0-x
-    const randomNumber = (x) => {
-        setNumber(Math.round(Math.random() * x))
-    }
-
+    const weeks = 8;
     return (
-        <>
-            <h1>Vite + React</h1>
-            <div className="card">
-                <button onClick={() => randomNumber(100)}>
-                    {number}
-                </button>
-
-            </div>
-        </>
+        <div className="container">
+            <Header />
+            <main>
+                <div className="content-header">
+                    <h1 className="title">Översikt</h1>
+                </div>
+                <GanttChart weeks={weeks}/>
+            </main>
+        </div>
     )
 }
 
