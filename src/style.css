@@ -3,7 +3,7 @@
 
 /*BASE STYLES*/
 
-
+/*
 * {
     margin: 0;
     padding: 0;
@@ -22,7 +22,7 @@ body {
 }
 
 /* HEADER */
-
+/*
 .header {
     background: white;
     padding: 40px;
@@ -88,7 +88,7 @@ body {
 }
 
 /* FILTER BAR */
-
+/*
 .filter-bar {
     background: white;
     padding: 20px;
@@ -129,7 +129,7 @@ body {
 }
 
 /* MAIN CONTENT */
-
+/*
 main {
     background: white;
     border-radius: 20px;
@@ -179,7 +179,7 @@ main {
 }
 
 /* GANTT CHART */
-
+/*
 .gantt-container {
     overflow-x: auto;
     border-radius: 12px;
@@ -192,7 +192,7 @@ main {
 }
 
 /* GANTT HEADER */
-
+/*
 .gantt-header th {
     background: #fafbfc;
     padding: 16px 12px;
@@ -229,7 +229,7 @@ main {
 }
 
 /* CUSTOMER HEADER */
-
+/*
 .customer-header {
     background: #f9fafb;
     padding: 14px 24px;
@@ -246,7 +246,7 @@ main {
 }
 
 /* GANTT ROWS */
-
+/*
 .gantt-row {
     transition: all 0.2s ease;
 }
@@ -288,7 +288,7 @@ main {
 }
 
 /* CONSULTANT TAGS */
-
+/*
 .consultant-tag {
     display: inline-block;
     padding: 6px 14px;
@@ -327,36 +327,41 @@ td.activity-segment {
 /* COLOR SCHEMES */
 
 /* Kund 1 - Blue */
+/*
 .color-1 {
     background: #dbeafe;
     color: #1e40af;
 }
 
 /* Kund 2 - Pink */
+/*
 .color-2 {
     background: #fce7f3;
     color: #be185d;
 }
 
 /* Kund 3 - Yellow */
+/*
 .color-3 {
     background: #fef3c7;
     color: #92400e;
 }
 
 /* Kund 4 - Green */
+/*
 .color-4 {
     background: #d1fae5;
     color: #065f46;
 }
 
 /* Empty cell */
+/*
 .empty {
     color: #d1d5db;
 }
 
 /* STATS SECTION */
-
+/*
 .stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -384,7 +389,7 @@ td.activity-segment {
 }
 
 /* SCROLLBAR STYLING */
-
+/*
 .gantt-container::-webkit-scrollbar {
     height: 8px;
 }
@@ -405,7 +410,7 @@ td.activity-segment {
 
 /* 
    RESPONSIVE DESIGN */
-
+/*
 @media (max-width: 768px) {
     body {
         padding: 20px 10px;
@@ -447,4 +452,4 @@ td.activity-segment {
     .btn-today {
         width: 100%;
     }
-}
+}*/
