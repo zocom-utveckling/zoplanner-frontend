@@ -1,10 +1,17 @@
+import { RouterProvider } from "react-router-dom"
 import "./App.css"
 import Header from "./Header.jsx"
 import GanttChart from './ganttChart/GanttChart.jsx'
-
+import {router} from "@zoplanner/router"
 function App() {
 
-    const weeks = 8;
+    return(
+        <>
+        <RouterProvider router={router}/>
+        </>
+    )
+
+    /*const weeks = 8;
     return (
         <div className="container">
             <Header />
@@ -15,7 +22,7 @@ function App() {
                 <GanttChart weeks={weeks}/>
             </main>
         </div>
-    )
+    )*/
 }
 
 export default App
