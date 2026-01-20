@@ -44,11 +44,11 @@ function LoginPage() {
       <h2>login</h2>
        <div className="field">
                 <div className="label"><FaUser/> <span>Username</span></div>
-                <input type="text" value={username} required placeholder="Choose a username" onChange={e=>setUsername(e.target.value)} />
+                <input type="text" value={username} required placeholder="Enter your username" onChange={e=>setUsername(e.target.value)} />
             </div>
              <div className="field">
                 <div className="label"><FaLock/> <span>Password</span></div>
-                <input type="password" value={password} required placeholder="Create a password" minLength={8} onChange={e=>setPassword(e.target.value)} />
+                <input type="password" value={password} required placeholder="Enter your password" minLength={8} onChange={e=>setPassword(e.target.value)} />
             </div>
              <div className="button">
                 <Button text={"Login"} type={"submit"} style={"submit"}/>
