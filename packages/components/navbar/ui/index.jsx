@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 
-function Navbar({ user }) {
+function Navbar({ user,activePage,setActivePage }) {
   const dropdownRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadnotification] = useState(["example notification"]);
@@ -33,14 +33,14 @@ function Navbar({ user }) {
   return (
    <nav className="navbar">
   <div className="navbar-left">
-    <div className="logo">Logo</div>
+    <div className="logo">ZoPlanner</div>
   </div>
 
   <div className="navbar-right">
     <div className="routes">
-      <NavLink>Dashboard</NavLink>
-      <NavLink>Courses</NavLink>
-      <NavLink>Messages</NavLink>
+      <button onClick={()=>setActivePage("dashboard")} className={activePage=="dashboard"?"active":""}>Dashboard</button>
+      <button onClick={()=>setActivePage("courses")} className={activePage=="courses"?"active":""}>Courses</button>
+      <button onClick={()=> setActivePage("messages")} className={activePage=="messages"?"active":""}>Messages</button>
     </div>
 
     <div className="icon-group">
@@ -62,7 +62,7 @@ function Navbar({ user }) {
         onClick={() => setShowDropdown(prev => !prev)}
       >
         <FaUser />
-        <span>{user?.name || "Amir Ahmadi"}</span>
+        <span>{user?.name || "Users Name"}</span>
         {showDropdown ? <FaAngleUp /> : <FaAngleDown />}
       </button>
 
