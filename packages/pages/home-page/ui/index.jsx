@@ -2,6 +2,7 @@ import { Navbar } from "@zoplanner/navbar";
 import { Sidebar } from "@zoplanner/sidebar";
 import { Scheduler } from "@zoplanner/calendar";
 import "./index.css";
+import { Dashboard } from "@zoplanner/dashboard";
 
 function HomePage() {
   return (
@@ -9,7 +10,7 @@ function HomePage() {
       <Navbar />
       <div className="app">
         <Sidebar />
-        <Scheduler />
+        <Dashboard/>
       </div>
     </>
   );
