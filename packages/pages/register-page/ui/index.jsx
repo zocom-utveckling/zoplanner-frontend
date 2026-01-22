@@ -6,15 +6,18 @@ const roles=["MANAGER","CONSULTANT","BOTH"]
 
 import {Button} from "@zoplanner/button"
 import { FaBriefcase, FaLock, FaMapMarkedAlt, FaUser } from "react-icons/fa"
+import { set } from "date-fns"
 function Register(){
     const [name,setName]=useState("")
     const [username,setUsername]=useState("")
     const [city,setCity]=useState("Göteborg")
     const [role,setRole]=useState("MANAGER")
     const [password,setPassword]=useState("")
+    const [loading,setLoading]=useState(false)
     const navigate= useNavigate()
     const handleSubmit=async(e)=>{
         try{
+            setLoading(true)
             e.preventDefault()
             const user={name,username,city,role,password}
             const res = await fetch("http://localhost:5027/api/User",{
@@ -25,7 +28,7 @@ function Register(){
             const data = await res.json()
             if(res.ok){
                 alert("Acoount Created")
-                //navigate("/landing-page/data._id")
+                navigate(`/home-page/${data._id}`)
 
             }
             else{
@@ -36,6 +39,10 @@ function Register(){
         catch(error){
             console.log("error: "+ error)
             alert("Something went wrong")
+            setLoading(false)
+        }
+        finally{
+            setLoading(false)
         }
     }
     return(<>
@@ -72,7 +79,7 @@ function Register(){
                 <input type="password" value={password} required placeholder="Create a password" minLength={8} onChange={e=>setPassword(e.target.value)} />
             </div>
             <div className="button">
-                <Button text={"Create account"} type={"submit"} style={"submit"}/>
+                <Button text={loading?"Loading....":"Create account"} type={"submit"} style={"submit"}/>
                 <p>Already have a account?<Link to={"/"}>Login</Link></p>
 
             </div>
