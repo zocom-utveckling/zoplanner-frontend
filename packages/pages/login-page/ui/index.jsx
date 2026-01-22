@@ -23,7 +23,7 @@ function LoginPage() {
             const data = await res.json()
             if(res.ok){
               alert("Welcome")
-              navigate(`/home-page/${data._id}`)
+              navigate(`/home-page/${data.id}`)
 
             }
             else{
