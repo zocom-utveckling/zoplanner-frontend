@@ -1,7 +1,8 @@
 import React from "react";
 import "./index.css";
 
-function Sidebar({ user = { name: "Användare", avatar: null } }) {
+function Sidebar({ user }) {
+ if (!user) return null;
   // Om ingen profilbild finns, visas personens initialer
   const getInitials = (name) => {
     return name
@@ -11,6 +12,7 @@ function Sidebar({ user = { name: "Användare", avatar: null } }) {
       .toUpperCase()
       .slice(0, 2);
   };
+  console.log(user);
 
   return (
     <aside className="sidebar">

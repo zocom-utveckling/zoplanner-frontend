@@ -28,7 +28,7 @@ function Register(){
             const data = await res.json()
             if(res.ok){
                 alert("Acoount Created")
-                navigate(`/home-page/${data._id}`)
+                navigate(`/home-page/${data.id}`)
 
             }
             else{
