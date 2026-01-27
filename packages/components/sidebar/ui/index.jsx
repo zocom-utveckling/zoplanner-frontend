@@ -1,19 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import "./index.css";
 import { UserProfile } from "@zoplanner/user-profile";
-import { AddActivityModal } from "@zoplanner/add-activity-modal";
+import { AddActivityButton } from "@zoplanner/add-activity-button";
 
 function Sidebar({ user }) {
   console.log(user);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleAddActivity = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
 
   const handleSubmitActivity = (activityData) => {
     console.log("Ny aktivitet:", activityData);
@@ -24,15 +15,7 @@ function Sidebar({ user }) {
     <aside className="sidebar">
       <UserProfile user={user} />
 
-      <button className="add-activity-btn" onClick={handleAddActivity}>
-        <span className="plus-icon">+</span> Lägg till aktivitet
-      </button>
-
-      <AddActivityModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSubmit={handleSubmitActivity}
-      />
+      <AddActivityButton onSubmit={handleSubmitActivity} />
     </aside>
   );
 }
