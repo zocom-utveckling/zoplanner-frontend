@@ -2,6 +2,7 @@ import React from "react";
 import "./index.css";
 import { UserProfile } from "@zoplanner/user-profile";
 import { AddActivityButton } from "@zoplanner/add-activity-button";
+import { MonthCalendar } from "@zoplanner/month-calender-sidebar";
 
 function Sidebar({ user }) {
   console.log(user);
@@ -16,6 +17,8 @@ function Sidebar({ user }) {
       <UserProfile user={user} />
 
       <AddActivityButton onSubmit={handleSubmitActivity} />
+
+      <MonthCalendar />
     </aside>
   );
 }
