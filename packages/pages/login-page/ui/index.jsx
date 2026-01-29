@@ -14,22 +14,27 @@ function LoginPage() {
     try{
       e.preventDefault()
       setLoading(true)
-      const user = {username,password}
-     const res = await fetch("http://localhost:5027/api/User",{
-                method:"POST",
-                headers:{"Content-Type":"application/json"},
-                body:JSON.stringify(user)
-            })
-            const data = await res.json()
-            if(res.ok){
-              alert("Welcome")
-              navigate(`/home-page/${data.id}`)
-
-            }
-            else{
-              alert(data.message)
-              return
-            }
+     const res = await fetch(`http://localhost:5027/api/User/username/${username}`)
+     const data = await res.json()
+     if(res.ok){
+      if(data.password === password){
+        navigate(`/home-page/${data.id}`)
+        alert(data.message || `Welcome ${data.name}`)
+      }
+      else{
+        alert("Incorrect username or password")
+        setUsername("")
+        setPassword("")
+        setLoading(false)
+        return
+      }
+     }
+     else{
+      alert("System error")
+      setLoading(false)
+      return
+      
+     }
     }
     catch(error){
       console.log(error)
