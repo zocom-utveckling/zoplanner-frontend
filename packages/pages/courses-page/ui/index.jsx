@@ -10,6 +10,10 @@ function CoursesPage() {
     name:"frk24",
     startDate: new Date().toISOString(),
     endDate: new Date().toISOString(),
+  },{
+    name:"frk24",
+    startDate: new Date().toISOString(),
+    endDate: new Date().toISOString(),
   }
 ])
 
@@ -23,7 +27,7 @@ function CoursesPage() {
           {courses.map((course)=>
           <div className="course-card">
             <div className="course-left">
-              <div>{String(course.name.toUpperCase().split("").slice(0,1).join())}</div>
+              <div className="course-avatar">{course.name.charAt(0).toUpperCase()}</div>
               <h3>{course.name}</h3>
               </div>
 
