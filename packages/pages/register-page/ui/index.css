@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    background-color: bisque;
+    background-color: #eef2f8;
     gap: 30px;
 }
 .container form{
