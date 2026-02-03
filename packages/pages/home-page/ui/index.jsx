@@ -36,7 +36,7 @@ function HomePage() {
       <Navbar user={user} activePage={activePage} setActivePage={setActivePage}/>
       <div className="app">
         <Sidebar user={user} />
-       { activePage=="dashboard"? <Dashboard/>:activePage=="courses"?<CoursesPage/>:<MessagesPage/>}
+       { activePage=="dashboard"? <Dashboard/>:activePage=="courses"?<CoursesPage/>:<MessagesPage user={user}/>}
       </div>
     </>
   );
