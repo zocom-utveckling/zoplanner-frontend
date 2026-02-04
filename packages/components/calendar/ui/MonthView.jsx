@@ -30,6 +30,7 @@ export default function MonthView({
         {monthGridDays.map((d) => {
           const inMonth = isSameMonth(d, focusDate);
           const dayEvents = events
+            .filter((e) => e.type !== "session")
             .filter((e) => {
               if (isSameDay(e.start, d)) return true;
               if (!e.end) return false;
@@ -52,11 +53,29 @@ export default function MonthView({
             >
               <div className="month-cell-header">{format(d, "d")}</div>
               <div className="month-events">
-                {dayEvents.map((e) => (
-                  <div key={e.id} className="month-event-pill">
-                    {e.title.split("\n")[0]}
-                  </div>
-                ))}
+                {dayEvents.map((e) => {
+                  const isStart = isSameDay(e.start, d);
+                  const isEnd = e.end ? isSameDay(e.end, d) : isStart;
+                  const isMultiDay = Boolean(
+                    e.end && !isSameDay(e.start, e.end),
+                  );
+                  const pillClass = [
+                    "month-event-pill",
+                    isMultiDay
+                      ? isStart
+                        ? "is-start"
+                        : isEnd
+                          ? "is-end"
+                          : "is-middle"
+                      : "is-single",
+                  ].join(" ");
+
+                  return (
+                    <div key={e.id} className={pillClass} title={e.title}>
+                      {isMultiDay && !isStart ? "" : e.title.split("\n")[0]}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
