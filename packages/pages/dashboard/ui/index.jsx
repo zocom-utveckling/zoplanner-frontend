@@ -1,8 +1,7 @@
 import { Scheduler } from "@zoplanner/calendar";
 
-function Dashboard (){
-    return(
-        <Scheduler/>
-    )
+function Dashboard({ user }) {
+  return <Scheduler user={user} />;
 }
-export {Dashboard};
+
+export { Dashboard };

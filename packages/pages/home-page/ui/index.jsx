@@ -8,35 +8,42 @@ import { MessagesPage } from "@zoplanner/messages-page";
 import { Dashboard } from "@zoplanner/dashboard";
 import { useParams } from "react-router-dom";
 function HomePage() {
-  const {id}=useParams()
-  const [user,setUser]=useState(null)
-  useEffect(()=>{
-    const fetchUser=async()=>{
-     try{
-       const res = await fetch(`http://localhost:5027/api/User/${id}`)
-      const data = await res.json()
-      if(res.ok){
-        setUser(data)
-        console.log(data.name)
+  const { id } = useParams();
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`http://localhost:5027/api/User/${id}`);
+        const data = await res.json();
+        if (res.ok) {
+          setUser(data);
+          console.log(data.name);
+        } else {
+          console.log("Could not fetch user");
+        }
+      } catch (error) {
+        console.error(error);
       }
-      else{
-        console.log("Could not fetch user")
-      }
-     }
-     catch(error){
-      console.error(error)
-     }
-      
-    }
-    fetchUser()
-  },[id])
-  const [activePage,setActivePage]=useState("dashboard");
+    };
+    fetchUser();
+  }, [id]);
+  const [activePage, setActivePage] = useState("dashboard");
   return (
     <>
-      <Navbar user={user} activePage={activePage} setActivePage={setActivePage}/>
+      <Navbar
+        user={user}
+        activePage={activePage}
+        setActivePage={setActivePage}
+      />
       <div className="app">
         <Sidebar user={user} />
-       { activePage=="dashboard"? <Dashboard/>:activePage=="courses"?<CoursesPage/>:<MessagesPage/>}
+        {activePage == "dashboard" ? (
+          <Dashboard user={user} />
+        ) : activePage == "courses" ? (
+          <CoursesPage />
+        ) : (
+          <MessagesPage />
+        )}
       </div>
     </>
   );
