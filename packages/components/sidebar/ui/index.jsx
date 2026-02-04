@@ -4,6 +4,10 @@ import { UserProfile } from "@zoplanner/user-profile";
 import { AddActivityButton } from "@zoplanner/add-activity-button";
 import { MonthCalendar } from "@zoplanner/month-calender-sidebar";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+const SPRING_API_BASE_URL =
+  import.meta.env.VITE_SPRING_API_BASE_URL || "/spring-api";
+
 function Sidebar({ user }) {
   console.log(user);
   const [highlightedDates, setHighlightedDates] = useState([]);
@@ -43,7 +47,7 @@ function Sidebar({ user }) {
       if (!consultantId) {
         try {
           const consultantsRes = await fetch(
-            "http://localhost:5027/api/Consultant",
+            `${SPRING_API_BASE_URL}/consultants`,
           );
           const consultants = consultantsRes.ok
             ? await consultantsRes.json()
@@ -64,7 +68,7 @@ function Sidebar({ user }) {
 
       try {
         const assignmentsRes = await fetch(
-          `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
+          `${SPRING_API_BASE_URL}/assignments/consultant/${consultantId}`,
         );
         const assignments = assignmentsRes.ok
           ? await assignmentsRes.json()
