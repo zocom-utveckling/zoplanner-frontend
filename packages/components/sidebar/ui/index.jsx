@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./index.css";
 import { UserProfile } from "@zoplanner/user-profile";
 import { AddActivityButton } from "@zoplanner/add-activity-button";
@@ -10,6 +10,7 @@ const SPRING_API_BASE_URL =
 
 function Sidebar({ user }) {
   console.log(user);
+
   const [highlightedDates, setHighlightedDates] = useState([]);
 
   useEffect(() => {
@@ -127,7 +128,7 @@ function Sidebar({ user }) {
 
       <AddActivityButton onSubmit={handleSubmitActivity} />
 
-      <MonthCalendar highlightedDates={highlightedDates} />
+      <MonthCalendar />
     </aside>
   );
 }
