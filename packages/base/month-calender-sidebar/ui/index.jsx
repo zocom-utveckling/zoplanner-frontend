@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import "./index.css";
 
-function MonthCalendar({ variant = "sidebar", onSubmit }) {
+function MonthCalendar({
+  variant = "sidebar",
+  onSubmit,
+  highlightedDates = [],
+}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const today = new Date();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -124,6 +128,10 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
   };
 
   const days = getDaysInMonth();
+  const highlightedSet = useMemo(
+    () => new Set((highlightedDates || []).filter(Boolean)),
+    [highlightedDates],
+  );
 
   return (
     <div
@@ -150,15 +158,34 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
           </div>
         ))}
 
-        {days.map((day, index) => (
-          <div
-            key={`day-${index}`}
-            className={`calendar-day ${day ? "" : "empty"} ${isToday(day) ? "today" : ""} ${day ? "clickable" : ""}`}
-            onClick={() => handleDayClick(day)}
-          >
-            {day || ""}
-          </div>
-        ))}
+        {days.map((day, index) => {
+          if (!day) {
+            return (
+              <div
+                key={`day-${index}`}
+                className="calendar-day empty"
+                onClick={() => handleDayClick(day)}
+              />
+            );
+          }
+
+          const year = currentDate.getFullYear();
+          const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+          const dayStr = String(day).padStart(2, "0");
+          const dateKey = `${year}-${month}-${dayStr}`;
+          const hasDot = highlightedSet.has(dateKey);
+
+          return (
+            <div
+              key={`day-${index}`}
+              className={`calendar-day ${isToday(day) ? "today" : ""} clickable ${hasDot ? "has-dot" : ""}`}
+              onClick={() => handleDayClick(day)}
+            >
+              <span className="calendar-day-number">{day}</span>
+              {hasDot && <span className="calendar-dot" />}
+            </div>
+          );
+        })}
       </div>
 
       {isModalOpen && (
