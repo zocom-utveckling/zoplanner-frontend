@@ -12,6 +12,38 @@ function Sidebar({ user }) {
   console.log(user);
 
   const [highlightedDates, setHighlightedDates] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadUsers() {
+      setIsLoadingUsers(true);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/User`);
+        const data = res.ok ? await res.json() : [];
+        if (!isCancelled) {
+          setUsers(Array.isArray(data) ? data : []);
+        }
+      } catch {
+        if (!isCancelled) {
+          setUsers([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingUsers(false);
+        }
+      }
+    }
+
+    loadUsers();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let isCancelled = false;
@@ -119,12 +151,23 @@ function Sidebar({ user }) {
 
   const handleSubmitActivity = (activityData) => {
     console.log("Ny aktivitet:", activityData);
-    // TODO: Integrate with backend API to save activity
   };
 
   return (
     <aside className="sidebar">
       <UserProfile user={user} />
+
+      {isLoadingUsers
+        ? null
+        : users
+            .filter((listedUser) => listedUser?.id !== user?.id)
+            .map((listedUser) => (
+              <UserProfile
+                key={listedUser?.id || listedUser?.username || listedUser?.name}
+                user={listedUser}
+                variant="compact"
+              />
+            ))}
 
       <AddActivityButton onSubmit={handleSubmitActivity} />
 
