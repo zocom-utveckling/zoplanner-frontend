@@ -14,6 +14,7 @@ function Sidebar({ user }) {
   const [highlightedDates, setHighlightedDates] = useState([]);
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [isUsersOpen, setIsUsersOpen] = useState(true);
 
   useEffect(() => {
     let isCancelled = false;
@@ -153,21 +154,44 @@ function Sidebar({ user }) {
     console.log("Ny aktivitet:", activityData);
   };
 
+  const listedUsers = user
+    ? users.filter((listedUser) => listedUser?.id !== user?.id)
+    : users;
+
   return (
     <aside className="sidebar">
       <UserProfile user={user} />
 
-      {isLoadingUsers
-        ? null
-        : users
-            .filter((listedUser) => listedUser?.id !== user?.id)
-            .map((listedUser) => (
+      <div className="sidebar-users">
+        <button
+          type="button"
+          className="sidebar-users__toggle"
+          onClick={() => setIsUsersOpen((prev) => !prev)}
+          aria-expanded={isUsersOpen}
+        >
+          <span className="sidebar-users__title">Schema</span>
+          <span
+            className={`sidebar-users__chevron${isUsersOpen ? " is-open" : ""}`}
+            aria-hidden="true"
+          />
+        </button>
+
+        <div className={`sidebar-users__list${isUsersOpen ? " is-open" : ""}`}>
+          {isLoadingUsers ? (
+            <div className="sidebar-users__loading">Laddar användare...</div>
+          ) : listedUsers.length ? (
+            listedUsers.map((listedUser) => (
               <UserProfile
                 key={listedUser?.id || listedUser?.username || listedUser?.name}
                 user={listedUser}
                 variant="compact"
               />
-            ))}
+            ))
+          ) : (
+            <div className="sidebar-users__empty">Inga användare hittades.</div>
+          )}
+        </div>
+      </div>
 
       <AddActivityButton onSubmit={handleSubmitActivity} />
 
