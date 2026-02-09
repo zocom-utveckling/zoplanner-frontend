@@ -12,6 +12,39 @@ function Sidebar({ user }) {
   console.log(user);
 
   const [highlightedDates, setHighlightedDates] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [isUsersOpen, setIsUsersOpen] = useState(true);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadUsers() {
+      setIsLoadingUsers(true);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/User`);
+        const data = res.ok ? await res.json() : [];
+        if (!isCancelled) {
+          setUsers(Array.isArray(data) ? data : []);
+        }
+      } catch {
+        if (!isCancelled) {
+          setUsers([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingUsers(false);
+        }
+      }
+    }
+
+    loadUsers();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let isCancelled = false;
@@ -119,12 +152,46 @@ function Sidebar({ user }) {
 
   const handleSubmitActivity = (activityData) => {
     console.log("Ny aktivitet:", activityData);
-    // TODO: Integrate with backend API to save activity
   };
+
+  const listedUsers = user
+    ? users.filter((listedUser) => listedUser?.id !== user?.id)
+    : users;
 
   return (
     <aside className="sidebar">
       <UserProfile user={user} />
+
+      <div className="sidebar-users">
+        <button
+          type="button"
+          className="sidebar-users__toggle"
+          onClick={() => setIsUsersOpen((prev) => !prev)}
+          aria-expanded={isUsersOpen}
+        >
+          <span className="sidebar-users__title">Schema</span>
+          <span
+            className={`sidebar-users__chevron${isUsersOpen ? " is-open" : ""}`}
+            aria-hidden="true"
+          />
+        </button>
+
+        <div className={`sidebar-users__list${isUsersOpen ? " is-open" : ""}`}>
+          {isLoadingUsers ? (
+            <div className="sidebar-users__loading">Laddar användare...</div>
+          ) : listedUsers.length ? (
+            listedUsers.map((listedUser) => (
+              <UserProfile
+                key={listedUser?.id || listedUser?.username || listedUser?.name}
+                user={listedUser}
+                variant="compact"
+              />
+            ))
+          ) : (
+            <div className="sidebar-users__empty">Inga användare hittades.</div>
+          )}
+        </div>
+      </div>
 
       <AddActivityButton onSubmit={handleSubmitActivity} />
 
