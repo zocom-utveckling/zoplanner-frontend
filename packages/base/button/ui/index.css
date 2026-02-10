@@ -14,3 +14,29 @@
       background-color: rgb(36, 82, 157);
       transform: scale(0.95);
 }
+.button_cancel, .button_send{
+   padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+.button_cancel {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.button_cancel:hover {
+  background-color: #e5e7eb;
+}
+
+.button_send {
+  background-color: #3e4b5e;
+  color: #ffffff;
+}
+
+.button_send:hover {
+  background-color: #2b3340;
+}

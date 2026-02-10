@@ -1,9 +1,9 @@
-.recieved-container {
+.sent-container {
   width: 100%;
 }
 
 
-.recieved-container h2 {
+.sent-container h2 {
   text-align: center;
   color: #6b7280;
   font-weight: 500;
@@ -11,13 +11,14 @@
 }
 
 
-.recieved-content {
+.sent-content {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.recieved-card {
+
+.sent-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,61 +30,72 @@
  
 }
 
-.recieved-card:hover {
+.sent-card:hover {
   background-color: #f3f4f6;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 
-.recieved-left {
+.sent-left {
   display: flex;
   flex-direction: column;
   gap: 30px;
  
 }
 
-.recieved-left h3 {
+.sent-left h3 {
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
   color: #111827;
 }
 
-.recieved-left p {
+.sent-left p {
   margin: 0;
   font-size: 0.95rem;
   color: #6b7280;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+ white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
   max-width: 420px;
   margin-bottom: 10px;
 }
+.sent-header{
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.sent-header h4{
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1f447e;
+
+}
 
 
-.recieved-right {
+.sent-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 30px;
+  gap: 50px;
   font-size: 0.8rem;
   color: #9ca3af;
 }
 
-.recieved-right span:last-child {
+.sent-right span:last-child {
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
 }
 
-
 @media (max-width: 600px) {
-  .recieved-card {
+  .sent-card {
     padding: 12px;
   }
 
-  .recieved-left p {
+  .sent-left p {
     max-width: 220px;
   }
 }

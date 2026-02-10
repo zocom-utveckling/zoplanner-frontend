@@ -11,6 +11,11 @@
   font-size: 24px;
   font-weight: 600;
 }
+.messages-container h3{
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+}
 .messages-content {
   border-top: 1px solid #e5e7eb;
   padding-top: 32px;
@@ -37,4 +42,9 @@
 .active-status{
     background-color: #3b82f6;
     color: #ffffff;
+}
+.messages-headers{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
