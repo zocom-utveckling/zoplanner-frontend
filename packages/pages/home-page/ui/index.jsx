@@ -1,42 +1,58 @@
 import { Navbar } from "@zoplanner/navbar";
 import { Sidebar } from "@zoplanner/sidebar";
-import { Scheduler } from "@zoplanner/calendar";
-import "./index.css";
-import { useEffect, useState } from "react";
+import { Dashboard } from "@zoplanner/dashboard";
 import { CoursesPage } from "@zoplanner/courses-page";
 import { MessagesPage } from "@zoplanner/messages-page";
-import { Dashboard } from "@zoplanner/dashboard";
+import "./index.css";
+
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
 function HomePage() {
-  const {id}=useParams()
-  const [user,setUser]=useState(null)
-  useEffect(()=>{
-    const fetchUser=async()=>{
-     try{
-       const res = await fetch(`http://localhost:5027/api/User/${id}`)
-      const data = await res.json()
-      if(res.ok){
-        setUser(data)
-        console.log(data.name)
+  const { id } = useParams();
+  const [user, setUser] = useState(null);
+  const [activePage, setActivePage] = useState("dashboard");
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`http://localhost:5027/api/User/${id}`);
+        const data = await res.json();
+        if (res.ok) {
+          setUser(data);
+          console.log(data.name);
+        } else {
+          console.log("Could not fetch user");
+        }
+      } catch (error) {
+        console.error(error);
       }
-      else{
-        console.log("Could not fetch user")
-      }
-     }
-     catch(error){
-      console.error(error)
-     }
-      
-    }
-    fetchUser()
-  },[id])
-  const [activePage,setActivePage]=useState("dashboard");
+    };
+    fetchUser();
+  }, [id]);
+
+  // renderar inte förrän vi har användardata, annars får vi error när vi försöker accessa user.name i Navbar
+  if (!user) {
+    return <div>Laddar användare...</div>;
+  }
   return (
     <>
-      <Navbar user={user} activePage={activePage} setActivePage={setActivePage}/>
+      <Navbar
+        user={user}
+        activePage={activePage}
+        setActivePage={setActivePage}
+      />
       <div className="app">
         <Sidebar user={user} />
-       { activePage=="dashboard"? <Dashboard/>:activePage=="courses"?<CoursesPage/>:<MessagesPage user={user}/>}
+        {activePage == "dashboard" ? (
+          <Dashboard user={user} />
+        ) : activePage == "courses" ? (
+          <CoursesPage user={user} />
+        ) : (
+          <MessagesPage />
+        )}
       </div>
     </>
   );
