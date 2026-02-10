@@ -1,12 +1,12 @@
 import { Navbar } from "@zoplanner/navbar";
 import { Sidebar } from "@zoplanner/sidebar";
-import { Scheduler } from "@zoplanner/calendar";
 import "./index.css";
 import { useEffect, useState } from "react";
 import { CoursesPage } from "@zoplanner/courses-page";
 import { MessagesPage } from "@zoplanner/messages-page";
 import { Dashboard } from "@zoplanner/dashboard";
 import { useParams } from "react-router-dom";
+
 function HomePage() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
@@ -28,6 +28,10 @@ function HomePage() {
     fetchUser();
   }, [id]);
   const [activePage, setActivePage] = useState("dashboard");
+
+  if (!user) {
+    return <div>Laddar användare...</div>;
+  }
   return (
     <>
       <Navbar
