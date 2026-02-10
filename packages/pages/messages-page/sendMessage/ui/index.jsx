@@ -41,11 +41,11 @@ function SendMessagePopup({ onClose, user }) {
     <div className="send-container">
       <form >
         <p>
-          From: <span>{user.name}</span>
+          Från: <span>{user.name}</span>
         </p>
 
         <div>
-          <label htmlFor="recipient">To:</label>
+          <label htmlFor="recipient">Till:</label>
           <input
             id="recipient"
             type="text"
@@ -86,10 +86,10 @@ function SendMessagePopup({ onClose, user }) {
         </div>
 
         <div>
-          <label htmlFor="message">Message</label>
+          <label htmlFor="message">Meddelande</label>
           <textarea
             id="message"
-            placeholder="Write your message here..."
+            placeholder="Skriv ditt meddelande här..."
             value={message}
             required
             onChange={(e) => setMessage(e.target.value)}
@@ -98,12 +98,12 @@ function SendMessagePopup({ onClose, user }) {
 
         <div>
           <Button
-            text={"Cancel"}
+            text={"Avbryt"}
             type={"button"}
             style={"cancel"}
             onClick={() => onClose()}
           />
-          <Button text={"Send"} type={"submit"} style={"send"} />
+          <Button text={"Skicka"} type={"submit"} style={"send"} />
         </div>
       </form>
     </div>

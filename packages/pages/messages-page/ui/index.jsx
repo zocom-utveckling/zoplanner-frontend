@@ -3,6 +3,9 @@ import "./index.css"
 import { RecievedMessagesPage } from "@zoplanner/recieved-messages";
 import { SentMessagesPage } from "@zoplanner/sent-messages";
 import { SendMessagePopup } from "../sendMessage";
+import { FaPenAlt, FaPenSquare } from "react-icons/fa";
+import "react-icons/fa6"
+
 function MessagesPage({user}) {
   const [status, setStatus] = useState('recieved');
   const [show,setShow]= useState(false)
@@ -12,12 +15,14 @@ function MessagesPage({user}) {
   return (<>
   {show&& <SendMessagePopup user={user} onClose={()=> setShow(false)}/>}
     <div className="messages-container">
-      <h2>Messages</h2>
-      <h2 onClick={()=>setShow(true)}>New message</h2>
+      <div className="messages-headers">
+        <h2>Meddelande</h2>
+      <h3 onClick={()=>setShow(true)}><FaPenSquare /></h3>
+      </div>
       <div className="messages-content">
         <div className="messages-status">
-          <p className={`status ${currentStatus==="recieved"?"active-status":""}`} onClick={()=>setStatus("recieved")}>Recieved</p>
-          <p className={`status ${currentStatus==="sent"?"active-status":""}`} onClick={()=>setStatus("sent")}>Sent</p>
+          <p className={`status ${currentStatus==="recieved"?"active-status":""}`} onClick={()=>setStatus("recieved")}>Mottagen</p>
+          <p className={`status ${currentStatus==="sent"?"active-status":""}`} onClick={()=>setStatus("sent")}>Skickat</p>
         </div>
        {status==="recieved"? <RecievedMessagesPage/> : <SentMessagesPage/>}
       </div>
