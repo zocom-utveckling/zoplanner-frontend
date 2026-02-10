@@ -1,16 +1,21 @@
 import { Navbar } from "@zoplanner/navbar";
 import { Sidebar } from "@zoplanner/sidebar";
-import { Scheduler } from "@zoplanner/calendar";
-import "./index.css";
-import { useEffect, useState } from "react";
+import { Dashboard } from "@zoplanner/dashboard";
 import { CoursesPage } from "@zoplanner/courses-page";
 import { MessagesPage } from "@zoplanner/messages-page";
-import { Dashboard } from "@zoplanner/dashboard";
+import "./index.css";
+
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
 function HomePage() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
+  const [activePage, setActivePage] = useState("dashboard");
+
   useEffect(() => {
+    if (!id) return;
+
     const fetchUser = async () => {
       try {
         const res = await fetch(`http://localhost:5027/api/User/${id}`);
@@ -27,7 +32,11 @@ function HomePage() {
     };
     fetchUser();
   }, [id]);
-  const [activePage, setActivePage] = useState("dashboard");
+
+  // renderar inte förrän vi har användardata, annars får vi error när vi försöker accessa user.name i Navbar
+  if (!user) {
+    return <div>Laddar användare...</div>;
+  }
   return (
     <>
       <Navbar
@@ -40,7 +49,7 @@ function HomePage() {
         {activePage == "dashboard" ? (
           <Dashboard user={user} />
         ) : activePage == "courses" ? (
-          <CoursesPage />
+          <CoursesPage user={user} />
         ) : (
           <MessagesPage />
         )}

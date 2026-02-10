@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./index.css";
 import { UserProfile } from "@zoplanner/user-profile";
 import { AddActivityButton } from "@zoplanner/add-activity-button";
@@ -9,6 +9,10 @@ const SPRING_API_BASE_URL =
   import.meta.env.VITE_SPRING_API_BASE_URL || "/spring-api";
 
 function Sidebar({ user }) {
+  // om user saknas blockeras hela sidofältet, eftersom det är osannolikt att det finns något meningsfullt att visa utan en användare. Det kan också förhindra potentiella fel
+  if (!user) {
+    return null;
+  }
   console.log(user);
 
   const [highlightedDates, setHighlightedDates] = useState([]);
