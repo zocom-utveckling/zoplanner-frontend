@@ -1,49 +1,48 @@
 .messages-container {
-   padding: 40px 32px;
+  padding: 40px 32px;
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 32px;
-  background-color: #eef2f8;
-
+  background-color: var(--app-bg);
 }
 .messages-container h2 {
   font-size: 24px;
   font-weight: 600;
 }
-.messages-container h3{
-    font-size: 20px;
-    font-weight: 600;
-    cursor: pointer;
+.messages-container h3 {
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
 }
 .messages-content {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
   padding-top: 32px;
   display: flex;
   align-items: center;
   flex-direction: column;
   gap: 32px;
 }
-.messages-status{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
+.messages-status {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
 }
-.status{
-   padding: 12px 16px;
-   background-color: #e5e7eb;
-   border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #374151;
-    cursor: pointer;
+.status {
+  padding: 12px 16px;
+  background-color: var(--surface-strong);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
 }
-.active-status{
-    background-color: #3b82f6;
-    color: #ffffff;
+.active-status {
+  background-color: var(--accent);
+  color: var(--accent-fg);
 }
-.messages-headers{
+.messages-headers {
   display: flex;
   align-items: center;
   justify-content: space-between;

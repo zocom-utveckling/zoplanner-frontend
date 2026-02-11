@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #f5f5f5;
+  background-color: var(--app-bg);
   font-family: "Poppins", sans-serif;
 }
 
@@ -17,9 +17,9 @@
 
 /* Topbar */
 .topbar {
-  background-color: white;
+  background-color: var(--surface);
   padding: 16px 24px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -39,8 +39,8 @@
 
 .btn-today {
   padding: 8px 16px;
-  background-color: #3498db;
-  color: white;
+  background-color: var(--accent);
+  color: var(--accent-fg);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -50,13 +50,13 @@
 }
 
 .btn-today:hover {
-  background-color: #2980b9;
+  background-color: var(--accent-hover);
 }
 
 .topbar-title {
   font-size: 20px;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-primary);
 }
 
 .topbar-right {
@@ -68,7 +68,7 @@
 .view-switcher {
   display: flex;
   gap: 4px;
-  background-color: #f5f5f5;
+  background-color: var(--surface-muted);
   padding: 4px;
   border-radius: 8px;
 }
@@ -80,18 +80,18 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  color: #666;
+  color: var(--text-muted);
   transition: all 0.2s;
 }
 
 .view-btn:hover {
-  background-color: rgba(52, 152, 219, 0.1);
-  color: #3498db;
+  background-color: var(--hover-bg);
+  color: var(--accent);
 }
 
 .view-btn.active {
-  background-color: white;
-  color: #3498db;
+  background-color: var(--surface);
+  color: var(--accent);
   font-weight: 500;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -100,7 +100,7 @@
 .content-card {
   flex: 1;
   margin: 16px;
-  background-color: white;
+  background-color: var(--surface);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -118,8 +118,8 @@
 
 .time-grid-header {
   display: grid;
-  border-bottom: 2px solid #e0e0e0;
-  background-color: #fafafa;
+  border-bottom: 2px solid var(--border-color);
+  background-color: var(--surface-alt);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -127,18 +127,18 @@
 
 .time-col-header {
   width: 60px;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid var(--border-color);
 }
 
 .day-col-header {
   text-align: center;
   padding: 12px;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid var(--border-color);
 }
 
 .day-name {
   font-size: 12px;
-  color: #666;
+  color: var(--text-muted);
   text-transform: uppercase;
   margin-bottom: 4px;
 }
@@ -146,7 +146,7 @@
 .day-number {
   font-size: 20px;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-primary);
 }
 
 .time-grid-body {
@@ -157,15 +157,15 @@
 
 .time-labels {
   width: 60px;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid var(--border-color);
 }
 
 .time-label {
   height: 60px;
   padding: 4px 8px;
   font-size: 11px;
-  color: #666;
-  border-bottom: 1px solid #f0f0f0;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
   text-align: right;
 }
 
@@ -176,12 +176,12 @@
 
 .day-column {
   position: relative;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid var(--border-color);
 }
 
 .hour-cell {
   height: 60px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .events-container {
@@ -197,8 +197,8 @@
   position: absolute;
   left: 4px;
   right: 4px;
-  background-color: #3498db;
-  color: white;
+  background-color: var(--accent);
+  color: var(--accent-fg);
   border-radius: 4px;
   padding: 4px 8px;
   font-size: 12px;
@@ -232,7 +232,7 @@
   padding: 12px;
   font-size: 12px;
   font-weight: 600;
-  color: #666;
+  color: var(--text-muted);
   text-transform: uppercase;
 }
 
@@ -242,11 +242,11 @@
   grid-template-rows: repeat(6, 1fr);
   gap: 1px;
   flex: 1;
-  background-color: #e0e0e0;
+  background-color: var(--border-color);
 }
 
 .month-day {
-  background-color: white;
+  background-color: var(--surface);
   padding: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -256,17 +256,17 @@
 }
 
 .month-day:hover {
-  background-color: #f9f9f9;
+  background-color: var(--surface-muted);
 }
 
 .month-day.other-month {
-  background-color: #fafafa;
-  color: #999;
+  background-color: var(--surface-alt);
+  color: var(--text-subtle);
 }
 
 .month-day.today .month-day-number {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--accent);
+  color: var(--accent-fg);
   border-radius: 50%;
   width: 28px;
   height: 28px;
@@ -288,8 +288,8 @@
 }
 
 .month-event {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--accent);
+  color: var(--accent-fg);
   padding: 2px 6px;
   border-radius: 3px;
   font-size: 11px;

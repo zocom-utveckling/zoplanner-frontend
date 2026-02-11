@@ -2,14 +2,12 @@
   width: 100%;
 }
 
-
 .recieved-container h2 {
   text-align: center;
-  color: #6b7280;
+  color: var(--text-muted);
   font-weight: 500;
   margin-top: 40px;
 }
-
 
 .recieved-content {
   display: flex;
@@ -23,43 +21,41 @@
   align-items: center;
   padding: 14px 16px;
   border-radius: 10px;
-  background-color: #ffffff;
+  background-color: var(--surface);
   cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
- 
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .recieved-card:hover {
-  background-color: #f3f4f6;
+  background-color: var(--surface-muted);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
-
 
 .recieved-left {
   display: flex;
   flex-direction: column;
   gap: 30px;
- 
 }
 
 .recieved-left h3 {
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .recieved-left p {
   margin: 0;
   font-size: 0.95rem;
-  color: #6b7280;
+  color: var(--text-muted);
   white-space: normal !important;
   overflow: visible !important;
   text-overflow: unset !important;
   max-width: 620px;
   margin-bottom: 10px;
 }
-
 
 .recieved-right {
   display: flex;
@@ -68,20 +64,19 @@
   justify-content: space-between;
   gap: 50px;
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--text-subtle);
   height: 100%;
 }
-.recieved-header{
+.recieved-header {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
-.recieved-header h4{
+.recieved-header h4 {
   margin: 0;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #1f447e;
-
+  color: var(--accent);
 }
 
 .recieved-right span:last-child {
@@ -89,7 +84,6 @@
   line-height: 1;
   cursor: pointer;
 }
-
 
 @media (max-width: 600px) {
   .recieved-card {
