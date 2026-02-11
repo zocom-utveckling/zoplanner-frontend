@@ -8,6 +8,7 @@
   border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
+  font-family: "Poppins", sans-serif;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -41,11 +42,10 @@
 .modal-content {
   background: #ffffff;
   border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  font-family: "Poppins", sans-serif;
 }
 
 .modal-header {
@@ -107,7 +107,6 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 14px;
-  font-family: inherit;
   transition: border-color 0.2s;
   box-sizing: border-box;
 }
