@@ -37,7 +37,12 @@ function Navbar({ user, activePage, setActivePage }) {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <div className="logo">ZoPlanner</div>
+        <div className="logo">
+          <span className="logo-mark" aria-hidden="true">
+            <span className="logo-ring" />
+          </span>
+          <span className="logo-text">ZoPlanner</span>
+        </div>
       </div>
 
       <div className="navbar-right">
