@@ -102,7 +102,8 @@ export default function TimeGridView({ days, events }) {
                     className="day-slot-bg"
                     style={{
                       height: gridRowHeight,
-                      borderTop: idx === 0 ? "none" : "1px solid #eef1f6",
+                      borderTop:
+                        idx === 0 ? "none" : "1px solid var(--border-subtle)",
                     }}
                   />
                 ))}

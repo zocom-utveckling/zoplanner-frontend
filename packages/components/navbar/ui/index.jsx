@@ -8,6 +8,7 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
+import { DarkModeButton } from "@zoplanner/dark-mode-button";
 
 function Navbar({ user, activePage, setActivePage }) {
   const dropdownRef = useRef(null);
@@ -47,6 +48,7 @@ function Navbar({ user, activePage, setActivePage }) {
 
       <div className="navbar-right">
         <div className="routes">
+          <DarkModeButton />
           <button
             onClick={() => setActivePage("dashboard")}
             className={activePage == "dashboard" ? "active" : ""}

@@ -46,7 +46,9 @@ export default function MonthView({
               className="month-cell"
               style={{
                 opacity: inMonth ? 1 : 0.45,
-                background: isSameDay(d, focusDate) ? "#f3f6ff" : "#fff",
+                background: isSameDay(d, focusDate)
+                  ? "var(--surface-alt)"
+                  : "var(--surface)",
               }}
               onClick={() => onDayClick(d)}
             >
