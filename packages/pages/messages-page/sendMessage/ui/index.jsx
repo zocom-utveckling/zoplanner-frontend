@@ -1,6 +1,7 @@
 import { Button } from "@zoplanner/button";
 import { useEffect, useState } from "react";
 import "./index.css";
+
 function SendMessagePopup({ onClose, user }) {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -8,11 +9,11 @@ function SendMessagePopup({ onClose, user }) {
   const [recipient, setRecipient] = useState("");
   const [users, setUsers] = useState([]);
 
- 
-  const filteredUsers = users.filter(u => u.username !== user.username||u.name!==recipient);  ;
+  const filteredUsers = users.filter(
+    (u) => u.username !== user.username || u.name !== recipient
+  );
 
- 
-  const output = filteredUsers.filter(u =>
+  const output = filteredUsers.filter((u) =>
     u.name.toLowerCase().includes(recipientInput.toLowerCase())
   );
 
@@ -32,80 +33,77 @@ function SendMessagePopup({ onClose, user }) {
 
   const handleSelectRecipient = (name) => {
     setRecipient(name);
-    setRecipientInput(""); 
+    setRecipientInput("");
   };
 
-
-
   return (
-    <div className="send-container">
-      <form >
-        <p>
-          Från: <span>{user.name}</span>
-        </p>
+    <div className="sendOverlay-container">
+      <div className="sendOverlay-content">
+        <header className="sendOverlay-header">
+          <h2>New Message</h2>
+          <Button text="×" onClick={onClose} type="button" style="close-btn" />
+        </header>
 
-        <div>
-          <label htmlFor="recipient">Till:</label>
-          <input
-            id="recipient"
-            type="text"
-            value={recipientInput || recipient}
-            placeholder="Search for recipient"
-            required
-            onChange={(e) => {
-              setRecipientInput(e.target.value);
-              setRecipient("");
-            }}
-          />
-          
-          {output.length > 0 && recipientInput && (
-            <ul className="recipient-suggestions">
-              {output.map((u) => (
-                <li
-                  key={u.id}
-                  onClick={() =>{ handleSelectRecipient(u.name) }}
-                >
-                  {u.name} ({u.username})
-                </li>
-              ))}
-            </ul>
-          )}
-          
-        </div>
+        <main className="sendOverlay-main">
+          <div className="sendOverlay-field">
+            <p>
+              Från: <span>{user.name}</span>
+            </p>
+          </div>
 
-        <div>
-          <label htmlFor="subject">Subject</label>
-          <input
-            id="subject"
-            type="text"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            required
-            placeholder="Subject..."
-          />
-        </div>
+          <div className="sendOverlay-field">
+            <label htmlFor="recipient">Till:</label>
+            <input
+              id="recipient"
+              type="text"
+              value={recipientInput || recipient}
+              placeholder="Search for recipient"
+              required
+              onChange={(e) => {
+                setRecipientInput(e.target.value);
+                setRecipient("");
+              }}
+            />
+            {output.length > 0 && recipientInput && (
+              <ul className="recipient-suggestions">
+                {output.map((u) => (
+                  <li key={u.id} onClick={() => handleSelectRecipient(u.name)}>
+                    {u.name} ({u.username})
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
-        <div>
-          <label htmlFor="message">Meddelande</label>
-          <textarea
-            id="message"
-            placeholder="Skriv ditt meddelande här..."
-            value={message}
-            required
-            onChange={(e) => setMessage(e.target.value)}
-          />
-        </div>
+          <div className="sendOverlay-field">
+            <label htmlFor="subject">Subject</label>
+            <input
+              id="subject"
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              required
+              placeholder="Subject..."
+            />
+          </div>
 
-        <div>
-          <Button
-            text={"Avbryt"}
-            type={"button"}
-            style={"cancel"}
-            onClick={() => onClose()}
-          />
-          <Button text={"Skicka"} type={"submit"} style={"send"} />
-        </div>
-      </form>
+          <div className="sendOverlay-field">
+            <label htmlFor="message">Meddelande</label>
+            <textarea
+              id="message"
+              placeholder="Skriv ditt meddelande här..."
+              value={message}
+              required
+              onChange={(e) => setMessage(e.target.value)}
+            />
+          </div>
+        </main>
+
+        <footer className="sendOverlay-footer">
+          <Button text="Avbryt" type="button" style="cancel" onClick={onClose} />
+          <Button text="Skicka" type="submit" style="send" />
+        </footer>
+      </div>
     </div>
   );
 }
