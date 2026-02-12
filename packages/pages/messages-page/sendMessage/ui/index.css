@@ -89,7 +89,31 @@
   gap: 12px;
   margin-top: 8px;
 }
-
+.recipient{
+  position: relative;
+}
+.recipient-suggestions{
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  margin-top: 4px;
+  padding: 0;
+  max-height: 150px;
+  overflow-y: scroll;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  z-index: 10;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.recipient-suggestions li {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  text-align: center;
+  border-bottom: 0.5px solid #d1d5db;
+}
 
 .send-container .btn {
   padding: 10px 16px;

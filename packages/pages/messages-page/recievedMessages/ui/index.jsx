@@ -1,9 +1,13 @@
-import { useState } from "react";
+import {  useState } from "react";
+
 import "./index.css"
-function RecievedMessagesPage() {
+import { OverviewMessages } from "../../overviewMessgaes/ui";
+function RecievedMessagesPage({user}) {
     const max = 80;
+    const [showFullMessage, setShowFullMessage] = useState(false);
     const [recievedMessages, setRecievedMessages] = useState([{
-        recipient: "Maaggie Rae",
+        sender: "John Doe",
+        recipient: user.username,
         subject: "Meeting Reminder",
         message: {
             text:
@@ -12,7 +16,8 @@ function RecievedMessagesPage() {
             createdAt: new Date().toLocaleString(),
         },
     }, {
-        recipient: "Frank Smith",
+        sender: "Jane Smith",
+        recipient: user.username,
         subject: "Project Update",
         message: {
             text: "Hello, how are you?",
@@ -20,11 +25,12 @@ function RecievedMessagesPage() {
         },
     }]);
     return(<>
+    {showFullMessage && <OverviewMessages message={recievedMessages[0]} onClose={()=> setShowFullMessage(false)} user={user}/>}
     <div className="recieved-container">
         {recievedMessages.length === 0 ? <h2>No Chats found</h2> :
             <div className="recieved-content">
                 {recievedMessages.map((message) =>
-                    <div className="recieved-card">
+                    <div className="recieved-card" onClick={() => setShowFullMessage(!showFullMessage)}>
                       <div className="recieved-left">  <div className="recieved-header">
                         <h3>{message.recipient}</h3>
                       <h4>{message.subject}</h4>

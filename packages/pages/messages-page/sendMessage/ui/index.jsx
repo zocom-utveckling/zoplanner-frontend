@@ -44,7 +44,7 @@ function SendMessagePopup({ onClose, user }) {
           Från: <span>{user.name}</span>
         </p>
 
-        <div>
+        <div className="recipient">
           <label htmlFor="recipient">Till:</label>
           <input
             id="recipient"

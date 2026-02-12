@@ -7,6 +7,7 @@ import { FaPenAlt, FaPenSquare } from "react-icons/fa";
 import "react-icons/fa6"
 
 function MessagesPage({user}) {
+  if(!user) return null;
   const [status, setStatus] = useState('recieved');
   const [show,setShow]= useState(false)
   
@@ -24,7 +25,7 @@ function MessagesPage({user}) {
           <p className={`status ${currentStatus==="recieved"?"active-status":""}`} onClick={()=>setStatus("recieved")}>Mottagen</p>
           <p className={`status ${currentStatus==="sent"?"active-status":""}`} onClick={()=>setStatus("sent")}>Skickat</p>
         </div>
-       {status==="recieved"? <RecievedMessagesPage/> : <SentMessagesPage/>}
+       {status==="recieved"? <RecievedMessagesPage user={user}/> : <SentMessagesPage user={user}/>}
       </div>
     </div>
   </>);

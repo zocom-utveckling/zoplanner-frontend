@@ -51,7 +51,7 @@ function HomePage() {
         ) : activePage == "courses" ? (
           <CoursesPage user={user} />
         ) : (
-          <MessagesPage />
+          <MessagesPage user={user}/>
         )}
       </div>
     </>
