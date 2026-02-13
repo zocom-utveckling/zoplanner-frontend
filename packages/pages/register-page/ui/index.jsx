@@ -48,7 +48,7 @@ function Register(){
     }
     return(<>
     <div className="container">
-        <h1>ZoPlanner</h1>
+        <h1>ZoPlanner </h1>
         <form onSubmit={handleSubmit}>
             <h2>Create account</h2>
             <div className="field">
