@@ -5,7 +5,7 @@ const cities =["GÖTEBORG","MALMÖ","STOCKHOLM"]
 const roles=["MANAGER","CONSULTANT","BOTH"]
 
 import {Button} from "@zoplanner/button"
-import { FaBriefcase, FaLock, FaMapMarkedAlt, FaUser } from "react-icons/fa"
+import { FaBriefcase, FaLock, FaMapMarkedAlt,FaEnvelope, FaUser } from "react-icons/fa"
 import { set } from "date-fns"
 function Register(){
     const [name,setName]=useState("")
@@ -13,13 +13,14 @@ function Register(){
     const [city,setCity]=useState("Göteborg")
     const [role,setRole]=useState("MANAGER")
     const [password,setPassword]=useState("")
+    const [email,setEmail]=useState("")
     const [loading,setLoading]=useState(false)
     const navigate= useNavigate()
     const handleSubmit=async(e)=>{
         try{
             setLoading(true)
             e.preventDefault()
-            const user={name,username,city,role,password}
+            const user={name,username,city,role,password,email}
             const res = await fetch("http://localhost:5027/api/User",{
                 method:"POST",
                 headers:{"Content-Type":"application/json"},
@@ -47,12 +48,16 @@ function Register(){
     }
     return(<>
     <div className="container">
-        <h1>ZoPlanner</h1>
+        <h1>ZoPlanner </h1>
         <form onSubmit={handleSubmit}>
             <h2>Create account</h2>
             <div className="field">
                 <div className="label"><FaUser/> <span>Full name</span></div>
                 <input type="text" value={name} required placeholder="Enter your full name" onChange={e=>setName(e.target.value)} />
+            </div>
+            <div className="field">
+                <div className="label"><FaEnvelope/> <span>Email</span></div>
+                <input type="email" value={email} required placeholder="Enter your email" onChange={e=>setEmail(e.target.value)} />
             </div>
              <div className="field">
                 <div className="label"><FaUser/> <span>Username</span></div>
