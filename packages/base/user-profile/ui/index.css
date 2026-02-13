@@ -9,7 +9,7 @@
 }
 
 .user-profile:hover {
-  background-color: var(--surface-muted);
+  background-color: #f5f7fa;
 }
 
 .profile-avatar {
@@ -23,21 +23,21 @@
   height: 52px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--border-color);
+  border: 2px solid #e6e9f0;
 }
 
 .avatar-placeholder {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: var(--accent-gradient);
-  color: var(--accent-fg);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 16px;
-  border: 2px solid var(--border-color);
+  border: 2px solid #e6e9f0;
 }
 
 .user-profile--compact .avatar-image,

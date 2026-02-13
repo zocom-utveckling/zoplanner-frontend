@@ -1,3 +1,4 @@
+import React from "react";
 import "./index.css";
 
 function UserProfile({ user, variant = "default" }) {

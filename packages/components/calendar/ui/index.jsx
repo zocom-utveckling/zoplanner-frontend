@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   addDays,
   addWeeks,
@@ -314,7 +314,7 @@ export default function Scheduler({ user }) {
           />
         )}
         {loading && events.length === 0 ? (
-          <div style={{ padding: "12px", color: "var(--text-muted)" }}>
+          <div style={{ padding: "12px", color: "#6b7280" }}>
             Laddar kalender...
           </div>
         ) : null}

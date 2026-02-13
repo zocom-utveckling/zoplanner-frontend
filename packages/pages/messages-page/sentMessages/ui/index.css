@@ -2,12 +2,14 @@
   width: 100%;
 }
 
+
 .sent-container h2 {
   text-align: center;
-  color: var(--text-muted);
+  color: #6b7280;
   font-weight: 500;
   margin-top: 40px;
 }
+
 
 .sent-content {
   display: flex;
@@ -15,58 +17,62 @@
   gap: 20px;
 }
 
+
 .sent-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 14px 16px;
   border-radius: 10px;
-  background-color: var(--surface);
+  background-color: #ffffff;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+ 
 }
 
 .sent-card:hover {
-  background-color: var(--surface-muted);
+  background-color: #f3f4f6;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
+
 
 .sent-left {
   display: flex;
   flex-direction: column;
   gap: 30px;
+ 
 }
 
 .sent-left h3 {
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #111827;
 }
 
 .sent-left p {
   margin: 0;
   font-size: 0.95rem;
-  color: var(--text-muted);
-  white-space: normal !important;
+  color: #6b7280;
+ white-space: normal !important;
   overflow: visible !important;
   text-overflow: unset !important;
   max-width: 420px;
   margin-bottom: 10px;
 }
-.sent-header {
+.sent-header{
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
-.sent-header h4 {
+.sent-header h4{
   margin: 0;
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--accent);
+  color: #1f447e;
+
 }
+
 
 .sent-right {
   display: flex;
@@ -75,7 +81,7 @@
   justify-content: space-between;
   gap: 50px;
   font-size: 0.8rem;
-  color: var(--text-subtle);
+  color: #9ca3af;
 }
 
 .sent-right span:last-child {

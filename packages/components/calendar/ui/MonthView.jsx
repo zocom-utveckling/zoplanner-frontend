@@ -1,3 +1,4 @@
+import React from "react";
 import {
   format,
   isSameDay,
@@ -46,9 +47,7 @@ export default function MonthView({
               className="month-cell"
               style={{
                 opacity: inMonth ? 1 : 0.45,
-                background: isSameDay(d, focusDate)
-                  ? "var(--surface-alt)"
-                  : "var(--surface)",
+                background: isSameDay(d, focusDate) ? "#f3f6ff" : "#fff",
               }}
               onClick={() => onDayClick(d)}
             >

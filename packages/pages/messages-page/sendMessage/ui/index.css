@@ -4,7 +4,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.4); 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,6 +20,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  font-family: sans-serif;
 }
 
 .sendOverlay-header {
@@ -56,9 +57,7 @@
   width: 100%;
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid var(--border-input);
-  background-color: var(--surface);
-  color: var(--text-primary);
+  border: 1px solid #d1d5db;
   font-size: 0.95rem;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -77,8 +76,8 @@
 
 .recipient-suggestions {
   position: absolute;
-  background-color: var(--surface);
-  border: 1px solid var(--border-input);
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   margin-top: 4px;
   padding: 0;

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { format, startOfDay, isSameDay, differenceInMinutes } from "date-fns";
 import sv from "date-fns/locale/sv";
 import EventBlock from "./EventBlock";
@@ -102,8 +102,7 @@ export default function TimeGridView({ days, events }) {
                     className="day-slot-bg"
                     style={{
                       height: gridRowHeight,
-                      borderTop:
-                        idx === 0 ? "none" : "1px solid var(--border-subtle)",
+                      borderTop: idx === 0 ? "none" : "1px solid #eef1f6",
                     }}
                   />
                 ))}
@@ -125,7 +124,7 @@ export default function TimeGridView({ days, events }) {
                   const top = (topMin / minutesPerSlot) * gridRowHeight;
                   const height = Math.max(
                     (durMin / minutesPerSlot) * gridRowHeight,
-                    18,
+                    18
                   );
 
                   return (

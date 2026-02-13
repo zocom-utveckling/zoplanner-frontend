@@ -7,6 +7,7 @@ import { FaPenAlt, FaPenSquare } from "react-icons/fa";
 import "react-icons/fa6"
 
 function MessagesPage({user}) {
+  if(!user) return null;
   const [status, setStatus] = useState('recieved');
   const [show,setShow]= useState(false)
   
