@@ -1,0 +1,27 @@
+.dark-mode-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  min-width: 110px;
+  justify-content: center;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s,
+    color 0.3s;
+}
+
+.dark-mode-button:hover {
+  background-color: var(--hover-bg);
+}
+
+.dark-mode-button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}

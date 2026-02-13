@@ -2,7 +2,8 @@
   display: flex;
   align-items: center;
   padding: 16px 20px;
-  background-color: white;
+  background-color: var(--nav-bg);
+  color: var(--text-primary);
   font-family: "Poppins", sans-serif;
 }
 
@@ -15,13 +16,11 @@
 }
 
 .navbar-right {
-  margin-left: auto; 
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 30px;
 }
-
-
 
 .logo {
   display: flex;
@@ -43,7 +42,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: #2f80ff;
+  background-color: var(--accent);
 }
 
 .logo-ring {
@@ -72,19 +71,15 @@
   padding: 8px 12px;
   border-radius: 2px;
   transition: background-color 0.3s;
+  color: var(--text-primary);
 }
-.routes button:hover{
-    background-color: rgba(0, 0, 0, 0.05);
+.routes button:hover {
+  background-color: var(--hover-bg);
 }
-.routes button.active{
-border-bottom: 2px solid black;
-font-weight: 600;
+.routes button.active {
+  border-bottom: 2px solid var(--text-primary);
+  font-weight: 600;
 }
-
-
-
-
-
 
 .icon-group {
   display: flex;
@@ -96,13 +91,23 @@ font-weight: 600;
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #262626;
-  color: white;
+  background-color: var(--icon-bg);
+  color: var(--icon-fg);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   position: relative;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.icon:hover,
+.notification:hover {
+  background-color: var(--accent);
+  color: var(--accent-fg);
+  transform: translateY(-1px);
 }
 
 .badge {
@@ -116,8 +121,6 @@ font-weight: 600;
   border-radius: 12px;
 }
 
-
-
 .profile {
   position: relative;
 }
@@ -130,31 +133,41 @@ font-weight: 600;
   border: none;
   cursor: pointer;
   font-size: 16px;
+  color: var(--text-primary);
+  padding: 6px 10px;
+  border-radius: 999px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
-
+.profile-trigger:hover,
+.profile-trigger:focus-visible {
+  background-color: var(--hover-bg);
+  outline: none;
+}
 
 .dropdown {
   position: absolute;
   right: 0;
   top: 120%;
   width: 160px;
-  background-color: white;
+  background-color: var(--surface);
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    animation: dropdown 0.5s ease forwards;
-    transition: all 0.8s ease;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  animation: dropdown 0.5s ease forwards;
+  transition: all 0.8s ease;
 }
 
 .dropdown a {
   padding: 12px;
   text-decoration: none;
-  color: black;
+  color: var(--text-primary);
   display: flex;
   justify-content: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .dropdown a:last-child {
@@ -162,15 +175,15 @@ font-weight: 600;
 }
 
 .dropdown a:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--hover-bg);
 }
-@keyframes dropdown{
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+@keyframes dropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

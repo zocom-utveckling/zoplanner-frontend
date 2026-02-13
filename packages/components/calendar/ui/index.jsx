@@ -314,7 +314,7 @@ export default function Scheduler({ user }) {
           />
         )}
         {loading && events.length === 0 ? (
-          <div style={{ padding: "12px", color: "#6b7280" }}>
+          <div style={{ padding: "12px", color: "var(--text-muted)" }}>
             Laddar kalender...
           </div>
         ) : null}

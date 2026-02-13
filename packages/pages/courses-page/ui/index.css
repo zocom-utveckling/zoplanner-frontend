@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
-  background-color: #eef2f8;
+  background-color: var(--app-bg);
 }
 
 .course-container h2 {
@@ -12,16 +12,14 @@
   font-weight: 600;
 }
 
-
 .course-content {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
   padding-top: 32px;
 }
 
-
 .course-list {
   display: grid;
-  grid-template-columns: repeat(1,1fr);
+  grid-template-columns: repeat(1, 1fr);
 
   gap: 24px;
 }
@@ -31,20 +29,20 @@
   }
 }
 
-
 .course-card {
-  background-color: #ffffff;
+  background-color: var(--surface);
   padding: 24px 28px;
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .course-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
 }
-
 
 .course-left {
   display: flex;
@@ -53,13 +51,12 @@
   margin-bottom: 20px;
 }
 
-
 .course-avatar {
   width: 56px;
   height: 56px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
-  color: #ffffff;
+  background: var(--accent-gradient);
+  color: var(--accent-fg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,41 +64,36 @@
   font-weight: 700;
 }
 
-
 .course-left h3 {
   font-size: 20px;
   font-weight: 600;
   margin: 0;
-  color: #111827;
+  color: var(--text-primary);
 }
-
 
 .course-right {
   display: flex;
   gap: 24px;
 }
 
-
 .course-right div {
   flex: 1;
-  background-color: #f1f5f9;
+  background-color: var(--surface-alt);
   padding: 16px;
   border-radius: 12px;
   display: flex;
-    flex-direction: column;
+  flex-direction: column;
 }
-
 
 .course-right label {
   font-size: 13px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-muted);
   margin-bottom: 6px;
 }
-
 
 .course-right span {
   font-size: 16px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
 }

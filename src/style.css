@@ -4,4 +4,78 @@
 html,
 body {
   font-family: "Poppins", sans-serif;
+  background-color: var(--app-bg);
+  color: var(--text-primary);
+}
+
+:root {
+  --app-bg: #eef2f8;
+  --nav-bg: #ffffff;
+  --surface: #ffffff;
+  --surface-alt: #f7f9fc;
+  --surface-muted: #f5f7fa;
+  --surface-strong: #e5e7eb;
+  --text-primary: #1f2933;
+  --text-muted: #6b7280;
+  --text-subtle: #9aa5b1;
+  --border-color: #e6e9f0;
+  --border-strong: #dfe4ee;
+  --border-subtle: #eef1f6;
+  --border-input: #d1d5db;
+  --active-bg: #1f2a44;
+  --active-fg: #ffffff;
+  --action-bg: #3e4b5e;
+  --action-bg-hover: #2b3340;
+  --action-fg: #ffffff;
+  --accent: #3498db;
+  --accent-hover: #2980b9;
+  --accent-fg: #ffffff;
+  --accent-gradient: linear-gradient(135deg, #4f46e5, #6366f1);
+  --accent-ring: rgba(52, 152, 219, 0.25);
+  --event-bg: #cfe1ff;
+  --event-border: #b7d0ff;
+  --event-fg: #1f2a44;
+  --event-muted: #42526e;
+  --event-range-bg: #b6d0ff;
+  --event-range-strong: #8fb6ff;
+  --hover-bg: rgba(0, 0, 0, 0.05);
+  --icon-bg: #262626;
+  --icon-fg: #ffffff;
+  --focus-ring: rgba(47, 128, 255, 0.35);
+}
+
+[data-theme="dark"] {
+  --app-bg: #0f141a;
+  --nav-bg: #111826;
+  --surface: #161f2e;
+  --surface-alt: #1c2638;
+  --surface-muted: #1f2a3d;
+  --surface-strong: #26324a;
+  --text-primary: #f1f5f9;
+  --text-muted: #cbd5f5;
+  --text-subtle: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-input: rgba(255, 255, 255, 0.18);
+  --active-bg: #e2e8f0;
+  --active-fg: #0f172a;
+  --action-bg: #5b6b85;
+  --action-bg-hover: #6a7a96;
+  --action-fg: #f8fafc;
+  --accent: #60a5fa;
+  --accent-hover: #7bb2fb;
+  --accent-fg: #0b1220;
+  --accent-gradient: linear-gradient(135deg, #60a5fa, #93c5fd);
+  --accent-ring: rgba(96, 165, 250, 0.35);
+  --event-bg: #1e293b;
+  --event-border: #334155;
+  --event-fg: #f8fafc;
+  --event-muted: #cbd5f5;
+  --event-range-bg: #2b3f5f;
+  --event-range-strong: #3f5d8f;
+  --hover-bg: rgba(255, 255, 255, 0.08);
+  --icon-bg: #f1f5f9;
+  --icon-fg: #111826;
+  --focus-ring: rgba(129, 178, 255, 0.45);
 }
