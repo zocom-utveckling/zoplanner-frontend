@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import { DarkModeButton } from "@zoplanner/dark-mode-button";
+import NotificationButton from "../../../base/send-notification/ui";
 
 function Navbar({ user, activePage, setActivePage }) {
   const dropdownRef = useRef(null);
@@ -48,6 +49,7 @@ function Navbar({ user, activePage, setActivePage }) {
 
       <div className="navbar-right">
         <div className="routes">
+          <NotificationButton/>
           <DarkModeButton />
           <button
             onClick={() => setActivePage("dashboard")}
