@@ -15,6 +15,9 @@ function Sidebar({ user }) {
   }
   console.log(user);
 
+  const roleValue = typeof user?.role === "string" ? user.role.toLowerCase() : "";
+  const isManager = roleValue === "manager";
+
   const [highlightedDates, setHighlightedDates] = useState([]);
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
@@ -22,6 +25,14 @@ function Sidebar({ user }) {
 
   useEffect(() => {
     let isCancelled = false;
+
+    if (!isManager) {
+      setUsers([]);
+      setIsLoadingUsers(false);
+      return () => {
+        isCancelled = true;
+      };
+    }
 
     async function loadUsers() {
       setIsLoadingUsers(true);
@@ -48,7 +59,7 @@ function Sidebar({ user }) {
     return () => {
       isCancelled = true;
     };
-  }, []);
+  }, [isManager]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -166,36 +177,38 @@ function Sidebar({ user }) {
     <aside className="sidebar">
       <UserProfile user={user} />
 
-      <div className="sidebar-users">
-        <button
-          type="button"
-          className="sidebar-users__toggle"
-          onClick={() => setIsUsersOpen((prev) => !prev)}
-          aria-expanded={isUsersOpen}
-        >
-          <span className="sidebar-users__title">Schema</span>
-          <span
-            className={`sidebar-users__chevron${isUsersOpen ? " is-open" : ""}`}
-            aria-hidden="true"
-          />
-        </button>
+      {isManager && (
+        <div className="sidebar-users">
+          <button
+            type="button"
+            className="sidebar-users__toggle"
+            onClick={() => setIsUsersOpen((prev) => !prev)}
+            aria-expanded={isUsersOpen}
+          >
+            <span className="sidebar-users__title">Schema</span>
+            <span
+              className={`sidebar-users__chevron${isUsersOpen ? " is-open" : ""}`}
+              aria-hidden="true"
+            />
+          </button>
 
-        <div className={`sidebar-users__list${isUsersOpen ? " is-open" : ""}`}>
-          {isLoadingUsers ? (
-            <div className="sidebar-users__loading">Laddar användare...</div>
-          ) : listedUsers.length ? (
-            listedUsers.map((listedUser) => (
-              <UserProfile
-                key={listedUser?.id || listedUser?.username || listedUser?.name}
-                user={listedUser}
-                variant="compact"
-              />
-            ))
-          ) : (
-            <div className="sidebar-users__empty">Inga användare hittades.</div>
-          )}
+          <div className={`sidebar-users__list${isUsersOpen ? " is-open" : ""}`}>
+            {isLoadingUsers ? (
+              <div className="sidebar-users__loading">Laddar användare...</div>
+            ) : listedUsers.length ? (
+              listedUsers.map((listedUser) => (
+                <UserProfile
+                  key={listedUser?.id || listedUser?.username || listedUser?.name}
+                  user={listedUser}
+                  variant="compact"
+                />
+              ))
+            ) : (
+              <div className="sidebar-users__empty">Inga användare hittades.</div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <AddActivityButton onSubmit={handleSubmitActivity} />
 
