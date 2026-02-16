@@ -8,6 +8,22 @@ import "./index.css";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+function DashboardLayout({ user, activePage, setActivePage, children }) {
+  return (
+    <>
+      <Navbar
+        user={user}
+        activePage={activePage}
+        setActivePage={setActivePage}
+      />
+      <div className="app">
+        <Sidebar user={user} />
+        {children}
+      </div>
+    </>
+  );
+}
+
 function HomePage() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
@@ -38,23 +54,19 @@ function HomePage() {
     return <div>Laddar användare...</div>;
   }
   return (
-    <>
-      <Navbar
-        user={user}
-        activePage={activePage}
-        setActivePage={setActivePage}
-      />
-      <div className="app">
-        <Sidebar user={user} />
-        {activePage == "dashboard" ? (
-          <Dashboard user={user} />
-        ) : activePage == "courses" ? (
-          <CoursesPage user={user} />
-        ) : (
-          <MessagesPage user={user}/>
-        )}
-      </div>
-    </>
+    <DashboardLayout
+      user={user}
+      activePage={activePage}
+      setActivePage={setActivePage}
+    >
+      {activePage == "dashboard" ? (
+        <Dashboard user={user} />
+      ) : activePage == "courses" ? (
+        <CoursesPage user={user} />
+      ) : (
+        <MessagesPage user={user} />
+      )}
+    </DashboardLayout>
   );
 }
 export { HomePage };
