@@ -41,3 +41,47 @@
 .button_send:hover {
   background-color: var(--action-bg-hover);
 }
+.button_close-btn{
+  background: none;
+  border: none;
+  font-weight: 600;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  max-width: 24px;
+}
+.button_close-btn:hover{
+  color: var(--text-primary);
+}
+.button_reply-btn{
+  background: var(--action-bg);
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--action-fg);
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+  max-width: max-content;
+  font-size: 18px;
+}
+.button_reply-btn:hover{
+  background-color: var(--action-bg-hover);
+}
+.button_delete-btn{
+  background: var(--delete-bg);
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--delete-fg);
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+  max-width: max-content;
+  font-size: 18px;
+}
+.button_delete-btn:hover{
+  background-color: var(--delete-bg-hover);
+}

@@ -42,6 +42,9 @@ body {
   --icon-bg: #262626;
   --icon-fg: #ffffff;
   --focus-ring: rgba(47, 128, 255, 0.35);
+  --delete-bg: #e53e3e;
+  --delete-bg-hover: #c53030;
+  --delete-fg: #ffffff;
 }
 
 [data-theme="dark"] {
