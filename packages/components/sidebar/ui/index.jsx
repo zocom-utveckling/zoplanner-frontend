@@ -4,10 +4,6 @@ import { UserProfile } from "@zoplanner/user-profile";
 import { AddActivityButton } from "@zoplanner/add-activity-button";
 import { MonthCalendar } from "@zoplanner/month-calender-sidebar";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
-const SPRING_API_BASE_URL =
-  import.meta.env.VITE_SPRING_API_BASE_URL || "/spring-api";
-
 function Sidebar({ user }) {
   // om user saknas blockeras hela sidofältet, eftersom det är osannolikt att det finns något meningsfullt att visa utan en användare. Det kan också förhindra potentiella fel
   if (!user) {
@@ -15,7 +11,8 @@ function Sidebar({ user }) {
   }
   console.log(user);
 
-  const roleValue = typeof user?.role === "string" ? user.role.toLowerCase() : "";
+  const roleValue =
+    typeof user?.role === "string" ? user.role.toLowerCase() : "";
   const isManager = roleValue === "manager";
 
   const [highlightedDates, setHighlightedDates] = useState([]);
@@ -38,7 +35,7 @@ function Sidebar({ user }) {
       setIsLoadingUsers(true);
 
       try {
-        const res = await fetch(`${API_BASE_URL}/User`);
+        const res = await fetch(`http://localhost:5027/api/User`);
         const data = res.ok ? await res.json() : [];
         if (!isCancelled) {
           setUsers(Array.isArray(data) ? data : []);
@@ -96,7 +93,7 @@ function Sidebar({ user }) {
       if (!consultantId) {
         try {
           const consultantsRes = await fetch(
-            `${SPRING_API_BASE_URL}/consultants`,
+            `http://localhost:5027/api/consultants`,
           );
           const consultants = consultantsRes.ok
             ? await consultantsRes.json()
@@ -117,7 +114,7 @@ function Sidebar({ user }) {
 
       try {
         const assignmentsRes = await fetch(
-          `${SPRING_API_BASE_URL}/assignments/consultant/${consultantId}`,
+          `http://localhost:5027/api/assignments/consultant/${consultantId}`,
         );
         const assignments = assignmentsRes.ok
           ? await assignmentsRes.json()
@@ -192,19 +189,25 @@ function Sidebar({ user }) {
             />
           </button>
 
-          <div className={`sidebar-users__list${isUsersOpen ? " is-open" : ""}`}>
+          <div
+            className={`sidebar-users__list${isUsersOpen ? " is-open" : ""}`}
+          >
             {isLoadingUsers ? (
               <div className="sidebar-users__loading">Laddar användare...</div>
             ) : listedUsers.length ? (
               listedUsers.map((listedUser) => (
                 <UserProfile
-                  key={listedUser?.id || listedUser?.username || listedUser?.name}
+                  key={
+                    listedUser?.id || listedUser?.username || listedUser?.name
+                  }
                   user={listedUser}
                   variant="compact"
                 />
               ))
             ) : (
-              <div className="sidebar-users__empty">Inga användare hittades.</div>
+              <div className="sidebar-users__empty">
+                Inga användare hittades.
+              </div>
             )}
           </div>
         </div>
