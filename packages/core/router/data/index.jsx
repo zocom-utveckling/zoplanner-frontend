@@ -6,6 +6,7 @@ import { HomePage } from "@zoplanner/home-page";
 const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   { path: "/", element: <LoginPage /> },
+  { path: "/login-page", element: <LoginPage /> },
 {path: "home-page", element:<HomePage/>},
   { path: "/home-page/:id", element: <HomePage /> },
 

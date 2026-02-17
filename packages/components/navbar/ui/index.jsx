@@ -95,7 +95,7 @@ function Navbar({ user, activePage, setActivePage }) {
           {showDropdown && (
             <div className="dropdown">
               <Link>View profile</Link>
-              <Link>Log out</Link>
+              <Link to="/login-page">Log out</Link>
             </div>
           )}
         </div>
