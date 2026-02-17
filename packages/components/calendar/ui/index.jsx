@@ -14,10 +14,6 @@ import TimeGridView from "./TimeGridView";
 import MonthView from "./MonthView";
 import "./index.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
-const SPRING_API_BASE_URL =
-  import.meta.env.VITE_SPRING_API_BASE_URL || "/spring-api";
-
 function toDateWithTime(dateValue, hours, minutes) {
   if (!dateValue) return null;
   if (dateValue instanceof Date) {
@@ -163,7 +159,7 @@ export default function Scheduler({ user }) {
 
         if (!consultantId) {
           const consultantsRes = await fetch(
-            `${SPRING_API_BASE_URL}/consultants`,
+            `http://localhost:5027/api/Consultant`,
           );
           const consultants = consultantsRes.ok
             ? await consultantsRes.json()
@@ -180,7 +176,7 @@ export default function Scheduler({ user }) {
         }
 
         const assignmentsRes = await fetch(
-          `${SPRING_API_BASE_URL}/assignments/consultant/${consultantId}`,
+          `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
         );
 
         const assignments = assignmentsRes.ok
@@ -204,7 +200,7 @@ export default function Scheduler({ user }) {
           classIds.map(async (classId) => {
             try {
               const res = await fetch(
-                `${SPRING_API_BASE_URL}/classes/${classId}`,
+                `http://localhost:5027/api/Classes/${classId}`,
               );
               if (!res.ok) return null;
               const data = await res.json();
