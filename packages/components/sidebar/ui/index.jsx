@@ -93,7 +93,7 @@ function Sidebar({ user }) {
       if (!consultantId) {
         try {
           const consultantsRes = await fetch(
-            `http://localhost:5027/api/consultants`,
+            `http://localhost:5027/api/Consultant`,
           );
           const consultants = consultantsRes.ok
             ? await consultantsRes.json()
@@ -114,7 +114,7 @@ function Sidebar({ user }) {
 
       try {
         const assignmentsRes = await fetch(
-          `http://localhost:5027/api/assignments/consultant/${consultantId}`,
+          `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
         );
         const assignments = assignmentsRes.ok
           ? await assignmentsRes.json()
