@@ -18,6 +18,24 @@ function UserProfile({ user, variant = "default" }) {
       .slice(0, 2);
   };
 
+  const formatTitle = (value) => {
+    if (typeof value !== "string") return "";
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "both") return "Manager + Consultant";
+    return value
+      .trim()
+      .split(/[\s_-]+/)
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(" ");
+  };
+
+  const userTitle =
+    formatTitle(user.title) ||
+    formatTitle(user.jobTitle) ||
+    formatTitle(user.position) ||
+    formatTitle(user.role);
+
   return (
     <div className={wrapperClassName}>
       <div className="profile-avatar">
@@ -27,7 +45,12 @@ function UserProfile({ user, variant = "default" }) {
           <div className="avatar-placeholder">{getInitials(user.name)}</div>
         )}
       </div>
-      <div className="user-profile__name">{user.name}</div>
+      <div className="user-profile__details">
+        <div className="user-profile__name">{user.name}</div>
+        {userTitle && variant !== "compact" && (
+          <div className="user-profile__title">{userTitle}</div>
+        )}
+      </div>
     </div>
   );
 }

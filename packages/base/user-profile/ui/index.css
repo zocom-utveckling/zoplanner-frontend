@@ -53,10 +53,25 @@
   font-weight: 600;
 }
 
+.user-profile__details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
 .user-profile__name {
   font-weight: 700;
   font-size: 20px;
   display: flex;
   align-items: center;
   line-height: 1;
+}
+
+.user-profile__title {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--text-muted);
 }
