@@ -43,13 +43,13 @@ export default function MonthView({
           return (
             <div
               key={d.toISOString()}
-              className="month-cell"
-              style={{
-                opacity: inMonth ? 1 : 0.45,
-                background: isSameDay(d, focusDate)
-                  ? "var(--surface-alt)"
-                  : "var(--surface)",
-              }}
+              className={[
+                "month-cell",
+                !inMonth ? "month-cell--out-of-month" : "",
+                isSameDay(d, focusDate) ? "month-cell--focus-day" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
               onClick={() => onDayClick(d)}
             >
               <div className="month-cell-header">{format(d, "d")}</div>

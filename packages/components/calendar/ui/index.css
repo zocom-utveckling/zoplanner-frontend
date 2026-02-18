@@ -287,6 +287,19 @@
   gap: 2px;
 }
 
+.month-cell {
+  background: var(--surface);
+}
+
+.month-cell--out-of-month {
+  opacity: 0.45;
+}
+
+.month-cell--focus-day {
+  background: var(--surface-alt);
+  background-color: #c0d8fb;
+}
+
 .month-event {
   background-color: var(--accent);
   color: var(--accent-fg);
