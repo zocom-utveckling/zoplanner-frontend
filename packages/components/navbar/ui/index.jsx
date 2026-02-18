@@ -39,9 +39,6 @@ function Navbar({ user, activePage, setActivePage }) {
     <nav className="navbar">
       <div className="navbar-left">
         <div className="logo">
-          <span className="logo-mark" aria-hidden="true">
-            <span className="logo-ring" />
-          </span>
           <span className="logo-text">ZoPlanner</span>
         </div>
       </div>
