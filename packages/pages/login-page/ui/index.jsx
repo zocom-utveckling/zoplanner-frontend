@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./index.css";
-
+import {PopUp} from "@zoplanner/popup"
 import { Button } from "@zoplanner/button";
 import { useNavigate,Link } from "react-router-dom";
 import {  FaLock, FaUser } from "react-icons/fa"
@@ -9,6 +9,7 @@ function LoginPage() {
   const [username,setUsername]=useState("")
   const [password,setPassword]=useState("")
   const [loading,setLoading]=useState(false)
+  const [message,setMessage]=useState(null)
   const navigate =useNavigate()
   const handleSubmit=async(e)=>{
     try{
@@ -19,7 +20,7 @@ function LoginPage() {
      if(res.ok){
       if(data.password === password){
         navigate(`/home-page/${data.id}`)
-        alert(data.message || `Welcome ${data.name}`)
+        setMessage("Welcome")
       }
       else{
         alert("Incorrect username or password")
@@ -46,7 +47,7 @@ function LoginPage() {
     }
   }
   return (
-   <>
+   <> {message && <PopUp messsage={message} onClose={()=>setMessage(null)}/>}
    <div className="container">
     <h1>ZoPlanner</h1>
     <form onSubmit={handleSubmit}>
