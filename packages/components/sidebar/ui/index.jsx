@@ -13,7 +13,12 @@ function Sidebar({ user }) {
 
   const roleValue =
     typeof user?.role === "string" ? user.role.toLowerCase() : "";
-  const isManager = roleValue === "manager";
+  const normalizedRoles = roleValue
+    .split(/[\s,;|/+-]+/)
+    .map((role) => role.trim())
+    .filter(Boolean);
+  const isManager =
+    normalizedRoles.includes("manager") || normalizedRoles.includes("both");
 
   const [highlightedDates, setHighlightedDates] = useState([]);
   const [users, setUsers] = useState([]);
