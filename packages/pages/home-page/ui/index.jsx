@@ -7,6 +7,7 @@ import "./index.css";
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Profile_Page } from "../../profile-page/ui";
 
 function DashboardLayout({ user, activePage, setActivePage, children }) {
   return (
@@ -63,7 +64,7 @@ function HomePage() {
         <Dashboard user={user} />
       ) : activePage == "courses" ? (
         <CoursesPage user={user} />
-      ) : (
+      ) : activePage== "profile"?(<Profile_Page user={user}/>):(
         <MessagesPage user={user} />
       )}
     </DashboardLayout>
