@@ -331,23 +331,6 @@
   );
 }
 
-.month-event-pill.is-middle {
-  border-right: 0;
-  border-left: 0;
-  border-radius: 0;
-  background: var(--event-range-strong);
-}
-
-.month-event-pill.is-end {
-  border-left: 0;
-  border-radius: 0 8px 8px 0;
-  background: linear-gradient(
-    90deg,
-    var(--event-range-bg),
-    var(--event-range-strong)
-  );
-}
-
 .month-event-pill.is-single {
   border-radius: 8px;
 }
