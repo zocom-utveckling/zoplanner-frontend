@@ -72,7 +72,7 @@ export default function MonthView({
                   ].join(" ");
 
                   return (
-                    <div key={e.id} className={pillClass} title={e.title}>
+                    <div key={e.id} className={pillClass}>
                       {isMultiDay && !isStart ? "" : e.title.split("\n")[0]}
                     </div>
                   );
