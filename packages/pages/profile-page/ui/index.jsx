@@ -1,0 +1,57 @@
+import { FaEdit, FaUser } from "react-icons/fa";
+import "./index.css";
+import { Button } from "@zoplanner/button";
+import { useEffect, useState } from "react";
+import { Edit_Profile } from "../edit-profile/ui";
+function Profile_Page({user,setUser}) {
+    const [showEdit,setShowEdit]=useState(false)
+  
+  return(<>
+   {showEdit && <Edit_Profile user={user} onClose={()=> setShowEdit(false)} setUser={setUser}/>}
+    <div className="profile-page-container">
+      <header className="profile-page-header">
+        <h2>Profil</h2>
+
+      </header>
+      <main className="profile-content">
+       <div>
+        <div className="profile-picture">
+            {user.profilePicture ? (
+          <img src={user.profilePicture} alt={`${user.name}'s profile`} className="profile-picture" />
+        ) : (
+          <div className="profile-placeholder">
+            <FaUser size={64} />
+          </div>
+        )}
+         <h2>{user.name}</h2>
+            </div>
+       </div>
+     <div className="profile-info">
+        <section className="profile-card">
+            <label>Email</label>
+            <p>{user.email}</p>
+        </section>
+        <section className="profile-card">
+            <label>Username</label>
+            <p>{user.username}</p>
+        </section>
+        <section className="profile-card">
+            <label>City</label>
+            <p>{user.city}</p>
+        </section>
+        <section className="profile-card">
+            <label>Role</label>
+            <p>{user.role}</p>
+        </section>
+          
+     </div>
+     <div className="profile-edit">
+        <Button text={"Redigera"} type={"button"} style={"reply-btn"} onClick={()=> setShowEdit(true)} /> 
+     </div>
+      </main>
+    </div>
+     </>
+  )
+}
+
+export  {Profile_Page};
