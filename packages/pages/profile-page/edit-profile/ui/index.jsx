@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./index.css"
+import { Button } from "@zoplanner/button";
 const cities =["GÖTEBORG","MALMÖ","STOCKHOLM"]
 const roles=["MANAGER","CONSULTANT","BOTH"]
 function Edit_Profile({ user, onClose,setUser }) {
@@ -51,11 +52,11 @@ function Edit_Profile({ user, onClose,setUser }) {
         </header>
 
         <form onSubmit={handleSubmit} className="edit-profile-form">
-          <img
+          <div className="edit-avatar"><img
             src={newUserinfo.profilePicture}
-            alt={newUserinfo.name + " profil"}
-            className="edit-avatar"
-          />
+            alt={String(newUserinfo.name).charAt(0)}
+            
+          /></div>
 
           <section>
             <label>Namn</label>
@@ -139,13 +140,8 @@ function Edit_Profile({ user, onClose,setUser }) {
 </section>
 
           <footer className="edit-profile-footer">
-            <button type="button" onClick={onClose} className="secondary-btn">
-              Avbryt
-            </button>
-
-            <button type="submit" className="primary-btn">
-              Spara ändringar
-            </button>
+            <Button type={"button"} text={"Avbryt"} onClick={onClose} style={"delete-btn"}/>
+            <Button type={"submit"} text={"Spara ändringar"} style={"reply-btn"}/>
           </footer>
         </form>
       </div>
