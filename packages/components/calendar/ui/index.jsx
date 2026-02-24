@@ -376,19 +376,28 @@ export default function Scheduler({ user }) {
       </div>
 
       {isActivityModalOpen && (
-        <div className="scheduler-modal-overlay" onClick={handleCloseActivityModal}>
+        <div
+          className="scheduler-modal-overlay"
+          onClick={handleCloseActivityModal}
+        >
           <div
             className="scheduler-modal-content"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="scheduler-modal-header">
               <h2>Lägg till aktivitet</h2>
-              <button className="scheduler-close-btn" onClick={handleCloseActivityModal}>
+              <button
+                className="scheduler-close-btn"
+                onClick={handleCloseActivityModal}
+              >
                 ×
               </button>
             </div>
 
-            <form onSubmit={handleActivitySubmit} className="scheduler-activity-form">
+            <form
+              onSubmit={handleActivitySubmit}
+              className="scheduler-activity-form"
+            >
               <div className="scheduler-form-group">
                 <label htmlFor="title">Titel *</label>
                 <input
