@@ -55,25 +55,17 @@ export default function MonthView({
               <div className="month-cell-header">{format(d, "d")}</div>
               <div className="month-events">
                 {dayEvents.map((e) => {
-                  const isStart = isSameDay(e.start, d);
-                  const isEnd = e.end ? isSameDay(e.end, d) : isStart;
                   const isMultiDay = Boolean(
                     e.end && !isSameDay(e.start, e.end),
                   );
                   const pillClass = [
                     "month-event-pill",
-                    isMultiDay
-                      ? isStart
-                        ? "is-start"
-                        : isEnd
-                          ? "is-end"
-                          : "is-middle"
-                      : "is-single",
+                    isMultiDay ? "is-start" : "is-single",
                   ].join(" ");
 
                   return (
-                    <div key={e.id} className={pillClass} title={e.title}>
-                      {isMultiDay && !isStart ? "" : e.title.split("\n")[0]}
+                    <div key={e.id} className={pillClass}>
+                      {e.title.split("\n")[0]}
                     </div>
                   );
                 })}

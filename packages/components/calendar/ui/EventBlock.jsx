@@ -1,5 +1,3 @@
-import { format } from "date-fns";
-
 export default function EventBlock({ event, top, height }) {
   return (
     <div
@@ -8,12 +6,11 @@ export default function EventBlock({ event, top, height }) {
         top,
         height,
       }}
-      title={`${format(event.start, "HH:mm")}–${format(event.end, "HH:mm")}`}
     >
       <div className="event-title">{event.title}</div>
-      <div className="event-time">
-        {format(event.start, "HH:mm")}–{format(event.end, "HH:mm")}
-      </div>
+      {event.subtitle ? (
+        <div className="event-subtitle">{event.subtitle}</div>
+      ) : null}
     </div>
   );
 }

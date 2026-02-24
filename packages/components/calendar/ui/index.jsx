@@ -6,7 +6,6 @@ import {
   format,
   startOfWeek,
   startOfMonth,
-  endOfMonth,
 } from "date-fns";
 import sv from "date-fns/locale/sv";
 import Topbar from "./Topbar";
@@ -84,11 +83,29 @@ function toLocalDateTime(dateValue) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
+function firstNonEmptyString(...values) {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim()) {
+      return value.trim();
+    }
+  }
+  return null;
+}
+
 export default function Scheduler({ user }) {
   const [view, setView] = useState("week");
   const [focusDate, setFocusDate] = useState(new Date());
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [activityFormData, setActivityFormData] = useState({
+    title: "",
+    description: "",
+    date: "",
+    startTime: "",
+    endTime: "",
+    type: "meeting",
+  });
 
   const weekStart = useMemo(
     () => startOfWeek(focusDate, { weekStartsOn: 1 }),
@@ -108,7 +125,6 @@ export default function Scheduler({ user }) {
   }, [view, focusDate]);
 
   const monthStart = startOfMonth(focusDate);
-  const monthEnd = endOfMonth(focusDate);
 
   const monthGridDays = useMemo(() => {
     const start = startOfWeek(monthStart, { weekStartsOn: 1 });
@@ -139,8 +155,65 @@ export default function Scheduler({ user }) {
     }
   }
 
-  function jump(deltaDays) {
-    setFocusDate((d) => addDays(d, deltaDays));
+  function handleOpenActivityModal(date) {
+    const selectedDate = format(date, "yyyy-MM-dd");
+    setFocusDate(date);
+    setActivityFormData({
+      title: "",
+      description: "",
+      date: selectedDate,
+      startTime: "",
+      endTime: "",
+      type: "meeting",
+    });
+    setIsActivityModalOpen(true);
+  }
+
+  function handleCloseActivityModal() {
+    setIsActivityModalOpen(false);
+  }
+
+  function handleActivityChange(event) {
+    const { name, value } = event.target;
+    setActivityFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  function handleActivitySubmit(event) {
+    event.preventDefault();
+
+    const start = toLocalDateTime(
+      `${activityFormData.date} ${activityFormData.startTime}:00`,
+    );
+    const end = toLocalDateTime(
+      `${activityFormData.date} ${activityFormData.endTime}:00`,
+    );
+
+    if (start && end) {
+      setEvents((prev) => [
+        ...prev,
+        {
+          id: `manual-${Date.now()}`,
+          title: activityFormData.title,
+          subtitle: activityFormData.description,
+          start,
+          end,
+          type: activityFormData.type || "manual",
+        },
+      ]);
+    }
+
+    setActivityFormData({
+      title: "",
+      description: "",
+      date: "",
+      startTime: "",
+      endTime: "",
+      type: "meeting",
+    });
+    setIsActivityModalOpen(false);
   }
 
   useEffect(() => {
@@ -183,48 +256,32 @@ export default function Scheduler({ user }) {
           ? await assignmentsRes.json()
           : [];
 
-        const classIds = Array.from(
-          new Set(
-            assignments
-              .map(
-                (assignment) =>
-                  assignment?.course?.classId ||
-                  assignment?.classId ||
-                  assignment?.courseClassId,
-              )
-              .filter(Boolean),
-          ),
+        const coursesRes = await fetch(`http://localhost:5027/api/Course`);
+        const courses = coursesRes.ok ? await coursesRes.json() : [];
+        const courseMap = new Map(
+          (Array.isArray(courses) ? courses : [])
+            .map((course) => [
+              course?.id,
+              firstNonEmptyString(
+                course?.name,
+                course?.Name,
+                course?.courseName,
+                course?.title,
+              ),
+            ])
+            .filter(([id, name]) => Boolean(id) && Boolean(name)),
         );
-
-        const classEntries = await Promise.all(
-          classIds.map(async (classId) => {
-            try {
-              const res = await fetch(
-                `http://localhost:5027/api/Classes/${classId}`,
-              );
-              if (!res.ok) return null;
-              const data = await res.json();
-              return [classId, data?.name || data?.className || null];
-            } catch {
-              return null;
-            }
-          }),
-        );
-
-        const classMap = new Map(classEntries.filter(Boolean));
 
         const nextEvents = [];
 
         assignments.forEach((assignment) => {
+          const assignmentCourseId =
+            assignment?.course?.id ||
+            assignment?.courseId ||
+            assignment?.idCourse;
           const courseName =
-            assignment?.course?.name || assignment?.courseName || "Uppdrag";
-          const classId =
-            assignment?.course?.classId ||
-            assignment?.classId ||
-            assignment?.courseClassId;
-          const className = classId ? classMap.get(classId) : null;
-          const classLine = className ? `\n${className}` : "";
-
+            (assignmentCourseId ? courseMap.get(assignmentCourseId) : null) ||
+            "Uppdrag";
           const sessions = assignment?.sessions || [];
 
           if (Array.isArray(sessions) && sessions.length > 0) {
@@ -238,13 +295,15 @@ export default function Scheduler({ user }) {
 
               if (!start || !end) return;
 
-              const locationLine = session?.location
-                ? `\n${session.location}`
-                : "\nSession";
-
               nextEvents.push({
                 id: `session-${assignment.id}-${session.id}`,
-                title: `${courseName}${classLine}${locationLine}`,
+                title: courseName,
+                subtitle: firstNonEmptyString(
+                  session?.comment,
+                  session?.Comment,
+                  session?.sessionComment,
+                  session?.description,
+                ),
                 start,
                 end,
                 type: "session",
@@ -265,7 +324,7 @@ export default function Scheduler({ user }) {
 
           nextEvents.push({
             id: `assignment-${assignment.id}`,
-            title: `${courseName}${classLine}\nUppdrag`,
+            title: courseName,
             start,
             end,
             type: "assignment",
@@ -306,7 +365,7 @@ export default function Scheduler({ user }) {
             monthGridDays={monthGridDays}
             focusDate={focusDate}
             events={events}
-            onDayClick={setFocusDate}
+            onDayClick={handleOpenActivityModal}
           />
         )}
         {loading && events.length === 0 ? (
@@ -315,6 +374,126 @@ export default function Scheduler({ user }) {
           </div>
         ) : null}
       </div>
+
+      {isActivityModalOpen && (
+        <div
+          className="scheduler-modal-overlay"
+          onClick={handleCloseActivityModal}
+        >
+          <div
+            className="scheduler-modal-content"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="scheduler-modal-header">
+              <h2>Lägg till aktivitet</h2>
+              <button
+                className="scheduler-close-btn"
+                onClick={handleCloseActivityModal}
+              >
+                ×
+              </button>
+            </div>
+
+            <form
+              onSubmit={handleActivitySubmit}
+              className="scheduler-activity-form"
+            >
+              <div className="scheduler-form-group">
+                <label htmlFor="title">Titel *</label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={activityFormData.title}
+                  onChange={handleActivityChange}
+                  required
+                  placeholder="T.ex. Möte med kursledare"
+                />
+              </div>
+
+              <div className="scheduler-form-group">
+                <label htmlFor="type">Typ av aktivitet *</label>
+                <select
+                  id="type"
+                  name="type"
+                  value={activityFormData.type}
+                  onChange={handleActivityChange}
+                  required
+                >
+                  <option value="meeting">Möte</option>
+                  <option value="lecture">Lektion</option>
+                  <option value="review">Granskning</option>
+                  <option value="preparation">Förberedelse</option>
+                  <option value="other">Annat</option>
+                </select>
+              </div>
+
+              <div className="scheduler-form-group">
+                <label htmlFor="date">Datum *</label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  value={activityFormData.date}
+                  onChange={handleActivityChange}
+                  required
+                />
+              </div>
+
+              <div className="scheduler-form-row">
+                <div className="scheduler-form-group">
+                  <label htmlFor="startTime">Starttid *</label>
+                  <input
+                    type="time"
+                    id="startTime"
+                    name="startTime"
+                    value={activityFormData.startTime}
+                    onChange={handleActivityChange}
+                    required
+                  />
+                </div>
+
+                <div className="scheduler-form-group">
+                  <label htmlFor="endTime">Sluttid *</label>
+                  <input
+                    type="time"
+                    id="endTime"
+                    name="endTime"
+                    value={activityFormData.endTime}
+                    onChange={handleActivityChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="scheduler-form-group">
+                <label htmlFor="description">Beskrivning</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={activityFormData.description}
+                  onChange={handleActivityChange}
+                  rows="4"
+                  placeholder="Lägg till eventuella anteckningar..."
+                />
+              </div>
+
+              <div className="scheduler-modal-actions">
+                <button
+                  type="button"
+                  className="scheduler-btn-cancel"
+                  onClick={handleCloseActivityModal}
+                >
+                  Avbryt
+                </button>
+                <button type="submit" className="scheduler-btn-submit">
+                  Lägg till
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
