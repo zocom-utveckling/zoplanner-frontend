@@ -228,6 +228,12 @@ export default function Scheduler({ user }) {
               nextEvents.push({
                 id: `session-${assignment.id}-${session.id}`,
                 title: courseName,
+                subtitle: firstNonEmptyString(
+                  session?.comment,
+                  session?.Comment,
+                  session?.sessionComment,
+                  session?.description,
+                ),
                 start,
                 end,
                 type: "session",

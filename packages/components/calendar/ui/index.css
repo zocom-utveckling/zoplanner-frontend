@@ -234,6 +234,16 @@
   color: var(--event-fg);
 }
 
+.event-subtitle {
+  margin-top: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
 /* Month view */
 .month-wrap {
   display: flex;
