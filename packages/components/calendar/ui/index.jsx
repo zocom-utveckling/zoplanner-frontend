@@ -6,7 +6,6 @@ import {
   format,
   startOfWeek,
   startOfMonth,
-  endOfMonth,
 } from "date-fns";
 import sv from "date-fns/locale/sv";
 import Topbar from "./Topbar";
@@ -84,6 +83,15 @@ function toLocalDateTime(dateValue) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
+function firstNonEmptyString(...values) {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim()) {
+      return value.trim();
+    }
+  }
+  return null;
+}
+
 export default function Scheduler({ user }) {
   const [view, setView] = useState("week");
   const [focusDate, setFocusDate] = useState(new Date());
@@ -108,7 +116,6 @@ export default function Scheduler({ user }) {
   }, [view, focusDate]);
 
   const monthStart = startOfMonth(focusDate);
-  const monthEnd = endOfMonth(focusDate);
 
   const monthGridDays = useMemo(() => {
     const start = startOfWeek(monthStart, { weekStartsOn: 1 });
@@ -137,10 +144,6 @@ export default function Scheduler({ user }) {
     } else {
       setFocusDate((d) => addMonths(d, 1));
     }
-  }
-
-  function jump(deltaDays) {
-    setFocusDate((d) => addDays(d, deltaDays));
   }
 
   useEffect(() => {
@@ -183,48 +186,32 @@ export default function Scheduler({ user }) {
           ? await assignmentsRes.json()
           : [];
 
-        const classIds = Array.from(
-          new Set(
-            assignments
-              .map(
-                (assignment) =>
-                  assignment?.course?.classId ||
-                  assignment?.classId ||
-                  assignment?.courseClassId,
-              )
-              .filter(Boolean),
-          ),
+        const coursesRes = await fetch(`http://localhost:5027/api/Course`);
+        const courses = coursesRes.ok ? await coursesRes.json() : [];
+        const courseMap = new Map(
+          (Array.isArray(courses) ? courses : [])
+            .map((course) => [
+              course?.id,
+              firstNonEmptyString(
+                course?.name,
+                course?.Name,
+                course?.courseName,
+                course?.title,
+              ),
+            ])
+            .filter(([id, name]) => Boolean(id) && Boolean(name)),
         );
-
-        const classEntries = await Promise.all(
-          classIds.map(async (classId) => {
-            try {
-              const res = await fetch(
-                `http://localhost:5027/api/Classes/${classId}`,
-              );
-              if (!res.ok) return null;
-              const data = await res.json();
-              return [classId, data?.name || data?.className || null];
-            } catch {
-              return null;
-            }
-          }),
-        );
-
-        const classMap = new Map(classEntries.filter(Boolean));
 
         const nextEvents = [];
 
         assignments.forEach((assignment) => {
+          const assignmentCourseId =
+            assignment?.course?.id ||
+            assignment?.courseId ||
+            assignment?.idCourse;
           const courseName =
-            assignment?.course?.name || assignment?.courseName || "Uppdrag";
-          const classId =
-            assignment?.course?.classId ||
-            assignment?.classId ||
-            assignment?.courseClassId;
-          const className = classId ? classMap.get(classId) : null;
-          const classLine = className ? `\n${className}` : "";
-
+            (assignmentCourseId ? courseMap.get(assignmentCourseId) : null) ||
+            "Uppdrag";
           const sessions = assignment?.sessions || [];
 
           if (Array.isArray(sessions) && sessions.length > 0) {
@@ -238,13 +225,9 @@ export default function Scheduler({ user }) {
 
               if (!start || !end) return;
 
-              const locationLine = session?.location
-                ? `\n${session.location}`
-                : "\nSession";
-
               nextEvents.push({
                 id: `session-${assignment.id}-${session.id}`,
-                title: `${courseName}${classLine}${locationLine}`,
+                title: courseName,
                 start,
                 end,
                 type: "session",
@@ -265,7 +248,7 @@ export default function Scheduler({ user }) {
 
           nextEvents.push({
             id: `assignment-${assignment.id}`,
-            title: `${courseName}${classLine}\nUppdrag`,
+            title: courseName,
             start,
             end,
             type: "assignment",
