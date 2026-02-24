@@ -97,6 +97,15 @@ export default function Scheduler({ user }) {
   const [focusDate, setFocusDate] = useState(new Date());
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [activityFormData, setActivityFormData] = useState({
+    title: "",
+    description: "",
+    date: "",
+    startTime: "",
+    endTime: "",
+    type: "meeting",
+  });
 
   const weekStart = useMemo(
     () => startOfWeek(focusDate, { weekStartsOn: 1 }),
@@ -144,6 +153,67 @@ export default function Scheduler({ user }) {
     } else {
       setFocusDate((d) => addMonths(d, 1));
     }
+  }
+
+  function handleOpenActivityModal(date) {
+    const selectedDate = format(date, "yyyy-MM-dd");
+    setFocusDate(date);
+    setActivityFormData({
+      title: "",
+      description: "",
+      date: selectedDate,
+      startTime: "",
+      endTime: "",
+      type: "meeting",
+    });
+    setIsActivityModalOpen(true);
+  }
+
+  function handleCloseActivityModal() {
+    setIsActivityModalOpen(false);
+  }
+
+  function handleActivityChange(event) {
+    const { name, value } = event.target;
+    setActivityFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  function handleActivitySubmit(event) {
+    event.preventDefault();
+
+    const start = toLocalDateTime(
+      `${activityFormData.date} ${activityFormData.startTime}:00`,
+    );
+    const end = toLocalDateTime(
+      `${activityFormData.date} ${activityFormData.endTime}:00`,
+    );
+
+    if (start && end) {
+      setEvents((prev) => [
+        ...prev,
+        {
+          id: `manual-${Date.now()}`,
+          title: activityFormData.title,
+          subtitle: activityFormData.description,
+          start,
+          end,
+          type: activityFormData.type || "manual",
+        },
+      ]);
+    }
+
+    setActivityFormData({
+      title: "",
+      description: "",
+      date: "",
+      startTime: "",
+      endTime: "",
+      type: "meeting",
+    });
+    setIsActivityModalOpen(false);
   }
 
   useEffect(() => {
@@ -295,7 +365,7 @@ export default function Scheduler({ user }) {
             monthGridDays={monthGridDays}
             focusDate={focusDate}
             events={events}
-            onDayClick={setFocusDate}
+            onDayClick={handleOpenActivityModal}
           />
         )}
         {loading && events.length === 0 ? (
@@ -304,6 +374,117 @@ export default function Scheduler({ user }) {
           </div>
         ) : null}
       </div>
+
+      {isActivityModalOpen && (
+        <div className="scheduler-modal-overlay" onClick={handleCloseActivityModal}>
+          <div
+            className="scheduler-modal-content"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="scheduler-modal-header">
+              <h2>Lägg till aktivitet</h2>
+              <button className="scheduler-close-btn" onClick={handleCloseActivityModal}>
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleActivitySubmit} className="scheduler-activity-form">
+              <div className="scheduler-form-group">
+                <label htmlFor="title">Titel *</label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={activityFormData.title}
+                  onChange={handleActivityChange}
+                  required
+                  placeholder="T.ex. Möte med kursledare"
+                />
+              </div>
+
+              <div className="scheduler-form-group">
+                <label htmlFor="type">Typ av aktivitet *</label>
+                <select
+                  id="type"
+                  name="type"
+                  value={activityFormData.type}
+                  onChange={handleActivityChange}
+                  required
+                >
+                  <option value="meeting">Möte</option>
+                  <option value="lecture">Lektion</option>
+                  <option value="review">Granskning</option>
+                  <option value="preparation">Förberedelse</option>
+                  <option value="other">Annat</option>
+                </select>
+              </div>
+
+              <div className="scheduler-form-group">
+                <label htmlFor="date">Datum *</label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  value={activityFormData.date}
+                  onChange={handleActivityChange}
+                  required
+                />
+              </div>
+
+              <div className="scheduler-form-row">
+                <div className="scheduler-form-group">
+                  <label htmlFor="startTime">Starttid *</label>
+                  <input
+                    type="time"
+                    id="startTime"
+                    name="startTime"
+                    value={activityFormData.startTime}
+                    onChange={handleActivityChange}
+                    required
+                  />
+                </div>
+
+                <div className="scheduler-form-group">
+                  <label htmlFor="endTime">Sluttid *</label>
+                  <input
+                    type="time"
+                    id="endTime"
+                    name="endTime"
+                    value={activityFormData.endTime}
+                    onChange={handleActivityChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="scheduler-form-group">
+                <label htmlFor="description">Beskrivning</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={activityFormData.description}
+                  onChange={handleActivityChange}
+                  rows="4"
+                  placeholder="Lägg till eventuella anteckningar..."
+                />
+              </div>
+
+              <div className="scheduler-modal-actions">
+                <button
+                  type="button"
+                  className="scheduler-btn-cancel"
+                  onClick={handleCloseActivityModal}
+                >
+                  Avbryt
+                </button>
+                <button type="submit" className="scheduler-btn-submit">
+                  Lägg till
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
