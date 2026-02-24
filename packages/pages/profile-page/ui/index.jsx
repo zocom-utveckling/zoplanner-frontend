@@ -1,11 +1,16 @@
-import { FaUser } from "react-icons/fa";
+import { FaEdit, FaUser } from "react-icons/fa";
 import "./index.css";
-function Profile_Page({user}) {
-  return(
+import { Button } from "@zoplanner/button";
+import { useEffect, useState } from "react";
+import { Edit_Profile } from "../edit-profile/ui";
+function Profile_Page({user,setUser}) {
+    const [showEdit,setShowEdit]=useState(false)
+  
+  return(<>
+   {showEdit && <Edit_Profile user={user} onClose={()=> setShowEdit(false)} setUser={setUser}/>}
     <div className="profile-page-container">
       <header className="profile-page-header">
-        <h2>Profile</h2>
-        <h2>Edit</h2>
+        <h2>Profil</h2>
 
       </header>
       <main className="profile-content">
@@ -40,8 +45,12 @@ function Profile_Page({user}) {
         </section>
           
      </div>
+     <div className="profile-edit">
+        <Button text={"Redigera"} type={"button"} style={"reply-btn"} onClick={()=> setShowEdit(true)} /> 
+     </div>
       </main>
     </div>
+     </>
   )
 }
 
