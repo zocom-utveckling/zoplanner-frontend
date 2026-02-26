@@ -225,6 +225,7 @@
   border: 1px solid var(--event-border);
   border-radius: 12px;
   background: var(--event-bg);
+  cursor: pointer;
 }
 
 .event-title {
@@ -319,6 +320,7 @@
   font-weight: 800;
   color: var(--event-fg);
   background: var(--event-range-bg);
+  cursor: pointer;
 }
 
 .month-event-pill.is-start {
@@ -451,4 +453,35 @@
 .scheduler-btn-submit {
   color: var(--active-fg);
   background: var(--active-bg);
+}
+
+.scheduler-event-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scheduler-event-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.scheduler-event-row--column {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.scheduler-event-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.scheduler-event-value {
+  font-size: 14px;
+  color: var(--text-muted);
 }
