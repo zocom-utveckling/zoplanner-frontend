@@ -1,12 +1,12 @@
 import Topbar from "./Topbar";
 import TimeGridView from "./TimeGridView";
 import MonthView from "./MonthView";
-import ActivityModal from "./ActivityModal";
-import EventDetailsModal from "./EventDetailsModal";
-import useSchedulerNavigation from "./useSchedulerNavigation";
-import useActivityForm from "./useActivityForm";
-import useEventDetailsModal from "./useEventDetailsModal";
-import useSchedulerEvents from "./useSchedulerEvents";
+import ActivityModal from "./modals/ActivityModal";
+import EventDetailsModal from "./modals/EventDetailsModal";
+import useSchedulerNavigation from "../hooks/useSchedulerNavigation";
+import useActivityForm from "../hooks/useActivityForm";
+import useEventDetailsModal from "../hooks/useEventDetailsModal";
+import useSchedulerEvents from "../hooks/useSchedulerEvents";
 import "./index.css";
 
 export default function Scheduler({ user }) {

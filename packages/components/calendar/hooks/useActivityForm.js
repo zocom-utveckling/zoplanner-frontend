@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
-import { toLocalDateTime } from "./schedulerData";
+import { toLocalDateTime } from "../data/schedulerData";
 
 const initialFormData = {
   title: "",

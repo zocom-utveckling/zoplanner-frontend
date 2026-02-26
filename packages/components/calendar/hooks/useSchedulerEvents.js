@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchSchedulerEvents } from "./schedulerData";
+import { fetchSchedulerEvents } from "../data/schedulerData";
 
 export default function useSchedulerEvents(user) {
   const [events, setEvents] = useState([]);
