@@ -98,6 +98,7 @@ export default function Scheduler({ user }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [activityFormData, setActivityFormData] = useState({
     title: "",
     description: "",
@@ -171,6 +172,14 @@ export default function Scheduler({ user }) {
 
   function handleCloseActivityModal() {
     setIsActivityModalOpen(false);
+  }
+
+  function handleOpenEventModal(event) {
+    setSelectedEvent(event);
+  }
+
+  function handleCloseEventModal() {
+    setSelectedEvent(null);
   }
 
   function handleActivityChange(event) {
@@ -358,14 +367,27 @@ export default function Scheduler({ user }) {
       />
 
       <div className="content-card">
-        {view === "day" && <TimeGridView days={[focusDate]} events={events} />}
-        {view === "week" && <TimeGridView days={weekDays} events={events} />}
+        {view === "day" && (
+          <TimeGridView
+            days={[focusDate]}
+            events={events}
+            onEventClick={handleOpenEventModal}
+          />
+        )}
+        {view === "week" && (
+          <TimeGridView
+            days={weekDays}
+            events={events}
+            onEventClick={handleOpenEventModal}
+          />
+        )}
         {view === "month" && (
           <MonthView
             monthGridDays={monthGridDays}
             focusDate={focusDate}
             events={events}
             onDayClick={handleOpenActivityModal}
+            onEventClick={handleOpenEventModal}
           />
         )}
         {loading && events.length === 0 ? (
@@ -491,6 +513,78 @@ export default function Scheduler({ user }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {selectedEvent && (
+        <div className="scheduler-modal-overlay" onClick={handleCloseEventModal}>
+          <div
+            className="scheduler-modal-content"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="scheduler-modal-header">
+              <h2>Detaljer</h2>
+              <button
+                className="scheduler-close-btn"
+                onClick={handleCloseEventModal}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="scheduler-event-details">
+              <div className="scheduler-event-row">
+                <span className="scheduler-event-label">Titel</span>
+                <span className="scheduler-event-value">{selectedEvent.title}</span>
+              </div>
+
+              <div className="scheduler-event-row">
+                <span className="scheduler-event-label">Typ</span>
+                <span className="scheduler-event-value">
+                  {selectedEvent.type || "event"}
+                </span>
+              </div>
+
+              <div className="scheduler-event-row">
+                <span className="scheduler-event-label">Start</span>
+                <span className="scheduler-event-value">
+                  {selectedEvent.start
+                    ? format(selectedEvent.start, "d MMM yyyy HH:mm", {
+                        locale: sv,
+                      })
+                    : "-"}
+                </span>
+              </div>
+
+              <div className="scheduler-event-row">
+                <span className="scheduler-event-label">Slut</span>
+                <span className="scheduler-event-value">
+                  {selectedEvent.end
+                    ? format(selectedEvent.end, "d MMM yyyy HH:mm", {
+                        locale: sv,
+                      })
+                    : "-"}
+                </span>
+              </div>
+
+              <div className="scheduler-event-row scheduler-event-row--column">
+                <span className="scheduler-event-label">Beskrivning</span>
+                <span className="scheduler-event-value">
+                  {selectedEvent.subtitle || "Ingen beskrivning"}
+                </span>
+              </div>
+            </div>
+
+            <div className="scheduler-modal-actions">
+              <button
+                type="button"
+                className="scheduler-btn-submit"
+                onClick={handleCloseEventModal}
+              >
+                Stäng
+              </button>
+            </div>
           </div>
         </div>
       )}
