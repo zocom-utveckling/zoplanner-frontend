@@ -16,7 +16,7 @@ function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
-export default function TimeGridView({ days, events }) {
+export default function TimeGridView({ days, events, onEventClick }) {
   const timeSlots = useMemo(() => {
     const slots = [];
     for (let h = HOURS_START; h <= HOURS_END; h++) {
@@ -134,6 +134,7 @@ export default function TimeGridView({ days, events }) {
                       event={e}
                       top={top}
                       height={height}
+                      onClick={onEventClick}
                     />
                   );
                 })}
