@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
 import {
   FaAngleDown,
@@ -9,8 +9,11 @@ import {
 } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import { DarkModeButton } from "@zoplanner/dark-mode-button";
+import { ConfirmPopup } from "../../confirm-popup/ui";
 
 function Navbar({ user, activePage, setActivePage }) {
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const navigate = useNavigate()
   const dropdownRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadnotification] = useState(["example notification"]);
@@ -36,6 +39,10 @@ function Navbar({ user, activePage, setActivePage }) {
   }
 
   return (
+   <>
+   {
+    openConfirm && (<ConfirmPopup onCancel={()=> setOpenConfirm(false)} onConfirm={()=> navigate("/")} text={"Logga ut?"}/>)
+   }
     <nav className="navbar">
       <div className="navbar-left">
         <div className="logo">
@@ -92,12 +99,13 @@ function Navbar({ user, activePage, setActivePage }) {
           {showDropdown && (
             <div className="dropdown">
               <Link onClick={()=> setActivePage("profile")}>View profile</Link>
-              <Link to="/login-page">Log out</Link>
+              <Link to={"#"} onClick={()=> setOpenConfirm(true)}>Log out</Link>
             </div>
           )}
         </div>
       </div>
     </nav>
+   </>
   );
 }
 
