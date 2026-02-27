@@ -1,13 +1,123 @@
+import { useEffect } from "react";
 import { format } from "date-fns";
 import sv from "date-fns/locale/sv";
 
-export default function EventDetailsModal({ event, onClose }) {
+function resolveStatus(start, end) {
+  const now = new Date();
+  if (end && end < now) return { label: "Avslutad", tone: "ended" };
+  if (start && start > now) return { label: "Kommande", tone: "upcoming" };
+  return { label: "Pågående", tone: "ongoing" };
+}
+
+function normalizeLocationType(locationTypeValue) {
+  const normalized =
+    typeof locationTypeValue === "string"
+      ? locationTypeValue.trim().toUpperCase()
+      : "";
+
+  if (normalized === "REMOTE") return "REMOTE";
+  if (normalized === "ONSITE") return "ONSITE";
+  if (normalized === "HYBRID") return "HYBRID";
+  return "-";
+}
+
+function formatDateRange(start, end) {
+  if (!start || !end) return "-";
+
+  const sameDate = format(start, "yyyy-MM-dd") === format(end, "yyyy-MM-dd");
+
+  if (sameDate) {
+    return `${format(start, "d MMM yyyy", { locale: sv })} · ${format(
+      start,
+      "HH:mm",
+      {
+        locale: sv,
+      },
+    )} - ${format(end, "HH:mm", { locale: sv })}`;
+  }
+
+  return `${format(start, "d MMM yyyy HH:mm", {
+    locale: sv,
+  })} - ${format(end, "d MMM yyyy HH:mm", { locale: sv })}`;
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <div className="scheduler-event-row">
+      <span className="scheduler-event-label">{label}</span>
+      <span className="scheduler-event-value">{value || "-"}</span>
+    </div>
+  );
+}
+
+function Section({ title, children }) {
+  return (
+    <section className="scheduler-event-section">
+      <h3 className="scheduler-event-section-title">{title}</h3>
+      <div className="scheduler-event-section-content">{children}</div>
+    </section>
+  );
+}
+
+export default function EventDetailsModal({
+  event,
+  onClose,
+  userRole,
+  onEdit,
+  onDelete,
+}) {
+  const startDate = event?.start ? new Date(event.start) : null;
+  const endDate = event?.end ? new Date(event.end) : null;
+
+  const status = resolveStatus(startDate, endDate);
+  const locationType = normalizeLocationType(event?.locationType);
+
+  const description =
+    event?.description || event?.subtitle || "Ingen beskrivning";
+  const dateTimeLabel = formatDateRange(startDate, endDate);
+
+  const normalizedRole =
+    typeof userRole === "string" ? userRole.trim().toUpperCase() : "";
+  const isManager = normalizedRole === "MANAGER" || normalizedRole === "BOTH";
+
+  useEffect(() => {
+    function handleKeydown(keyboardEvent) {
+      if (keyboardEvent.key === "Escape") {
+        onClose();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+    };
+  }, [onClose]);
+
   if (!event) return null;
+
+  function handleEditClick() {
+    if (onEdit) {
+      onEdit(event);
+      return;
+    }
+    onClose();
+  }
+
+  function handleDeleteClick() {
+    if (onDelete) {
+      onDelete(event);
+      return;
+    }
+    onClose();
+  }
 
   return (
     <div className="scheduler-modal-overlay" onClick={onClose}>
       <div
         className="scheduler-modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Detaljer"
         onClick={(modalEvent) => modalEvent.stopPropagation()}
       >
         <div className="scheduler-modal-header">
@@ -17,50 +127,60 @@ export default function EventDetailsModal({ event, onClose }) {
           </button>
         </div>
 
-        <div className="scheduler-event-details">
-          <div className="scheduler-event-row">
-            <span className="scheduler-event-label">Titel</span>
-            <span className="scheduler-event-value">{event.title}</span>
-          </div>
+        <div className="scheduler-event-details scheduler-event-details-view">
+          <Section title="Information">
+            <InfoRow label="Kurs" value={event?.title} />
+            <InfoRow label="Datum/tid" value={dateTimeLabel} />
+          </Section>
 
-          <div className="scheduler-event-row">
-            <span className="scheduler-event-label">Typ</span>
-            <span className="scheduler-event-value">
-              {event.type || "event"}
-            </span>
-          </div>
+          <Section title="Status">
+            <div className="scheduler-event-row">
+              <span className="scheduler-event-label">Aktuell status</span>
+              <span
+                className={`scheduler-status-badge scheduler-status-${status.tone}`}
+              >
+                {status.label}
+              </span>
+            </div>
+          </Section>
 
-          <div className="scheduler-event-row">
-            <span className="scheduler-event-label">Start</span>
-            <span className="scheduler-event-value">
-              {event.start
-                ? format(event.start, "d MMM yyyy HH:mm", {
-                    locale: sv,
-                  })
-                : "-"}
-            </span>
-          </div>
+          <Section title="Plats">
+            <div className="scheduler-event-row">
+              <span className="scheduler-event-label">Stad</span>
+              <span className="scheduler-location-badge">{locationType}</span>
+            </div>
+          </Section>
 
-          <div className="scheduler-event-row">
-            <span className="scheduler-event-label">Slut</span>
-            <span className="scheduler-event-value">
-              {event.end
-                ? format(event.end, "d MMM yyyy HH:mm", {
-                    locale: sv,
-                  })
-                : "-"}
-            </span>
-          </div>
+          <Section title="Uppdraget">
+            <InfoRow label="Klass" value={event?.context?.className} />
+            <InfoRow label="Skola" value={event?.context?.customer} />
+            <InfoRow label="Sal" value={event?.context?.room} />
+          </Section>
 
-          <div className="scheduler-event-row scheduler-event-row--column">
-            <span className="scheduler-event-label">Beskrivning</span>
-            <span className="scheduler-event-value">
-              {event.subtitle || "Ingen beskrivning"}
-            </span>
-          </div>
+          <Section title="Beskrivning">
+            <p className="scheduler-description-text">{description}</p>
+          </Section>
         </div>
 
         <div className="scheduler-modal-actions">
+          {isManager ? (
+            <>
+              <button
+                type="button"
+                className="scheduler-btn-cancel"
+                onClick={handleEditClick}
+              >
+                Redigera
+              </button>
+              <button
+                type="button"
+                className="scheduler-btn-cancel"
+                onClick={handleDeleteClick}
+              >
+                Ta bort
+              </button>
+            </>
+          ) : null}
           <button
             type="button"
             className="scheduler-btn-submit"

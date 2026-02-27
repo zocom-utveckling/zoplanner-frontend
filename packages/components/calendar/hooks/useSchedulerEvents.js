@@ -9,6 +9,21 @@ export default function useSchedulerEvents(user) {
     setEvents((prev) => [...prev, newEvent]);
   }
 
+  function removeEvent(eventId) {
+    setEvents((prev) => prev.filter((eventItem) => eventItem.id !== eventId));
+  }
+
+  function updateEvent(updatedEvent) {
+    if (!updatedEvent?.id) return;
+    setEvents((prev) =>
+      prev.map((eventItem) =>
+        eventItem.id === updatedEvent.id
+          ? { ...eventItem, ...updatedEvent }
+          : eventItem,
+      ),
+    );
+  }
+
   useEffect(() => {
     let isCancelled = false;
 
@@ -41,5 +56,7 @@ export default function useSchedulerEvents(user) {
     events,
     loading,
     addEvent,
+    removeEvent,
+    updateEvent,
   };
 }

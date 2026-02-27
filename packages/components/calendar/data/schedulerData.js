@@ -7,6 +7,25 @@ function firstNonEmptyString(...values) {
   return null;
 }
 
+function normalizeLocationType(locationTypeValue) {
+  const normalized = firstNonEmptyString(locationTypeValue)?.toUpperCase();
+  if (normalized === "REMOTE") return "REMOTE";
+  if (normalized === "ONSITE") return "ONSITE";
+  if (normalized === "HYBRID") return "HYBRID";
+  return null;
+}
+
+function getPersonName(person) {
+  return firstNonEmptyString(
+    person?.name,
+    person?.Name,
+    person?.fullName,
+    person?.FullName,
+    [person?.firstName, person?.lastName].filter(Boolean).join(" "),
+    [person?.FirstName, person?.LastName].filter(Boolean).join(" "),
+  );
+}
+
 export function toDateWithTime(dateValue, hours, minutes) {
   if (!dateValue) return null;
   if (dateValue instanceof Date) {
@@ -141,18 +160,52 @@ export async function fetchSchedulerEvents(user) {
 
         if (!start || !end) return;
 
+        const sessionLocation = normalizeLocationType(
+          firstNonEmptyString(
+            session?.locationType,
+            session?.location,
+            session?.LocationType,
+            session?.Location,
+          ),
+        );
+        const sessionDescription = firstNonEmptyString(
+          session?.comment,
+          session?.Comment,
+          session?.sessionComment,
+          session?.description,
+          session?.Description,
+        );
+
         nextEvents.push({
           id: `session-${assignment.id}-${session.id}`,
           title: courseName,
-          subtitle: firstNonEmptyString(
-            session?.comment,
-            session?.Comment,
-            session?.sessionComment,
-            session?.description,
-          ),
+          subtitle: sessionDescription,
+          description: sessionDescription,
           start,
           end,
           type: "session",
+          locationType: sessionLocation,
+          context: {
+            course: courseName,
+            className: firstNonEmptyString(
+              assignment?.className,
+              assignment?.class?.name,
+              assignment?.class?.Name,
+              assignment?.schoolClass?.name,
+              assignment?.schoolClassName,
+            ),
+            customer: firstNonEmptyString(
+              assignment?.customer?.name,
+              assignment?.customer?.Name,
+              assignment?.customerName,
+              assignment?.client?.name,
+              assignment?.companyName,
+            ),
+            consultant: firstNonEmptyString(
+              getPersonName(assignment?.consultant),
+              assignment?.consultantName,
+            ),
+          },
         });
       });
     }
@@ -174,6 +227,40 @@ export async function fetchSchedulerEvents(user) {
       start,
       end,
       type: "assignment",
+      description: firstNonEmptyString(
+        assignment?.description,
+        assignment?.Description,
+        assignment?.comment,
+      ),
+      locationType: normalizeLocationType(
+        firstNonEmptyString(
+          assignment?.locationType,
+          assignment?.location,
+          assignment?.LocationType,
+          assignment?.Location,
+        ),
+      ),
+      context: {
+        course: courseName,
+        className: firstNonEmptyString(
+          assignment?.className,
+          assignment?.class?.name,
+          assignment?.class?.Name,
+          assignment?.schoolClass?.name,
+          assignment?.schoolClassName,
+        ),
+        customer: firstNonEmptyString(
+          assignment?.customer?.name,
+          assignment?.customer?.Name,
+          assignment?.customerName,
+          assignment?.client?.name,
+          assignment?.companyName,
+        ),
+        consultant: firstNonEmptyString(
+          getPersonName(assignment?.consultant),
+          assignment?.consultantName,
+        ),
+      },
     });
   });
 

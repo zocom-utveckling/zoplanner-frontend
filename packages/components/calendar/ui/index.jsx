@@ -22,7 +22,7 @@ export default function Scheduler({ user }) {
     goPrev,
     goNext,
   } = useSchedulerNavigation();
-  const { events, loading, addEvent } = useSchedulerEvents(user);
+  const { events, loading, addEvent, removeEvent } = useSchedulerEvents(user);
   const {
     selectedEvent,
     handleOpenEventModal,
@@ -39,6 +39,16 @@ export default function Scheduler({ user }) {
     onDateSelected: setFocusDate,
     onCreateEvent: addEvent,
   });
+
+  function handleDeleteEvent(eventToDelete) {
+    if (!eventToDelete?.id) return;
+    removeEvent(eventToDelete.id);
+    handleCloseEventModal();
+  }
+
+  function handleEditEvent() {
+    handleCloseEventModal();
+  }
 
   return (
     <main className="main">
@@ -93,6 +103,9 @@ export default function Scheduler({ user }) {
       <EventDetailsModal
         event={selectedEvent}
         onClose={handleCloseEventModal}
+        userRole={user?.role}
+        onEdit={handleEditEvent}
+        onDelete={handleDeleteEvent}
       />
     </main>
   );
