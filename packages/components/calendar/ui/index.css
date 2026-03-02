@@ -225,6 +225,7 @@
   border: 1px solid var(--event-border);
   border-radius: 12px;
   background: var(--event-bg);
+  cursor: pointer;
 }
 
 .event-title {
@@ -319,6 +320,7 @@
   font-weight: 800;
   color: var(--event-fg);
   background: var(--event-range-bg);
+  cursor: pointer;
 }
 
 .month-event-pill.is-start {
@@ -451,4 +453,105 @@
 .scheduler-btn-submit {
   color: var(--active-fg);
   background: var(--active-bg);
+}
+
+.scheduler-event-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scheduler-event-details-view {
+  gap: 16px;
+}
+
+.scheduler-event-section {
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: var(--surface-muted);
+}
+
+.scheduler-event-section-title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.scheduler-event-section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scheduler-event-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.scheduler-event-row--column {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.scheduler-event-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.scheduler-event-value {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.scheduler-status-badge,
+.scheduler-location-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.scheduler-status-badge {
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  background: var(--surface);
+}
+
+.scheduler-status-upcoming {
+  color: var(--active-fg);
+  background: var(--active-bg);
+}
+
+.scheduler-status-ongoing {
+  color: var(--text-primary);
+  background: var(--event-range-bg);
+}
+
+.scheduler-status-ended {
+  color: var(--text-muted);
+  background: var(--surface);
+}
+
+.scheduler-location-badge {
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  background: var(--surface);
+}
+
+.scheduler-description-text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  white-space: pre-wrap;
 }

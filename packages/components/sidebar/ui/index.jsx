@@ -5,12 +5,6 @@ import { AddActivityButton } from "@zoplanner/add-activity-button";
 import { MonthCalendar } from "@zoplanner/month-calender-sidebar";
 
 function Sidebar({ user }) {
-  // om user saknas blockeras hela sidofältet, eftersom det är osannolikt att det finns något meningsfullt att visa utan en användare. Det kan också förhindra potentiella fel
-  if (!user) {
-    return null;
-  }
-  console.log(user);
-
   const roleValue =
     typeof user?.role === "string" ? user.role.toLowerCase() : "";
   const normalizedRoles = roleValue
@@ -174,6 +168,10 @@ function Sidebar({ user }) {
   const listedUsers = user
     ? users.filter((listedUser) => listedUser?.id !== user?.id)
     : users;
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <aside className="sidebar">

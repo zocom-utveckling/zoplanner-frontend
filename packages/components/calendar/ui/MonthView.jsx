@@ -12,6 +12,7 @@ export default function MonthView({
   focusDate,
   events,
   onDayClick,
+  onEventClick,
 }) {
   const weekdays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
 
@@ -64,7 +65,14 @@ export default function MonthView({
                   ].join(" ");
 
                   return (
-                    <div key={e.id} className={pillClass}>
+                    <div
+                      key={e.id}
+                      className={pillClass}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onEventClick?.(e);
+                      }}
+                    >
                       {e.title.split("\n")[0]}
                     </div>
                   );
