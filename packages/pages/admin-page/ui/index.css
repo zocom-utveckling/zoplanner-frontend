@@ -1,0 +1,11 @@
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+
+}
+.admin-card {
+    padding: 1.5rem;
+    min-height: 150px;
+}
