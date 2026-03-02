@@ -1,4 +1,4 @@
-export default function EventBlock({ event, top, height }) {
+export default function EventBlock({ event, top, height, onClick }) {
   return (
     <div
       className="event-block"
@@ -6,6 +6,7 @@ export default function EventBlock({ event, top, height }) {
         top,
         height,
       }}
+      onClick={() => onClick?.(event)}
     >
       <div className="event-title">{event.title}</div>
       {event.subtitle ? (
