@@ -75,19 +75,19 @@ function Navbar({ user, activePage, setActivePage }) {
               onClick={() => setActivePage("dashboard")}
               className={activePage == "dashboard" ? "active" : ""}
             >
-              Dashboard
+              Skrivbord
             </button>
             <button
               onClick={() => setActivePage("courses")}
               className={activePage == "courses" ? "active" : ""}
             >
-              Courses
+              kurser
             </button>
             <button
               onClick={() => setActivePage("messages")}
               className={activePage == "messages" ? "active" : ""}
             >
-              Messages
+              Meddelande
             </button>
           </div>
 
@@ -117,10 +117,10 @@ function Navbar({ user, activePage, setActivePage }) {
             {showDropdown && (
               <div className="dropdown">
                 <Link onClick={() => setActivePage("profile")}>
-                  View profile
+                  Se profil
                 </Link>
                 <Link to={"#"} onClick={() => setOpenConfirm(true)}>
-                  Log out
+                  Logga ut
                 </Link>
               </div>
             )}
