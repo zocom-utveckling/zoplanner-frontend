@@ -1,3 +1,7 @@
+.container {
+display: flexbox;
+flex-direction:column;
+}
 .admin-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -8,4 +12,12 @@
 .admin-card {
     padding: 1.5rem;
     min-height: 150px;
+    background-color: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+}
+.card-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
 }
