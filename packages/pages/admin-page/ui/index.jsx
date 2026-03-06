@@ -1,4 +1,5 @@
 import "./index.css";
+
 function AdminPage() {
   return (
     <>
@@ -10,38 +11,35 @@ function AdminPage() {
           <div className="admin-grid">
             <section className="admin-card">
               <h3>Kurser</h3>
-              <text>Idé/förslag under utformning:</text>
-              <text>
-                {" "}
-                Här kommer man kunna registrera, redigera och söka kurser{" "}
-              </text>
+              <p>Idé/förslag under utformning:</p>
+              <p> Här kommer man kunna registrera, redigera och söka kurser </p>
             </section>
             <section className="admin-card">
               <h3>Konsulter</h3>
-              <text>Idé/förslag under utformning:</text>
-              <text>
+              <p>Idé/förslag under utformning:</p>
+              <p>
                 {" "}
                 Här kommer man kunna registrera, redigera och söka
                 konsulter{" "}
-              </text>
+              </p>
             </section>
             <section className="admin-card">
               <h3>Kunder</h3>
-              <text>Idé/förslag under utformning:</text>
-              <text>
+              <p>Idé/förslag under utformning:</p>
+              <p>
                 {" "}
                 Här kommer man kunna registrera, redigera, söka kunder och
                 beställningar{" "}
-              </text>
+              </p>
             </section>
             <section className="admin-card">
               <h3>Planering</h3>
-              <text>Idé/förslag under utformning:</text>
-              <text>
+              <p>Idé/förslag under utformning:</p>
+              <p>
                 {" "}
                 Här kommer det finnas verktyg för att lägga schema, ändra
                 enstaka lektioner, skapa uppdrag och tilldela{" "}
-              </text>
+              </p>
             </section>
           </div>
         </div>
