@@ -29,6 +29,7 @@ function HomePage() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [activePage, setActivePage] = useState("dashboard");
+  console.log(localStorage.getItem("managerId"))
 
   useEffect(() => {
     if (!id) return;

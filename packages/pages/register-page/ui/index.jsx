@@ -15,7 +15,58 @@ function Register(){
     const [password,setPassword]=useState("")
     const [email,setEmail]=useState("")
     const [loading,setLoading]=useState(false)
+    
     const navigate= useNavigate()
+    const addConsultant = async ({userId,city})=>{
+        try{
+            const consultant = {userId,managerId:1,city}
+            if(!userId){
+                alert("Hittade inte användaren")
+                return
+            }
+            const res = await fetch("http://localhost:5027/api/Consultant",{
+                 method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify(consultant)
+            })
+            const data = await res.json()
+            if(!res.ok){
+                alert("Kunde inte lägga till konsultant")
+                return
+            }
+            localStorage.setItem("ConsultantId",data.id)
+            localStorage.setItem("managerId",data.managerId)
+            alert("Konto skapat")
+            navigate(`/home-page/${userId}`)
+
+        }
+        catch(error){
+            alert("Något har gått fel")
+        }
+    }
+        const addManager = async ({userId})=>{
+        try{
+            if(!userId){
+                alert("Hittade inte användaren")
+                return
+            }
+            const res = await fetch(`http://localhost:5027/api/Manager/${userId}`,{
+                 method:"POST",
+                headers:{"Content-Type":"application/json"}
+            })
+            const data = await res.json()
+            if(!res.ok){
+                alert("Kunde inte lägga till Manager")
+                return
+            }
+            alert("Konto skapat")
+            navigate(`/home-page/${userId}`)
+
+        }
+        catch(error){
+            alert("Något har gått fel")
+        }
+    }
     const handleSubmit=async(e)=>{
         try{
             setLoading(true)
@@ -27,15 +78,17 @@ function Register(){
                 body:JSON.stringify(user)
             })
             const data = await res.json()
-            if(res.ok){
-                alert("Acoount Created")
-                navigate(`/home-page/${data.id}`)
-
-            }
-            else{
-                alert(data.message)
-                return
-            }
+           if(!res.ok){
+            alert("Registering misslycakdes")
+            return
+           }
+           if(role ==="MANAGER"){
+           await addManager({userId:data.id})
+           }
+           else{
+           await addConsultant({userId:data.id,city:"GÖTEBORG"})
+           }
+           
         }
         catch(error){
             console.log("error: "+ error)
