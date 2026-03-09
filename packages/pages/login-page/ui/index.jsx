@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./index.css";
 
 import { Button } from "@zoplanner/button";
@@ -9,7 +9,32 @@ function LoginPage() {
   const [username,setUsername]=useState("")
   const [password,setPassword]=useState("")
   const [loading,setLoading]=useState(false)
+  const [managers,setManager]=useState([])
+    const [consultants,setConsultant]=useState([])
   const navigate =useNavigate()
+ useEffect(()=>{
+  async function fetchManagers(){
+    const res = await fetch("http://localhost:5027/api/Manager")
+    const data = await res.json()
+    if(res.ok){
+      setManager(data)
+    }
+  }
+
+  fetchManagers()
+},[])
+useEffect(()=>{
+  async function fetchConsultant(){
+    const res = await fetch("http://localhost:5027/api/Consultant")
+    const data = await res.json()
+    if(res.ok){
+     setConsultant(data)
+    }
+  }
+
+  fetchConsultant()
+},[])
+
   const handleSubmit=async(e)=>{
     try{
       e.preventDefault()
@@ -18,6 +43,20 @@ function LoginPage() {
      const data = await res.json()
      if(res.ok){
       if(data.password === password){
+        const manager= managers.find(manager=> manager.userId === data.id)
+         const consultant= consultants.find(consultant=> consultant.userId === data.id)
+         if(manager){
+          localStorage.setItem("managerId",manager.id)
+
+         }
+         if(consultant){
+          localStorage.setItem("consultantId",consultant.id)
+          localStorage.setItem("managerId",consultant.managerId)
+         }
+         if(!manager &&!consultant){
+          alert("användaren hittades inte")
+          return
+         }
         navigate(`/home-page/${data.id}`)
         alert(data.message || `Welcome ${data.name}`)
       }
