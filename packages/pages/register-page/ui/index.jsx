@@ -34,7 +34,7 @@ function Register(){
                 alert("Kunde inte lägga till konsultant")
                 return
             }
-            localStorage.setItem("ConsultantId",data.id)
+            localStorage.setItem("consultantId",data.id)
             localStorage.setItem("managerId",data.managerId)
             alert("Konto skapat")
             navigate(`/home-page/${userId}`)
