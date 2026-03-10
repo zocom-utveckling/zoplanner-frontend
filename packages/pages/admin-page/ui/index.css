@@ -1,11 +1,26 @@
+.admin-container {
+    padding: 30px;
+}
+.admin-header {
+    margin-bottom: 30px;
+}
 .admin-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
-    margin-top: 2rem;
+    margin-bottom: 2rem;
 
 }
 .admin-card {
-    padding: 1.5rem;
-    min-height: 150px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--surface);
+ 
+}
+.schemaplanerar-container {
+   border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--surface);
 }
