@@ -60,6 +60,12 @@ function Navbar({ user, activePage, setActivePage }) {
         <div className="navbar-right">
           <div className="routes">
             <DarkModeButton />
+            <button
+              onClick={() => setActivePage("allSchedules")}
+              className={activePage == "allSchedules" ? "active" : ""}
+            >
+              Alla scheman
+            </button>
             {isManager && (
               <button
                 onClick={() => {

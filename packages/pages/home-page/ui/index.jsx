@@ -29,7 +29,7 @@ function HomePage() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [activePage, setActivePage] = useState("dashboard");
-  console.log(localStorage.getItem("managerId"))
+  console.log(localStorage.getItem("managerId"));
 
   useEffect(() => {
     if (!id) return;
@@ -50,7 +50,6 @@ function HomePage() {
     };
     fetchUser();
   }, [id]);
- 
 
   // renderar inte förrän vi har användardata, annars får vi error när vi försöker accessa user.name i Navbar
   if (!user) {
@@ -64,9 +63,13 @@ function HomePage() {
     >
       {activePage == "dashboard" ? (
         <Dashboard user={user} />
+      ) : activePage == "allSchedules" ? (
+        <Dashboard user={user} monthOnly={true} />
       ) : activePage == "courses" ? (
         <CoursesPage user={user} />
-      ) : activePage== "profile"?(<Profile_Page user={user} setUser={setUser}/>):(
+      ) : activePage == "profile" ? (
+        <Profile_Page user={user} setUser={setUser} />
+      ) : (
         <MessagesPage user={user} />
       )}
     </DashboardLayout>
