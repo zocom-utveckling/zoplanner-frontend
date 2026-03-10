@@ -257,7 +257,9 @@ export async function fetchSchedulerEvents(user, options = {}) {
     let consultantId = user?.consultantId || user?.consultant?.id;
 
     if (!consultantId) {
-      const consultantsRes = await fetch(`http://localhost:5027/api/Consultant`);
+      const consultantsRes = await fetch(
+        `http://localhost:5027/api/Consultant`,
+      );
       const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
       const match = consultants.find(
         (consultant) => consultant?.userId === user?.id,
@@ -293,8 +295,12 @@ export async function fetchSchedulerEvents(user, options = {}) {
           loadedUser?.Name,
           loadedUser?.fullName,
           loadedUser?.FullName,
-          [loadedUser?.firstName, loadedUser?.lastName].filter(Boolean).join(" "),
-          [loadedUser?.FirstName, loadedUser?.LastName].filter(Boolean).join(" "),
+          [loadedUser?.firstName, loadedUser?.lastName]
+            .filter(Boolean)
+            .join(" "),
+          [loadedUser?.FirstName, loadedUser?.LastName]
+            .filter(Boolean)
+            .join(" "),
           loadedUser?.username,
           loadedUser?.Username,
         ),
@@ -314,8 +320,12 @@ export async function fetchSchedulerEvents(user, options = {}) {
             consultant?.Name,
             consultant?.fullName,
             consultant?.FullName,
-            [consultant?.firstName, consultant?.lastName].filter(Boolean).join(" "),
-            [consultant?.FirstName, consultant?.LastName].filter(Boolean).join(" "),
+            [consultant?.firstName, consultant?.lastName]
+              .filter(Boolean)
+              .join(" "),
+            [consultant?.FirstName, consultant?.LastName]
+              .filter(Boolean)
+              .join(" "),
           ),
         ];
       })
@@ -424,9 +434,7 @@ export async function fetchSchedulerEvents(user, options = {}) {
               assignment?.client?.name,
               assignment?.companyName,
             ),
-            consultant: firstNonEmptyString(
-              consultantName,
-            ),
+            consultant: firstNonEmptyString(consultantName),
             location: sessionLocationLabel,
             city,
             customerCity: city,
@@ -497,9 +505,7 @@ export async function fetchSchedulerEvents(user, options = {}) {
           assignment?.client?.name,
           assignment?.companyName,
         ),
-        consultant: firstNonEmptyString(
-          consultantName,
-        ),
+        consultant: firstNonEmptyString(consultantName),
         location: firstNonEmptyString(
           assignment?.location,
           assignment?.Location,

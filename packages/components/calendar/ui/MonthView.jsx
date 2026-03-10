@@ -7,7 +7,6 @@ import {
   endOfDay,
 } from "date-fns";
 
-
 const MAX_VISIBLE = 3;
 
 export default function MonthView({
