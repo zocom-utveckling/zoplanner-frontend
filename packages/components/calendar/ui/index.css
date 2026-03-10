@@ -305,9 +305,12 @@
 
 .month-events {
   display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
   gap: 6px;
   margin-right: -10px;
   margin-left: -10px;
+  align-content: start;
 }
 
 .month-cell--out-of-month {
@@ -347,6 +350,12 @@
 
 .month-event-pill.is-single {
   border-radius: 8px;
+}
+
+.month-more-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .scheduler-modal-overlay {

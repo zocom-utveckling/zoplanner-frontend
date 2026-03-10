@@ -7,14 +7,27 @@ import {
   endOfDay,
 } from "date-fns";
 
+
+const MAX_VISIBLE = 3;
+
 export default function MonthView({
   monthGridDays,
   focusDate,
   events,
   onDayClick,
   onEventClick,
+  showBookedPerson = false,
 }) {
   const weekdays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
+
+  function getEventLabel(eventItem) {
+    const eventLabel =
+      showBookedPerson && eventItem?.context?.consultant
+        ? eventItem.context.consultant
+        : eventItem.title;
+
+    return String(eventLabel).split("\n")[0];
+  }
 
   return (
     <div className="month-wrap">
@@ -29,7 +42,7 @@ export default function MonthView({
       <div className="month-grid">
         {monthGridDays.map((d) => {
           const inMonth = isSameMonth(d, focusDate);
-          const dayEvents = events
+          const allDayEvents = events
             .filter((e) => e.type !== "session")
             .filter((e) => {
               if (isSameDay(e.start, d)) return true;
@@ -38,8 +51,10 @@ export default function MonthView({
                 start: startOfDay(e.start),
                 end: endOfDay(e.end),
               });
-            })
-            .slice(0, 3);
+            });
+
+          const visibleEvents = allDayEvents.slice(0, MAX_VISIBLE);
+          const hiddenCount = Math.max(0, allDayEvents.length - MAX_VISIBLE);
 
           return (
             <div
@@ -55,7 +70,7 @@ export default function MonthView({
             >
               <div className="month-cell-header">{format(d, "d")}</div>
               <div className="month-events">
-                {dayEvents.map((e) => {
+                {visibleEvents.map((e) => {
                   const isMultiDay = Boolean(
                     e.end && !isSameDay(e.start, e.end),
                   );
@@ -73,10 +88,19 @@ export default function MonthView({
                         onEventClick?.(e);
                       }}
                     >
-                      {e.title.split("\n")[0]}
+                      {getEventLabel(e)}
                     </div>
                   );
                 })}
+
+                {hiddenCount > 0 ? (
+                  <div
+                    className="month-event-pill month-more-pill is-single"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    +{hiddenCount} fler
+                  </div>
+                ) : null}
               </div>
             </div>
           );

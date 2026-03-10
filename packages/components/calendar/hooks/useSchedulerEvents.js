@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchSchedulerEvents } from "../data/schedulerData";
 
-export default function useSchedulerEvents(user) {
+export default function useSchedulerEvents(user, options = {}) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +36,7 @@ export default function useSchedulerEvents(user) {
       setLoading(true);
 
       try {
-        const nextEvents = await fetchSchedulerEvents(user);
+        const nextEvents = await fetchSchedulerEvents(user, options);
         if (!isCancelled) setEvents(nextEvents);
       } catch {
         if (!isCancelled) setEvents([]);
@@ -50,7 +50,7 @@ export default function useSchedulerEvents(user) {
     return () => {
       isCancelled = true;
     };
-  }, [user?.id]);
+  }, [user?.id, options?.includeAllConsultants]);
 
   return {
     events,

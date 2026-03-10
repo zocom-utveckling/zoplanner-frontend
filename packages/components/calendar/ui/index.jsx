@@ -26,7 +26,7 @@ function normalizeCityKey(value) {
   return normalized || null;
 }
 
-export default function Scheduler({ user, monthOnly = false }) {
+export default function Scheduler({ user, monthOnly = false, allSchedules = false }) {
   const {
     view,
     setView,
@@ -42,7 +42,9 @@ export default function Scheduler({ user, monthOnly = false }) {
     initialView: monthOnly ? "month" : "week",
     lockedView: monthOnly ? "month" : null,
   });
-  const { events, loading, addEvent, removeEvent } = useSchedulerEvents(user);
+  const { events, loading, addEvent, removeEvent } = useSchedulerEvents(user, {
+    includeAllConsultants: allSchedules,
+  });
   const [filters, setFilters] = useState({
     teacher: "",
     availability: "",
@@ -176,7 +178,7 @@ export default function Scheduler({ user, monthOnly = false }) {
         view={view}
         setView={setView}
         availableViews={monthOnly ? ["month"] : ["day", "week", "month"]}
-        showFilters={monthOnly}
+        showFilters={monthOnly || allSchedules}
         filterOptions={filterOptions}
         filters={filters}
         onFilterChange={handleFilterChange}
@@ -207,6 +209,7 @@ export default function Scheduler({ user, monthOnly = false }) {
             events={filteredEvents}
             onDayClick={handleOpenActivityModal}
             onEventClick={handleOpenEventModal}
+            showBookedPerson={monthOnly}
           />
         )}
         {loading && filteredEvents.length === 0 ? (

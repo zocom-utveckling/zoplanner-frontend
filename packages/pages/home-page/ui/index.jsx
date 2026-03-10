@@ -64,7 +64,7 @@ function HomePage() {
       {activePage == "dashboard" ? (
         <Dashboard user={user} />
       ) : activePage == "allSchedules" ? (
-        <Dashboard user={user} monthOnly={true} />
+        <Dashboard user={user} monthOnly={true} allSchedules={true} />
       ) : activePage == "courses" ? (
         <CoursesPage user={user} />
       ) : activePage == "profile" ? (

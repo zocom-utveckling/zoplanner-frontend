@@ -26,6 +26,27 @@ function getPersonName(person) {
   );
 }
 
+function getAssignmentConsultantId(assignment) {
+  return (
+    assignment?.consultantId ||
+    assignment?.idConsultant ||
+    assignment?.consultant?.id ||
+    null
+  );
+}
+
+function getAssignmentConsultantName(assignment, consultantNameById) {
+  const consultantId = getAssignmentConsultantId(assignment);
+
+  return firstNonEmptyString(
+    getPersonName(assignment?.consultant),
+    assignment?.consultantName,
+    assignment?.consultant?.name,
+    assignment?.consultant?.Name,
+    consultantId ? consultantNameById.get(consultantId) : null,
+  );
+}
+
 function hasConsultantRole(user) {
   const roleValue = firstNonEmptyString(user?.role, user?.Role);
   if (!roleValue) return false;
@@ -222,31 +243,84 @@ export function toLocalDateTime(dateValue) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-export async function fetchSchedulerEvents(user) {
+export async function fetchSchedulerEvents(user, options = {}) {
   if (!user?.id) {
     return [];
   }
 
-  let consultantId = user?.consultantId || user?.consultant?.id;
+  let assignments = [];
 
-  if (!consultantId) {
-    const consultantsRes = await fetch(`http://localhost:5027/api/Consultant`);
-    const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
-    const match = consultants.find(
-      (consultant) => consultant?.userId === user?.id,
+  if (options?.includeAllConsultants) {
+    const assignmentsRes = await fetch(`http://localhost:5027/api/Assignment`);
+    assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
+  } else {
+    let consultantId = user?.consultantId || user?.consultant?.id;
+
+    if (!consultantId) {
+      const consultantsRes = await fetch(`http://localhost:5027/api/Consultant`);
+      const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
+      const match = consultants.find(
+        (consultant) => consultant?.userId === user?.id,
+      );
+      consultantId = match?.id;
+    }
+
+    if (!consultantId) {
+      return [];
+    }
+
+    const assignmentsRes = await fetch(
+      `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
     );
-    consultantId = match?.id;
+
+    assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
   }
 
-  if (!consultantId) {
-    return [];
-  }
+  const [consultantsRes, usersRes] = await Promise.all([
+    fetch(`http://localhost:5027/api/Consultant`),
+    fetch(`http://localhost:5027/api/User`),
+  ]);
 
-  const assignmentsRes = await fetch(
-    `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
+  const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
+  const users = usersRes.ok ? await usersRes.json() : [];
+
+  const userNameById = new Map(
+    (Array.isArray(users) ? users : [])
+      .map((loadedUser) => [
+        loadedUser?.id,
+        firstNonEmptyString(
+          loadedUser?.name,
+          loadedUser?.Name,
+          loadedUser?.fullName,
+          loadedUser?.FullName,
+          [loadedUser?.firstName, loadedUser?.lastName].filter(Boolean).join(" "),
+          [loadedUser?.FirstName, loadedUser?.LastName].filter(Boolean).join(" "),
+          loadedUser?.username,
+          loadedUser?.Username,
+        ),
+      ])
+      .filter(([id, name]) => Boolean(id) && Boolean(name)),
   );
 
-  const assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
+  const consultantNameById = new Map(
+    (Array.isArray(consultants) ? consultants : [])
+      .map((consultant) => {
+        const linkedUserName = userNameById.get(consultant?.userId);
+        return [
+          consultant?.id,
+          firstNonEmptyString(
+            linkedUserName,
+            consultant?.name,
+            consultant?.Name,
+            consultant?.fullName,
+            consultant?.FullName,
+            [consultant?.firstName, consultant?.lastName].filter(Boolean).join(" "),
+            [consultant?.FirstName, consultant?.LastName].filter(Boolean).join(" "),
+          ),
+        ];
+      })
+      .filter(([id, name]) => Boolean(id) && Boolean(name)),
+  );
 
   const coursesRes = await fetch(`http://localhost:5027/api/Course`);
   const courses = coursesRes.ok ? await coursesRes.json() : [];
@@ -267,6 +341,11 @@ export async function fetchSchedulerEvents(user) {
   const nextEvents = [];
 
   assignments.forEach((assignment) => {
+    const consultantName = getAssignmentConsultantName(
+      assignment,
+      consultantNameById,
+    );
+
     const assignmentCourseId =
       assignment?.course?.id || assignment?.courseId || assignment?.idCourse;
     const courseName =
@@ -346,8 +425,7 @@ export async function fetchSchedulerEvents(user) {
               assignment?.companyName,
             ),
             consultant: firstNonEmptyString(
-              getPersonName(assignment?.consultant),
-              assignment?.consultantName,
+              consultantName,
             ),
             location: sessionLocationLabel,
             city,
@@ -420,8 +498,7 @@ export async function fetchSchedulerEvents(user) {
           assignment?.companyName,
         ),
         consultant: firstNonEmptyString(
-          getPersonName(assignment?.consultant),
-          assignment?.consultantName,
+          consultantName,
         ),
         location: firstNonEmptyString(
           assignment?.location,
