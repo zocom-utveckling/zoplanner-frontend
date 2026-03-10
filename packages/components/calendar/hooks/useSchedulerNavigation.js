@@ -9,9 +9,14 @@ import {
 } from "date-fns";
 import sv from "date-fns/locale/sv";
 
-export default function useSchedulerNavigation() {
-  const [view, setView] = useState("week");
+export default function useSchedulerNavigation({
+  initialView = "week",
+  lockedView = null,
+} = {}) {
+  const [view, setViewState] = useState(initialView);
   const [focusDate, setFocusDate] = useState(new Date());
+  const currentView = lockedView ?? view;
+  const setView = lockedView ? () => {} : setViewState;
 
   const weekStart = useMemo(
     () => startOfWeek(focusDate, { weekStartsOn: 1 }),
@@ -24,16 +29,16 @@ export default function useSchedulerNavigation() {
   );
 
   const title = useMemo(() => {
-    if (view === "day") {
+    if (currentView === "day") {
       return format(focusDate, "EEEE d MMMM yyyy", { locale: sv });
     }
 
-    if (view === "week") {
+    if (currentView === "week") {
       return `Vecka ${format(focusDate, "I, yyyy", { locale: sv })}`;
     }
 
     return format(focusDate, "MMMM yyyy", { locale: sv });
-  }, [view, focusDate]);
+  }, [currentView, focusDate]);
 
   const monthStart = startOfMonth(focusDate);
 
@@ -47,12 +52,12 @@ export default function useSchedulerNavigation() {
   }
 
   function goPrev() {
-    if (view === "day") {
+    if (currentView === "day") {
       setFocusDate((currentDate) => addDays(currentDate, -1));
       return;
     }
 
-    if (view === "week") {
+    if (currentView === "week") {
       setFocusDate((currentDate) => addWeeks(currentDate, -1));
       return;
     }
@@ -61,12 +66,12 @@ export default function useSchedulerNavigation() {
   }
 
   function goNext() {
-    if (view === "day") {
+    if (currentView === "day") {
       setFocusDate((currentDate) => addDays(currentDate, 1));
       return;
     }
 
-    if (view === "week") {
+    if (currentView === "week") {
       setFocusDate((currentDate) => addWeeks(currentDate, 1));
       return;
     }
@@ -75,7 +80,7 @@ export default function useSchedulerNavigation() {
   }
 
   return {
-    view,
+    view: currentView,
     setView,
     focusDate,
     setFocusDate,

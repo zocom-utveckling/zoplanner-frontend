@@ -26,6 +26,61 @@ function getPersonName(person) {
   );
 }
 
+export async function fetchConsultantUsers() {
+  try {
+    const [consultantsRes, usersRes] = await Promise.all([
+      fetch(`http://localhost:5027/api/Consultant`),
+      fetch(`http://localhost:5027/api/User`),
+    ]);
+
+    const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
+    const users = usersRes.ok ? await usersRes.json() : [];
+
+    const userMap = new Map(
+      (Array.isArray(users) ? users : [])
+        .map((user) => [
+          user?.id,
+          firstNonEmptyString(
+            user?.name,
+            user?.Name,
+            user?.fullName,
+            user?.FullName,
+            [user?.firstName, user?.lastName].filter(Boolean).join(" "),
+            [user?.FirstName, user?.LastName].filter(Boolean).join(" "),
+            user?.username,
+            user?.Username,
+          ),
+        ])
+        .filter(([id, name]) => Boolean(id) && Boolean(name)),
+    );
+
+    const consultantNames = (Array.isArray(consultants) ? consultants : [])
+      .map((consultant) => {
+        const linkedUserName = userMap.get(consultant?.userId);
+        return firstNonEmptyString(
+          linkedUserName,
+          consultant?.name,
+          consultant?.Name,
+          consultant?.fullName,
+          consultant?.FullName,
+          [consultant?.firstName, consultant?.lastName]
+            .filter(Boolean)
+            .join(" "),
+          [consultant?.FirstName, consultant?.LastName]
+            .filter(Boolean)
+            .join(" "),
+        );
+      })
+      .filter(Boolean);
+
+    return Array.from(new Set(consultantNames)).sort((a, b) =>
+      a.localeCompare(b, "sv"),
+    );
+  } catch {
+    return [];
+  }
+}
+
 export function toDateWithTime(dateValue, hours, minutes) {
   if (!dateValue) return null;
   if (dateValue instanceof Date) {
@@ -175,6 +230,17 @@ export async function fetchSchedulerEvents(user) {
           session?.description,
           session?.Description,
         );
+        const city = firstNonEmptyString(
+          session?.city,
+          session?.City,
+          session?.locationCity,
+          session?.LocationCity,
+          assignment?.city,
+          assignment?.City,
+          assignment?.customer?.city,
+          assignment?.customer?.City,
+          assignment?.customerCity,
+        );
 
         nextEvents.push({
           id: `session-${assignment.id}-${session.id}`,
@@ -185,6 +251,7 @@ export async function fetchSchedulerEvents(user) {
           end,
           type: "session",
           locationType: sessionLocation,
+          city,
           context: {
             course: courseName,
             className: firstNonEmptyString(
@@ -205,6 +272,9 @@ export async function fetchSchedulerEvents(user) {
               getPersonName(assignment?.consultant),
               assignment?.consultantName,
             ),
+            city,
+            customerCity: city,
+            availability: sessionLocation,
           },
         });
       });
@@ -240,6 +310,15 @@ export async function fetchSchedulerEvents(user) {
           assignment?.Location,
         ),
       ),
+      city: firstNonEmptyString(
+        assignment?.city,
+        assignment?.City,
+        assignment?.locationCity,
+        assignment?.LocationCity,
+        assignment?.customer?.city,
+        assignment?.customer?.City,
+        assignment?.customerCity,
+      ),
       context: {
         course: courseName,
         className: firstNonEmptyString(
@@ -259,6 +338,28 @@ export async function fetchSchedulerEvents(user) {
         consultant: firstNonEmptyString(
           getPersonName(assignment?.consultant),
           assignment?.consultantName,
+        ),
+        city: firstNonEmptyString(
+          assignment?.city,
+          assignment?.City,
+          assignment?.locationCity,
+          assignment?.LocationCity,
+          assignment?.customer?.city,
+          assignment?.customer?.City,
+          assignment?.customerCity,
+        ),
+        customerCity: firstNonEmptyString(
+          assignment?.customer?.city,
+          assignment?.customer?.City,
+          assignment?.customerCity,
+        ),
+        availability: normalizeLocationType(
+          firstNonEmptyString(
+            assignment?.locationType,
+            assignment?.location,
+            assignment?.LocationType,
+            assignment?.Location,
+          ),
         ),
       },
     });
