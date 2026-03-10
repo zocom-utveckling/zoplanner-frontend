@@ -1,4 +1,4 @@
-.course-container {
+.assignment-container {
   padding: 40px 32px;
   width: 100%;
   display: flex;
@@ -12,88 +12,64 @@
   font-weight: 600;
 }
 
-.course-content {
+.assignment-content {
   border-top: 1px solid var(--border-color);
   padding-top: 32px;
 }
 
-.course-list {
+.assignments-list {
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
-
-  gap: 24px;
-}
-@media (min-width: 900px) {
-  .course-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.course-card {
-  background-color: var(--surface);
-  padding: 24px 28px;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  transition:
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
-}
-
-.course-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
-}
-
-.course-left {
-  display: flex;
-  align-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
-  margin-bottom: 20px;
 }
-
-.course-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  background: var(--accent-gradient);
-  color: var(--accent-fg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.course-left h3 {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0;
-  color: var(--text-primary);
-}
-
-.course-right {
-  display: flex;
-  gap: 24px;
-}
-
-.course-right div {
-  flex: 1;
-  background-color: var(--surface-alt);
+.assignment-card{
+  background-color: var(--surface);
+  border-radius: 8px;
   padding: 16px;
-  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+ 
   display: flex;
   flex-direction: column;
 }
-
-.course-right label {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-muted);
-  margin-bottom: 6px;
+.assignment-upper{
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
 }
+.assignment-under{
+  flex: 8;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+   background-color: var(--surface-strong);
+   gap: 10px;
+   border-radius: 8px;
+}
+.sessions{
+  display:flex ;
+  flex-direction: column;
+  gap: 15px;
+  
+}
+.session-card{
+  background-color: var(--accent);
+   flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-radius: 8px;
+    gap: 10px;
+}
+.session-upper{
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+}
+.session-under{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 
-.course-right span {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
 }
