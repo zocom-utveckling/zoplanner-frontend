@@ -77,7 +77,10 @@ export default function MonthView({
           }
 
           const visibleEvents = displayDayEvents.slice(0, MAX_VISIBLE);
-          const hiddenCount = Math.max(0, displayDayEvents.length - MAX_VISIBLE);
+          const hiddenCount = Math.max(
+            0,
+            displayDayEvents.length - MAX_VISIBLE,
+          );
 
           return (
             <div
