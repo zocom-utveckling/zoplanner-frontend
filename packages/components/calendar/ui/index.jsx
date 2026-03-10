@@ -7,9 +7,24 @@ import useSchedulerNavigation from "../hooks/useSchedulerNavigation";
 import useActivityForm from "../hooks/useActivityForm";
 import useEventDetailsModal from "../hooks/useEventDetailsModal";
 import useSchedulerEvents from "../hooks/useSchedulerEvents";
-import { fetchConsultantUsers } from "../data/schedulerData";
+import { fetchConsultantUsers, fetchUserCities } from "../data/schedulerData";
 import { useEffect, useMemo, useState } from "react";
 import "./index.css";
+
+function normalizeAvailability(value) {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toUpperCase();
+  if (normalized === "REMOTE") return "REMOTE";
+  if (normalized === "ONSITE") return "ONSITE";
+  if (normalized === "HYBRID") return "HYBRID";
+  return null;
+}
+
+function normalizeCityKey(value) {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toLocaleLowerCase("sv");
+  return normalized || null;
+}
 
 export default function Scheduler({ user, monthOnly = false }) {
   const {
@@ -31,9 +46,10 @@ export default function Scheduler({ user, monthOnly = false }) {
   const [filters, setFilters] = useState({
     teacher: "",
     availability: "",
-    city: "",
+    location: "",
   });
   const [consultantUsers, setConsultantUsers] = useState([]);
+  const [userCities, setUserCities] = useState([]);
   const {
     selectedEvent,
     handleOpenEventModal,
@@ -64,14 +80,19 @@ export default function Scheduler({ user, monthOnly = false }) {
   useEffect(() => {
     let isCancelled = false;
 
-    async function loadConsultantUsers() {
-      const names = await fetchConsultantUsers();
+    async function loadFilterData() {
+      const [names, cities] = await Promise.all([
+        fetchConsultantUsers(),
+        fetchUserCities(),
+      ]);
+
       if (!isCancelled) {
         setConsultantUsers(Array.isArray(names) ? names : []);
+        setUserCities(Array.isArray(cities) ? cities : []);
       }
     }
 
-    loadConsultantUsers();
+    loadFilterData();
 
     return () => {
       isCancelled = true;
@@ -80,27 +101,26 @@ export default function Scheduler({ user, monthOnly = false }) {
 
   const filterOptions = useMemo(() => {
     const teachers = new Set();
-    const availability = new Set();
-    const cities = new Set();
+    const availability = new Set(["REMOTE", "ONSITE", "HYBRID"]);
+    const locations = new Set();
 
     events.forEach((eventItem) => {
       const teacher = eventItem?.context?.consultant;
-      const availabilityValue =
+      const availabilityValue = normalizeAvailability(
         eventItem?.availability ||
-        eventItem?.context?.availability ||
-        eventItem?.locationType;
-      const city =
-        eventItem?.city ||
-        eventItem?.context?.city ||
-        eventItem?.context?.customerCity;
-
+          eventItem?.context?.availability ||
+          eventItem?.locationType,
+      );
       if (teacher) teachers.add(teacher);
       if (availabilityValue) availability.add(availabilityValue);
-      if (city) cities.add(city);
     });
 
     consultantUsers.forEach((teacher) => {
       if (teacher) teachers.add(teacher);
+    });
+
+    userCities.forEach((city) => {
+      if (city) locations.add(city);
     });
 
     return {
@@ -108,29 +128,37 @@ export default function Scheduler({ user, monthOnly = false }) {
       availability: Array.from(availability).sort((a, b) =>
         a.localeCompare(b, "sv"),
       ),
-      cities: Array.from(cities).sort((a, b) => a.localeCompare(b, "sv")),
+      locations: Array.from(locations).sort((a, b) =>
+        a.localeCompare(b, "sv", { sensitivity: "base" }),
+      ),
     };
-  }, [events, consultantUsers]);
+  }, [events, consultantUsers, userCities]);
 
   const filteredEvents = useMemo(() => {
     return events.filter((eventItem) => {
       const teacherMatch =
         !filters.teacher || eventItem?.context?.consultant === filters.teacher;
 
-      const availabilityValue =
+      const availabilityValue = normalizeAvailability(
         eventItem?.availability ||
-        eventItem?.context?.availability ||
-        eventItem?.locationType;
+          eventItem?.context?.availability ||
+          eventItem?.locationType,
+      );
       const availabilityMatch =
         !filters.availability || availabilityValue === filters.availability;
 
-      const city =
+      const locationValue =
         eventItem?.city ||
         eventItem?.context?.city ||
         eventItem?.context?.customerCity;
-      const cityMatch = !filters.city || city === filters.city;
 
-      return teacherMatch && availabilityMatch && cityMatch;
+      const normalizedLocationValue = normalizeCityKey(locationValue);
+      const normalizedSelectedLocation = normalizeCityKey(filters.location);
+      const locationMatch =
+        !normalizedSelectedLocation ||
+        normalizedLocationValue === normalizedSelectedLocation;
+
+      return teacherMatch && availabilityMatch && locationMatch;
     });
   }, [events, filters]);
 
