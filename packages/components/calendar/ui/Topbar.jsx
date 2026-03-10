@@ -4,14 +4,14 @@ export default function Topbar({
   setView,
   availableViews = ["day", "week", "month"],
   showFilters = false,
-  filterOptions = { teachers: [], availability: [], cities: [] },
-  filters = { teacher: "", availability: "", city: "" },
+  filterOptions = { teachers: [], availability: [], locations: [] },
+  filters = { teacher: "", availability: "", location: "" },
   onFilterChange,
   onGoToday,
   onPrev,
   onNext,
 }) {
-  function getAvailabilityLabel(value) {
+  function getSwedishLabel(value) {
     if (value === "REMOTE") return "Distans";
     if (value === "ONSITE") return "På plats";
     if (value === "HYBRID") return "Hybrid";
@@ -55,23 +55,25 @@ export default function Topbar({
                 onFilterChange?.("availability", event.target.value)
               }
             >
-              <option value="">All tillgänglighet</option>
+              <option value="">Alla arbetsformer</option>
               {filterOptions.availability.map((availabilityValue) => (
                 <option key={availabilityValue} value={availabilityValue}>
-                  {getAvailabilityLabel(availabilityValue)}
+                  {getSwedishLabel(availabilityValue)}
                 </option>
               ))}
             </select>
 
             <select
               className="filter-select"
-              value={filters.city}
-              onChange={(event) => onFilterChange?.("city", event.target.value)}
+              value={filters.location}
+              onChange={(event) =>
+                onFilterChange?.("location", event.target.value)
+              }
             >
-              <option value="">Alla städer</option>
-              {filterOptions.cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
+              <option value="">Alla platser</option>
+              {filterOptions.locations.map((locationValue) => (
+                <option key={locationValue} value={locationValue}>
+                  {getSwedishLabel(locationValue)}
                 </option>
               ))}
             </select>
