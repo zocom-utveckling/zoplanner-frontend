@@ -26,6 +26,53 @@ function getPersonName(person) {
   );
 }
 
+function hasConsultantRole(user) {
+  const roleValue = firstNonEmptyString(user?.role, user?.Role);
+  if (!roleValue) return false;
+
+  const normalizedRoles = roleValue
+    .toLowerCase()
+    .split(/[\s,;|/+-]+/)
+    .map((role) => role.trim())
+    .filter(Boolean);
+
+  return (
+    normalizedRoles.includes("consultant") || normalizedRoles.includes("both")
+  );
+}
+
+function toDisplayCity(cityValue) {
+  const normalized = firstNonEmptyString(cityValue);
+  if (!normalized) return null;
+  return normalized
+    .toLocaleLowerCase("sv")
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toLocaleUpperCase("sv") + part.slice(1))
+    .join(" ");
+}
+
+export async function fetchUserCities() {
+  try {
+    const usersRes = await fetch(`http://localhost:5027/api/User`);
+    const users = usersRes.ok ? await usersRes.json() : [];
+
+    const cityMap = new Map();
+
+    (Array.isArray(users) ? users : []).forEach((user) => {
+      const city = toDisplayCity(firstNonEmptyString(user?.city, user?.City));
+      if (!city) return;
+      cityMap.set(city.toLocaleLowerCase("sv"), city);
+    });
+
+    return Array.from(cityMap.values()).sort((a, b) =>
+      a.localeCompare(b, "sv", { sensitivity: "base" }),
+    );
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchConsultantUsers() {
   try {
     const [consultantsRes, usersRes] = await Promise.all([
@@ -54,7 +101,9 @@ export async function fetchConsultantUsers() {
         .filter(([id, name]) => Boolean(id) && Boolean(name)),
     );
 
-    const consultantNames = (Array.isArray(consultants) ? consultants : [])
+    const consultantNamesFromConsultants = (
+      Array.isArray(consultants) ? consultants : []
+    )
       .map((consultant) => {
         const linkedUserName = userMap.get(consultant?.userId);
         return firstNonEmptyString(
@@ -72,6 +121,27 @@ export async function fetchConsultantUsers() {
         );
       })
       .filter(Boolean);
+
+    const consultantNamesFromUsers = (Array.isArray(users) ? users : [])
+      .filter((user) => hasConsultantRole(user))
+      .map((user) =>
+        firstNonEmptyString(
+          user?.name,
+          user?.Name,
+          user?.fullName,
+          user?.FullName,
+          [user?.firstName, user?.lastName].filter(Boolean).join(" "),
+          [user?.FirstName, user?.LastName].filter(Boolean).join(" "),
+          user?.username,
+          user?.Username,
+        ),
+      )
+      .filter(Boolean);
+
+    const consultantNames = [
+      ...consultantNamesFromConsultants,
+      ...consultantNamesFromUsers,
+    ];
 
     return Array.from(new Set(consultantNames)).sort((a, b) =>
       a.localeCompare(b, "sv"),
@@ -230,6 +300,12 @@ export async function fetchSchedulerEvents(user) {
           session?.description,
           session?.Description,
         );
+        const sessionLocationLabel = firstNonEmptyString(
+          session?.location,
+          session?.Location,
+          session?.locationType,
+          session?.LocationType,
+        );
         const city = firstNonEmptyString(
           session?.city,
           session?.City,
@@ -251,6 +327,7 @@ export async function fetchSchedulerEvents(user) {
           end,
           type: "session",
           locationType: sessionLocation,
+          location: sessionLocationLabel,
           city,
           context: {
             course: courseName,
@@ -272,6 +349,7 @@ export async function fetchSchedulerEvents(user) {
               getPersonName(assignment?.consultant),
               assignment?.consultantName,
             ),
+            location: sessionLocationLabel,
             city,
             customerCity: city,
             availability: sessionLocation,
@@ -310,6 +388,12 @@ export async function fetchSchedulerEvents(user) {
           assignment?.Location,
         ),
       ),
+      location: firstNonEmptyString(
+        assignment?.location,
+        assignment?.Location,
+        assignment?.locationType,
+        assignment?.LocationType,
+      ),
       city: firstNonEmptyString(
         assignment?.city,
         assignment?.City,
@@ -338,6 +422,12 @@ export async function fetchSchedulerEvents(user) {
         consultant: firstNonEmptyString(
           getPersonName(assignment?.consultant),
           assignment?.consultantName,
+        ),
+        location: firstNonEmptyString(
+          assignment?.location,
+          assignment?.Location,
+          assignment?.locationType,
+          assignment?.LocationType,
         ),
         city: firstNonEmptyString(
           assignment?.city,
