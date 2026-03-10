@@ -16,6 +16,7 @@ export default function MonthView({
   onDayClick,
   onEventClick,
   showBookedPerson = false,
+  deduplicateConsultantsPerDay = false,
 }) {
   const weekdays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
 
@@ -52,8 +53,31 @@ export default function MonthView({
               });
             });
 
-          const visibleEvents = allDayEvents.slice(0, MAX_VISIBLE);
-          const hiddenCount = Math.max(0, allDayEvents.length - MAX_VISIBLE);
+          let displayDayEvents = allDayEvents;
+
+          if (deduplicateConsultantsPerDay) {
+            const seenConsultants = new Set();
+            displayDayEvents = allDayEvents.filter((eventItem) => {
+              const consultantName = String(
+                eventItem?.context?.consultant || "",
+              ).trim();
+
+              if (!consultantName) {
+                return true;
+              }
+
+              const key = consultantName.toLocaleLowerCase("sv");
+              if (seenConsultants.has(key)) {
+                return false;
+              }
+
+              seenConsultants.add(key);
+              return true;
+            });
+          }
+
+          const visibleEvents = displayDayEvents.slice(0, MAX_VISIBLE);
+          const hiddenCount = Math.max(0, displayDayEvents.length - MAX_VISIBLE);
 
           return (
             <div

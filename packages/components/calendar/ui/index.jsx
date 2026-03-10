@@ -210,6 +210,7 @@ export default function Scheduler({ user, monthOnly = false, allSchedules = fals
             onDayClick={handleOpenActivityModal}
             onEventClick={handleOpenEventModal}
             showBookedPerson={monthOnly}
+            deduplicateConsultantsPerDay={allSchedules}
           />
         )}
         {loading && filteredEvents.length === 0 ? (
