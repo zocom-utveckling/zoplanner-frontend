@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   addDays,
   endOfDay,
@@ -187,12 +187,12 @@ export default function useSchedulerFilters(events) {
     });
   }, [events, filters]);
 
-  function handleFilterChange(filterKey, value) {
+  const handleFilterChange = useCallback((filterKey, value) => {
     setFilters((prev) => ({
       ...prev,
       [filterKey]: value,
     }));
-  }
+  }, []);
 
   return {
     filters,
