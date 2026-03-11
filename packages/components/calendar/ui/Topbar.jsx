@@ -4,8 +4,15 @@ export default function Topbar({
   setView,
   availableViews = ["day", "week", "month"],
   showFilters = false,
-  filterOptions = { teachers: [], availability: [], locations: [] },
-  filters = { teacher: "", availability: "", location: "" },
+  filterOptions = { teachers: [], courses: [], availability: [], locations: [] },
+  filters = {
+    teacher: "",
+    course: "",
+    availability: "",
+    location: "",
+    period: "all",
+    searchQuery: "",
+  },
   onFilterChange,
   onGoToday,
   onPrev,
@@ -33,6 +40,15 @@ export default function Topbar({
       <div className="controls">
         {showFilters ? (
           <>
+            <input
+              className="search"
+              placeholder="Sök lärare, kurs, ort..."
+              value={filters.searchQuery}
+              onChange={(event) =>
+                onFilterChange?.("searchQuery", event.target.value)
+              }
+            />
+
             <select
               className="filter-select"
               value={filters.teacher}
@@ -44,6 +60,19 @@ export default function Topbar({
               {filterOptions.teachers.map((teacher) => (
                 <option key={teacher} value={teacher}>
                   {teacher}
+                </option>
+              ))}
+            </select>
+
+            <select
+              className="filter-select"
+              value={filters.course}
+              onChange={(event) => onFilterChange?.("course", event.target.value)}
+            >
+              <option value="">Alla kurser</option>
+              {filterOptions.courses.map((course) => (
+                <option key={course} value={course}>
+                  {course}
                 </option>
               ))}
             </select>
@@ -76,6 +105,18 @@ export default function Topbar({
                   {getSwedishLabel(locationValue)}
                 </option>
               ))}
+            </select>
+
+            <select
+              className="filter-select"
+              value={filters.period}
+              onChange={(event) => onFilterChange?.("period", event.target.value)}
+            >
+              <option value="all">Alla perioder</option>
+              <option value="today">Idag</option>
+              <option value="thisWeek">Denna vecka</option>
+              <option value="thisMonth">Denna månad</option>
+              <option value="next30Days">Nästa 30 dagar</option>
             </select>
           </>
         ) : (
