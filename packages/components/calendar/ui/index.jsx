@@ -1,6 +1,5 @@
 import Topbar from "./Topbar";
-import TimeGridView from "./TimeGridView";
-import MonthView from "./MonthView";
+import CalendarContent from "./CalendarContent";
 import ActivityModal from "./modals/ActivityModal";
 import EventDetailsModal from "./modals/EventDetailsModal";
 import useSchedulerNavigation from "../hooks/useSchedulerNavigation";
@@ -8,6 +7,7 @@ import useActivityForm from "../hooks/useActivityForm";
 import useEventDetailsModal from "../hooks/useEventDetailsModal";
 import useSchedulerEvents from "../hooks/useSchedulerEvents";
 import useSchedulerFilters from "../hooks/useSchedulerFilters";
+import { useMemo } from "react";
 import "./index.css";
 
 export default function Scheduler({ user, monthOnly = false, allSchedules = false }) {
@@ -31,6 +31,11 @@ export default function Scheduler({ user, monthOnly = false, allSchedules = fals
   });
   const { filters, filterOptions, filteredEvents, handleFilterChange } =
     useSchedulerFilters(events);
+  const availableViews = useMemo(
+    () => (monthOnly ? ["month"] : ["day", "week", "month"]),
+    [monthOnly],
+  );
+  const showFilters = monthOnly || allSchedules;
   const {
     selectedEvent,
     handleOpenEventModal,
@@ -64,8 +69,8 @@ export default function Scheduler({ user, monthOnly = false, allSchedules = fals
         title={title}
         view={view}
         setView={setView}
-        availableViews={monthOnly ? ["month"] : ["day", "week", "month"]}
-        showFilters={monthOnly || allSchedules}
+        availableViews={availableViews}
+        showFilters={showFilters}
         filterOptions={filterOptions}
         filters={filters}
         onFilterChange={handleFilterChange}
@@ -74,38 +79,18 @@ export default function Scheduler({ user, monthOnly = false, allSchedules = fals
         onNext={goNext}
       />
 
-      <div className="content-card">
-        {view === "day" && (
-          <TimeGridView
-            days={[focusDate]}
-            events={filteredEvents}
-            onEventClick={handleOpenEventModal}
-          />
-        )}
-        {view === "week" && (
-          <TimeGridView
-            days={weekDays}
-            events={filteredEvents}
-            onEventClick={handleOpenEventModal}
-          />
-        )}
-        {view === "month" && (
-          <MonthView
-            monthGridDays={monthGridDays}
-            focusDate={focusDate}
-            events={filteredEvents}
-            onDayClick={handleOpenActivityModal}
-            onEventClick={handleOpenEventModal}
-            showBookedPerson={monthOnly}
-            deduplicateConsultantsPerDay={allSchedules}
-          />
-        )}
-        {loading && filteredEvents.length === 0 ? (
-          <div style={{ padding: "12px", color: "var(--text-muted)" }}>
-            Laddar kalender...
-          </div>
-        ) : null}
-      </div>
+      <CalendarContent
+        view={view}
+        focusDate={focusDate}
+        weekDays={weekDays}
+        monthGridDays={monthGridDays}
+        filteredEvents={filteredEvents}
+        loading={loading}
+        monthOnly={monthOnly}
+        allSchedules={allSchedules}
+        onEventClick={handleOpenEventModal}
+        onDayClick={handleOpenActivityModal}
+      />
 
       <ActivityModal
         isOpen={isActivityModalOpen}
