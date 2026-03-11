@@ -4,7 +4,12 @@ export default function Topbar({
   setView,
   availableViews = ["day", "week", "month"],
   showFilters = false,
-  filterOptions = { teachers: [], courses: [], availability: [], locations: [] },
+  filterOptions = {
+    teachers: [],
+    courses: [],
+    availability: [],
+    locations: [],
+  },
   filters = {
     teacher: "",
     course: "",
@@ -67,7 +72,9 @@ export default function Topbar({
             <select
               className="filter-select"
               value={filters.course}
-              onChange={(event) => onFilterChange?.("course", event.target.value)}
+              onChange={(event) =>
+                onFilterChange?.("course", event.target.value)
+              }
             >
               <option value="">Alla kurser</option>
               {filterOptions.courses.map((course) => (
@@ -110,7 +117,9 @@ export default function Topbar({
             <select
               className="filter-select"
               value={filters.period}
-              onChange={(event) => onFilterChange?.("period", event.target.value)}
+              onChange={(event) =>
+                onFilterChange?.("period", event.target.value)
+              }
             >
               <option value="all">Alla perioder</option>
               <option value="today">Idag</option>
