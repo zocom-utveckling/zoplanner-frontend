@@ -1,4 +1,6 @@
-export default function Topbar({
+import { memo } from "react";
+
+function Topbar({
   title,
   view,
   setView,
@@ -169,3 +171,5 @@ export default function Topbar({
     </div>
   );
 }
+
+export default memo(Topbar);
