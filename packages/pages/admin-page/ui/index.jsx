@@ -1,5 +1,6 @@
 import "./index.css";
 import PlannerMonthView from "../../../components/planning-tool/ui/PlannerMonthView";
+import CourseSetupForm from "../../../components/planning-tool/ui/CourseSetupForm";
 import { useMemo, useState } from "react";
 import {
   startOfMonth,
@@ -54,6 +55,7 @@ function AdminPage() {
               <h3>Kurser</h3>
               <p>Idé/förslag under utformning:</p>
               <p> Här kommer man kunna registrera, redigera och söka kurser </p>
+              <CourseSetupForm />
             </section>
             <section className="admin-card">
               <h3>Konsulter</h3>

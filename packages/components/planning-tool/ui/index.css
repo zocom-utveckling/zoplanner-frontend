@@ -60,3 +60,43 @@
   text-overflow: ellipsis;
   margin-top: 2px;
 }
+.course-setup {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.course-setup-form {
+  display: grid;
+  gap: 16px;
+}
+
+.course-setup-field {
+  display: grid;
+  gap: 6px;
+}
+
+.course-setup-field label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.course-setup-field input {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.course-setup-form button {
+  width: fit-content;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
