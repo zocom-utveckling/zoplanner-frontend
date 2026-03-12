@@ -38,8 +38,14 @@ function Navbar({ user, activePage, setActivePage }) {
     return null;
   }
 
-  const role = (user.role || "").toUpperCase();
-  const isManager = role === "MANAGER" || role === "BOTH";
+  const roleValue =
+    typeof user?.role === "string" ? user.role.toLowerCase() : "";
+  const normalizedRoles = roleValue
+    .split(/[\s,;|/+-]+/)
+    .map((role) => role.trim())
+    .filter(Boolean);
+  const isManager =
+    normalizedRoles.includes("manager") || normalizedRoles.includes("both");
 
   return (
     <>
@@ -60,12 +66,14 @@ function Navbar({ user, activePage, setActivePage }) {
         <div className="navbar-right">
           <div className="routes">
             <DarkModeButton />
-            <button
-              onClick={() => setActivePage("allSchedules")}
-              className={activePage == "allSchedules" ? "active" : ""}
-            >
-              Alla scheman
-            </button>
+            {isManager && (
+              <button
+                onClick={() => setActivePage("allSchedules")}
+                className={activePage == "allSchedules" ? "active" : ""}
+              >
+                Alla scheman
+              </button>
+            )}
             {isManager && (
               <button
                 onClick={() => {

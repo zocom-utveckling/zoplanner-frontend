@@ -55,19 +55,32 @@ function HomePage() {
   if (!user) {
     return <div>Laddar användare...</div>;
   }
+
+  const roleValue =
+    typeof user?.role === "string" ? user.role.toLowerCase() : "";
+  const normalizedRoles = roleValue
+    .split(/[\s,;|/+-]+/)
+    .map((role) => role.trim())
+    .filter(Boolean);
+  const isManager =
+    normalizedRoles.includes("manager") || normalizedRoles.includes("both");
+
+  const resolvedActivePage =
+    activePage === "allSchedules" && !isManager ? "dashboard" : activePage;
+
   return (
     <DashboardLayout
       user={user}
-      activePage={activePage}
+      activePage={resolvedActivePage}
       setActivePage={setActivePage}
     >
-      {activePage == "dashboard" ? (
+      {resolvedActivePage == "dashboard" ? (
         <Dashboard user={user} />
-      ) : activePage == "allSchedules" ? (
+      ) : resolvedActivePage == "allSchedules" ? (
         <Dashboard user={user} monthOnly={true} allSchedules={true} />
-      ) : activePage == "courses" ? (
+      ) : resolvedActivePage == "courses" ? (
         <CoursesPage user={user} />
-      ) : activePage == "profile" ? (
+      ) : resolvedActivePage == "profile" ? (
         <Profile_Page user={user} setUser={setUser} />
       ) : (
         <MessagesPage user={user} />
