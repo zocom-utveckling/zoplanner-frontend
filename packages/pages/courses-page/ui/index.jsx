@@ -7,7 +7,7 @@ function CoursesPage() {
   useEffect(() => {
     async function getAssignments() {
       const res = await fetch(
-        `http://localhost:5027/api/assignments/consultant/${consultantId}`,
+        `http://localhost:5027/api/Assignments/consultant/${consultantId}`,
       );
       const data = await res.json();
       if (res.ok) {

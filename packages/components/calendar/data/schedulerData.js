@@ -251,7 +251,7 @@ export async function fetchSchedulerEvents(user, options = {}) {
   let assignments = [];
 
   if (options?.includeAllConsultants) {
-    const assignmentsRes = await fetch(`http://localhost:5027/api/assignments`);
+    const assignmentsRes = await fetch(`http://localhost:5027/api/Assignments`);
     assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
   } else {
     let consultantId = user?.consultantId || user?.consultant?.id;
@@ -272,7 +272,7 @@ export async function fetchSchedulerEvents(user, options = {}) {
     }
 
     const assignmentsRes = await fetch(
-      `http://localhost:5027/api/assignments/consultant/${consultantId}`,
+      `http://localhost:5027/api/Assignments/consultant/${consultantId}`,
     );
 
     assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
