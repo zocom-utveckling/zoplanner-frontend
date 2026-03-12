@@ -1,15 +1,16 @@
 import Topbar from "./Topbar";
-import TimeGridView from "./TimeGridView";
-import MonthView from "./MonthView";
+import CalendarContent from "./CalendarContent";
 import ActivityModal from "./modals/ActivityModal";
 import EventDetailsModal from "./modals/EventDetailsModal";
 import useSchedulerNavigation from "../hooks/useSchedulerNavigation";
 import useActivityForm from "../hooks/useActivityForm";
 import useEventDetailsModal from "../hooks/useEventDetailsModal";
 import useSchedulerEvents from "../hooks/useSchedulerEvents";
+import useSchedulerFilters from "../hooks/useSchedulerFilters";
+import { useMemo } from "react";
 import "./index.css";
 
-export default function Scheduler({ user }) {
+export default function Scheduler({ user, monthOnly = false, allSchedules = false }) {
   const {
     view,
     setView,
@@ -21,8 +22,20 @@ export default function Scheduler({ user }) {
     goToday,
     goPrev,
     goNext,
-  } = useSchedulerNavigation();
-  const { events, loading, addEvent, removeEvent } = useSchedulerEvents(user);
+  } = useSchedulerNavigation({
+    initialView: monthOnly ? "month" : "week",
+    lockedView: monthOnly ? "month" : null,
+  });
+  const { events, loading, addEvent, removeEvent } = useSchedulerEvents(user, {
+    includeAllConsultants: allSchedules,
+  });
+  const { filters, filterOptions, filteredEvents, handleFilterChange } =
+    useSchedulerFilters(events);
+  const availableViews = useMemo(
+    () => (monthOnly ? ["month"] : ["day", "week", "month"]),
+    [monthOnly],
+  );
+  const showFilters = monthOnly || allSchedules;
   const {
     selectedEvent,
     handleOpenEventModal,
@@ -56,41 +69,28 @@ export default function Scheduler({ user }) {
         title={title}
         view={view}
         setView={setView}
+        availableViews={availableViews}
+        showFilters={showFilters}
+        filterOptions={filterOptions}
+        filters={filters}
+        onFilterChange={handleFilterChange}
         onGoToday={goToday}
         onPrev={goPrev}
         onNext={goNext}
       />
 
-      <div className="content-card">
-        {view === "day" && (
-          <TimeGridView
-            days={[focusDate]}
-            events={events}
-            onEventClick={handleOpenEventModal}
-          />
-        )}
-        {view === "week" && (
-          <TimeGridView
-            days={weekDays}
-            events={events}
-            onEventClick={handleOpenEventModal}
-          />
-        )}
-        {view === "month" && (
-          <MonthView
-            monthGridDays={monthGridDays}
-            focusDate={focusDate}
-            events={events}
-            onDayClick={handleOpenActivityModal}
-            onEventClick={handleOpenEventModal}
-          />
-        )}
-        {loading && events.length === 0 ? (
-          <div style={{ padding: "12px", color: "var(--text-muted)" }}>
-            Laddar kalender...
-          </div>
-        ) : null}
-      </div>
+      <CalendarContent
+        view={view}
+        focusDate={focusDate}
+        weekDays={weekDays}
+        monthGridDays={monthGridDays}
+        filteredEvents={filteredEvents}
+        loading={loading}
+        monthOnly={monthOnly}
+        allSchedules={allSchedules}
+        onEventClick={handleOpenEventModal}
+        onDayClick={handleOpenActivityModal}
+      />
 
       <ActivityModal
         isOpen={isActivityModalOpen}

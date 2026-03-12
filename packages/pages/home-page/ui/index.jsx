@@ -29,7 +29,7 @@ function HomePage() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [activePage, setActivePage] = useState("dashboard");
-  console.log(localStorage.getItem("managerId"))
+  console.log(localStorage.getItem("managerId"));
 
   useEffect(() => {
     if (!id) return;
@@ -50,23 +50,39 @@ function HomePage() {
     };
     fetchUser();
   }, [id]);
- 
 
   // renderar inte förrän vi har användardata, annars får vi error när vi försöker accessa user.name i Navbar
   if (!user) {
     return <div>Laddar användare...</div>;
   }
+
+  const roleValue =
+    typeof user?.role === "string" ? user.role.toLowerCase() : "";
+  const normalizedRoles = roleValue
+    .split(/[\s,;|/+-]+/)
+    .map((role) => role.trim())
+    .filter(Boolean);
+  const isManager =
+    normalizedRoles.includes("manager") || normalizedRoles.includes("both");
+
+  const resolvedActivePage =
+    activePage === "allSchedules" && !isManager ? "dashboard" : activePage;
+
   return (
     <DashboardLayout
       user={user}
-      activePage={activePage}
+      activePage={resolvedActivePage}
       setActivePage={setActivePage}
     >
-      {activePage == "dashboard" ? (
+      {resolvedActivePage == "dashboard" ? (
         <Dashboard user={user} />
-      ) : activePage == "courses" ? (
+      ) : resolvedActivePage == "allSchedules" ? (
+        <Dashboard user={user} monthOnly={true} allSchedules={true} />
+      ) : resolvedActivePage == "courses" ? (
         <CoursesPage user={user} />
-      ) : activePage== "profile"?(<Profile_Page user={user} setUser={setUser}/>):(
+      ) : resolvedActivePage == "profile" ? (
+        <Profile_Page user={user} setUser={setUser} />
+      ) : (
         <MessagesPage user={user} />
       )}
     </DashboardLayout>

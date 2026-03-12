@@ -54,7 +54,9 @@
 .controls {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
+  justify-content: flex-end;
 }
 
 .small-btn {
@@ -75,7 +77,7 @@
 }
 
 .search {
-  min-width: 200px;
+  min-width: 240px;
   padding: 8px 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -87,6 +89,18 @@
 
 .search::placeholder {
   color: var(--text-subtle);
+}
+
+.filter-select {
+  min-width: 180px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .segment {
@@ -293,9 +307,12 @@
 
 .month-events {
   display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
   gap: 6px;
   margin-right: -10px;
   margin-left: -10px;
+  align-content: start;
 }
 
 .month-cell--out-of-month {
@@ -335,6 +352,12 @@
 
 .month-event-pill.is-single {
   border-radius: 8px;
+}
+
+.month-more-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .scheduler-modal-overlay {

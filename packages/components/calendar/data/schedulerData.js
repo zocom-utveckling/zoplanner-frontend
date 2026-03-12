@@ -26,6 +26,152 @@ function getPersonName(person) {
   );
 }
 
+function getAssignmentConsultantId(assignment) {
+  return (
+    assignment?.consultantId ||
+    assignment?.idConsultant ||
+    assignment?.consultant?.id ||
+    null
+  );
+}
+
+function getAssignmentConsultantName(assignment, consultantNameById) {
+  const consultantId = getAssignmentConsultantId(assignment);
+
+  return firstNonEmptyString(
+    getPersonName(assignment?.consultant),
+    assignment?.consultantName,
+    assignment?.consultant?.name,
+    assignment?.consultant?.Name,
+    consultantId ? consultantNameById.get(consultantId) : null,
+  );
+}
+
+function hasConsultantRole(user) {
+  const roleValue = firstNonEmptyString(user?.role, user?.Role);
+  if (!roleValue) return false;
+
+  const normalizedRoles = roleValue
+    .toLowerCase()
+    .split(/[\s,;|/+-]+/)
+    .map((role) => role.trim())
+    .filter(Boolean);
+
+  return (
+    normalizedRoles.includes("consultant") || normalizedRoles.includes("both")
+  );
+}
+
+function toDisplayCity(cityValue) {
+  const normalized = firstNonEmptyString(cityValue);
+  if (!normalized) return null;
+  return normalized
+    .toLocaleLowerCase("sv")
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toLocaleUpperCase("sv") + part.slice(1))
+    .join(" ");
+}
+
+export async function fetchUserCities() {
+  try {
+    const usersRes = await fetch(`http://localhost:5027/api/User`);
+    const users = usersRes.ok ? await usersRes.json() : [];
+
+    const cityMap = new Map();
+
+    (Array.isArray(users) ? users : []).forEach((user) => {
+      const city = toDisplayCity(firstNonEmptyString(user?.city, user?.City));
+      if (!city) return;
+      cityMap.set(city.toLocaleLowerCase("sv"), city);
+    });
+
+    return Array.from(cityMap.values()).sort((a, b) =>
+      a.localeCompare(b, "sv", { sensitivity: "base" }),
+    );
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchConsultantUsers() {
+  try {
+    const [consultantsRes, usersRes] = await Promise.all([
+      fetch(`http://localhost:5027/api/Consultant`),
+      fetch(`http://localhost:5027/api/User`),
+    ]);
+
+    const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
+    const users = usersRes.ok ? await usersRes.json() : [];
+
+    const userMap = new Map(
+      (Array.isArray(users) ? users : [])
+        .map((user) => [
+          user?.id,
+          firstNonEmptyString(
+            user?.name,
+            user?.Name,
+            user?.fullName,
+            user?.FullName,
+            [user?.firstName, user?.lastName].filter(Boolean).join(" "),
+            [user?.FirstName, user?.LastName].filter(Boolean).join(" "),
+            user?.username,
+            user?.Username,
+          ),
+        ])
+        .filter(([id, name]) => Boolean(id) && Boolean(name)),
+    );
+
+    const consultantNamesFromConsultants = (
+      Array.isArray(consultants) ? consultants : []
+    )
+      .map((consultant) => {
+        const linkedUserName = userMap.get(consultant?.userId);
+        return firstNonEmptyString(
+          linkedUserName,
+          consultant?.name,
+          consultant?.Name,
+          consultant?.fullName,
+          consultant?.FullName,
+          [consultant?.firstName, consultant?.lastName]
+            .filter(Boolean)
+            .join(" "),
+          [consultant?.FirstName, consultant?.LastName]
+            .filter(Boolean)
+            .join(" "),
+        );
+      })
+      .filter(Boolean);
+
+    const consultantNamesFromUsers = (Array.isArray(users) ? users : [])
+      .filter((user) => hasConsultantRole(user))
+      .map((user) =>
+        firstNonEmptyString(
+          user?.name,
+          user?.Name,
+          user?.fullName,
+          user?.FullName,
+          [user?.firstName, user?.lastName].filter(Boolean).join(" "),
+          [user?.FirstName, user?.LastName].filter(Boolean).join(" "),
+          user?.username,
+          user?.Username,
+        ),
+      )
+      .filter(Boolean);
+
+    const consultantNames = [
+      ...consultantNamesFromConsultants,
+      ...consultantNamesFromUsers,
+    ];
+
+    return Array.from(new Set(consultantNames)).sort((a, b) =>
+      a.localeCompare(b, "sv"),
+    );
+  } catch {
+    return [];
+  }
+}
+
 export function toDateWithTime(dateValue, hours, minutes) {
   if (!dateValue) return null;
   if (dateValue instanceof Date) {
@@ -97,31 +243,94 @@ export function toLocalDateTime(dateValue) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-export async function fetchSchedulerEvents(user) {
+export async function fetchSchedulerEvents(user, options = {}) {
   if (!user?.id) {
     return [];
   }
 
-  let consultantId = user?.consultantId || user?.consultant?.id;
+  let assignments = [];
 
-  if (!consultantId) {
-    const consultantsRes = await fetch(`http://localhost:5027/api/Consultant`);
-    const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
-    const match = consultants.find(
-      (consultant) => consultant?.userId === user?.id,
+  if (options?.includeAllConsultants) {
+    const assignmentsRes = await fetch(`http://localhost:5027/api/assignments`);
+    assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
+  } else {
+    let consultantId = user?.consultantId || user?.consultant?.id;
+
+    if (!consultantId) {
+      const consultantsRes = await fetch(
+        `http://localhost:5027/api/Consultant`,
+      );
+      const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
+      const match = consultants.find(
+        (consultant) => consultant?.userId === user?.id,
+      );
+      consultantId = match?.id;
+    }
+
+    if (!consultantId) {
+      return [];
+    }
+
+    const assignmentsRes = await fetch(
+      `http://localhost:5027/api/assignments/consultant/${consultantId}`,
     );
-    consultantId = match?.id;
+
+    assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
   }
 
-  if (!consultantId) {
-    return [];
-  }
+  const [consultantsRes, usersRes] = await Promise.all([
+    fetch(`http://localhost:5027/api/Consultant`),
+    fetch(`http://localhost:5027/api/User`),
+  ]);
 
-  const assignmentsRes = await fetch(
-    `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
+  const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
+  const users = usersRes.ok ? await usersRes.json() : [];
+
+  const userNameById = new Map(
+    (Array.isArray(users) ? users : [])
+      .map((loadedUser) => [
+        loadedUser?.id,
+        firstNonEmptyString(
+          loadedUser?.name,
+          loadedUser?.Name,
+          loadedUser?.fullName,
+          loadedUser?.FullName,
+          [loadedUser?.firstName, loadedUser?.lastName]
+            .filter(Boolean)
+            .join(" "),
+          [loadedUser?.FirstName, loadedUser?.LastName]
+            .filter(Boolean)
+            .join(" "),
+          loadedUser?.username,
+          loadedUser?.Username,
+        ),
+      ])
+      .filter(([id, name]) => Boolean(id) && Boolean(name)),
   );
 
-  const assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
+  const consultantNameById = new Map(
+    (Array.isArray(consultants) ? consultants : [])
+      .map((consultant) => {
+        const linkedUserName = userNameById.get(consultant?.userId);
+        return [
+          consultant?.id,
+          firstNonEmptyString(
+            linkedUserName,
+            consultant?.name,
+            consultant?.Name,
+            consultant?.fullName,
+            consultant?.FullName,
+            [consultant?.firstName, consultant?.lastName]
+              .filter(Boolean)
+              .join(" "),
+            [consultant?.FirstName, consultant?.LastName]
+              .filter(Boolean)
+              .join(" "),
+          ),
+        ];
+      })
+      .filter(([id, name]) => Boolean(id) && Boolean(name)),
+  );
 
   const coursesRes = await fetch(`http://localhost:5027/api/Course`);
   const courses = coursesRes.ok ? await coursesRes.json() : [];
@@ -142,6 +351,11 @@ export async function fetchSchedulerEvents(user) {
   const nextEvents = [];
 
   assignments.forEach((assignment) => {
+    const consultantName = getAssignmentConsultantName(
+      assignment,
+      consultantNameById,
+    );
+
     const assignmentCourseId =
       assignment?.course?.id || assignment?.courseId || assignment?.idCourse;
     const courseName =
@@ -175,6 +389,23 @@ export async function fetchSchedulerEvents(user) {
           session?.description,
           session?.Description,
         );
+        const sessionLocationLabel = firstNonEmptyString(
+          session?.location,
+          session?.Location,
+          session?.locationType,
+          session?.LocationType,
+        );
+        const city = firstNonEmptyString(
+          session?.city,
+          session?.City,
+          session?.locationCity,
+          session?.LocationCity,
+          assignment?.city,
+          assignment?.City,
+          assignment?.customer?.city,
+          assignment?.customer?.City,
+          assignment?.customerCity,
+        );
 
         nextEvents.push({
           id: `session-${assignment.id}-${session.id}`,
@@ -185,6 +416,8 @@ export async function fetchSchedulerEvents(user) {
           end,
           type: "session",
           locationType: sessionLocation,
+          location: sessionLocationLabel,
+          city,
           context: {
             course: courseName,
             className: firstNonEmptyString(
@@ -201,10 +434,11 @@ export async function fetchSchedulerEvents(user) {
               assignment?.client?.name,
               assignment?.companyName,
             ),
-            consultant: firstNonEmptyString(
-              getPersonName(assignment?.consultant),
-              assignment?.consultantName,
-            ),
+            consultant: firstNonEmptyString(consultantName),
+            location: sessionLocationLabel,
+            city,
+            customerCity: city,
+            availability: sessionLocation,
           },
         });
       });
@@ -240,6 +474,21 @@ export async function fetchSchedulerEvents(user) {
           assignment?.Location,
         ),
       ),
+      location: firstNonEmptyString(
+        assignment?.location,
+        assignment?.Location,
+        assignment?.locationType,
+        assignment?.LocationType,
+      ),
+      city: firstNonEmptyString(
+        assignment?.city,
+        assignment?.City,
+        assignment?.locationCity,
+        assignment?.LocationCity,
+        assignment?.customer?.city,
+        assignment?.customer?.City,
+        assignment?.customerCity,
+      ),
       context: {
         course: courseName,
         className: firstNonEmptyString(
@@ -256,9 +505,34 @@ export async function fetchSchedulerEvents(user) {
           assignment?.client?.name,
           assignment?.companyName,
         ),
-        consultant: firstNonEmptyString(
-          getPersonName(assignment?.consultant),
-          assignment?.consultantName,
+        consultant: firstNonEmptyString(consultantName),
+        location: firstNonEmptyString(
+          assignment?.location,
+          assignment?.Location,
+          assignment?.locationType,
+          assignment?.LocationType,
+        ),
+        city: firstNonEmptyString(
+          assignment?.city,
+          assignment?.City,
+          assignment?.locationCity,
+          assignment?.LocationCity,
+          assignment?.customer?.city,
+          assignment?.customer?.City,
+          assignment?.customerCity,
+        ),
+        customerCity: firstNonEmptyString(
+          assignment?.customer?.city,
+          assignment?.customer?.City,
+          assignment?.customerCity,
+        ),
+        availability: normalizeLocationType(
+          firstNonEmptyString(
+            assignment?.locationType,
+            assignment?.location,
+            assignment?.LocationType,
+            assignment?.Location,
+          ),
         ),
       },
     });
