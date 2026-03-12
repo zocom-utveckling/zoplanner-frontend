@@ -113,7 +113,7 @@ function Sidebar({ user }) {
 
       try {
         const assignmentsRes = await fetch(
-          `http://localhost:5027/api/assignments/consultant/${consultantId}`,
+          `http://localhost:5027/api/Assignments/consultant/${consultantId}`,
         );
         const assignments = assignmentsRes.ok
           ? await assignmentsRes.json()
