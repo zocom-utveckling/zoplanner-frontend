@@ -1,21 +1,21 @@
 export function createAssignmentService(api) {
   return {
     getAll: async () => {
-      return api.get(`/Assignments`);
+      return api.get(`/Assignment`);
     },
 
     getById: async (id) => {
       if (!id) {
         throw new Error("Assignment id is required");
       }
-      return api.get(`/Assignments/${id}`);
+      return api.get(`/Assignment/${id}`);
     },
 
     create: async (payload) => {
       if (!payload) {
         throw new Error("Assignment payload is required");
       }
-      return api.post(`/Assignments`, payload);
+      return api.post(`/Assignment`, payload);
     },
 
     update: async (id, payload) => {
@@ -25,28 +25,28 @@ export function createAssignmentService(api) {
       if (!payload) {
         throw new Error("Assignment payload is required");
       }
-      return api.put(`/Assignments/${id}`, payload);
+      return api.put(`/Assignment/${id}`, payload);
     },
 
     getSessions: async (id) => {
       if (!id) {
         throw new Error("Assignment id is required");
       }
-      return api.get(`/Assignments/${id}/sessions`);
+      return api.get(`/Assignment/${id}/sessions`);
     },
 
     getByConsultantId: async (consultantId) => {
       if (!consultantId) {
         throw new Error("Consultant id is required");
       }
-      return api.get(`/Assignments/consultant/${consultantId}`);
+      return api.get(`/Assignment/consultant/${consultantId}`);
     },
 
     remove: async (id) => {
       if (!id) {
         throw new Error("Assignment id is required");
       }
-      return api.delete(`/Assignments/${id}`);
+      return api.delete(`/Assignment/${id}`);
     },
   };
 }
