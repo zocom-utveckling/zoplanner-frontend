@@ -101,7 +101,10 @@ export function saveLocalActivity(userOrId, eventItem) {
   if (!serialized) return null;
 
   const existing = readRawLocalActivities(userOrId);
-  const updated = [...existing.filter((item) => item?.id !== serialized.id), serialized];
+  const updated = [
+    ...existing.filter((item) => item?.id !== serialized.id),
+    serialized,
+  ];
   writeRawLocalActivities(userOrId, updated);
 
   return deserializeFromStorage(serialized);
@@ -119,7 +122,12 @@ export function removeLocalActivity(userOrId, eventId) {
 }
 
 export function createLocalActivityFromForm(user, formData) {
-  if (!user?.id || !formData?.date || !formData?.startTime || !formData?.endTime) {
+  if (
+    !user?.id ||
+    !formData?.date ||
+    !formData?.startTime ||
+    !formData?.endTime
+  ) {
     return null;
   }
 

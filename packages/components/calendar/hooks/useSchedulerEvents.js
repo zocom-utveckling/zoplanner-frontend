@@ -89,7 +89,9 @@ export default function useSchedulerEvents(user, options = {}) {
       if (String(changedUserId) !== String(user.id)) return;
 
       setEvents((prev) => {
-        const remoteEvents = prev.filter((eventItem) => !isLocalEvent(eventItem));
+        const remoteEvents = prev.filter(
+          (eventItem) => !isLocalEvent(eventItem),
+        );
         return [...remoteEvents, ...listLocalActivities(user.id)];
       });
     });
