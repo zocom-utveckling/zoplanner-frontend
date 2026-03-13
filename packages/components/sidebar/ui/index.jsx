@@ -3,6 +3,10 @@ import "./index.css";
 import { UserProfile } from "@zoplanner/user-profile";
 import { AddActivityButton } from "@zoplanner/add-activity-button";
 import { MonthCalendar } from "@zoplanner/month-calender-sidebar";
+import {
+  createLocalActivityFromForm,
+  saveLocalActivity,
+} from "../../calendar/data/localActivityStorage";
 
 function Sidebar({ user }) {
   const roleValue =
@@ -162,7 +166,9 @@ function Sidebar({ user }) {
   }, [user?.id, user?.consultantId, user?.consultant?.id]);
 
   const handleSubmitActivity = (activityData) => {
-    console.log("Ny aktivitet:", activityData);
+    const localEvent = createLocalActivityFromForm(user, activityData);
+    if (!localEvent) return;
+    saveLocalActivity(user.id, localEvent);
   };
 
   const listedUsers = user
