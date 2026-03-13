@@ -9,13 +9,11 @@ function Topbar({
   filterOptions = {
     teachers: [],
     courses: [],
-    availability: [],
     locations: [],
   },
   filters = {
     teacher: "",
     course: "",
-    availability: "",
     location: "",
     period: "all",
     searchQuery: "",
@@ -88,27 +86,12 @@ function Topbar({
 
             <select
               className="filter-select"
-              value={filters.availability}
-              onChange={(event) =>
-                onFilterChange?.("availability", event.target.value)
-              }
-            >
-              <option value="">Alla arbetsformer</option>
-              {filterOptions.availability.map((availabilityValue) => (
-                <option key={availabilityValue} value={availabilityValue}>
-                  {getSwedishLabel(availabilityValue)}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="filter-select"
               value={filters.location}
               onChange={(event) =>
                 onFilterChange?.("location", event.target.value)
               }
             >
-              <option value="">Alla platser</option>
+              <option value="">Alla städer</option>
               {filterOptions.locations.map((locationValue) => (
                 <option key={locationValue} value={locationValue}>
                   {getSwedishLabel(locationValue)}

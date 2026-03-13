@@ -10,15 +10,6 @@ import {
 } from "date-fns";
 import { fetchConsultantUsers, fetchUserCities } from "../data/schedulerData";
 
-function normalizeAvailability(value) {
-  if (typeof value !== "string") return null;
-  const normalized = value.trim().toUpperCase();
-  if (normalized === "REMOTE") return "REMOTE";
-  if (normalized === "ONSITE") return "ONSITE";
-  if (normalized === "HYBRID") return "HYBRID";
-  return null;
-}
-
 function normalizeCityKey(value) {
   if (typeof value !== "string") return null;
   const normalized = value.trim().toLocaleLowerCase("sv");
@@ -70,7 +61,6 @@ export default function useSchedulerFilters(events) {
   const [filters, setFilters] = useState({
     teacher: "",
     course: "",
-    availability: "",
     location: "",
     period: "all",
     searchQuery: "",
@@ -103,20 +93,13 @@ export default function useSchedulerFilters(events) {
   const filterOptions = useMemo(() => {
     const teachers = new Set();
     const courses = new Set();
-    const availability = new Set(["REMOTE", "ONSITE", "HYBRID"]);
     const locations = new Set();
 
     events.forEach((eventItem) => {
       const teacher = eventItem?.context?.consultant;
       const course = eventItem?.context?.course || eventItem?.title;
-      const availabilityValue = normalizeAvailability(
-        eventItem?.availability ||
-          eventItem?.context?.availability ||
-          eventItem?.locationType,
-      );
       if (teacher) teachers.add(teacher);
       if (course) courses.add(course);
-      if (availabilityValue) availability.add(availabilityValue);
     });
 
     consultantUsers.forEach((teacher) => {
@@ -130,9 +113,6 @@ export default function useSchedulerFilters(events) {
     return {
       teachers: Array.from(teachers).sort((a, b) => a.localeCompare(b, "sv")),
       courses: Array.from(courses).sort((a, b) => a.localeCompare(b, "sv")),
-      availability: Array.from(availability).sort((a, b) =>
-        a.localeCompare(b, "sv"),
-      ),
       locations: Array.from(locations).sort((a, b) =>
         a.localeCompare(b, "sv", { sensitivity: "base" }),
       ),
@@ -153,14 +133,6 @@ export default function useSchedulerFilters(events) {
         !filters.teacher || consultantName === filters.teacher;
       const courseMatch = !filters.course || courseName === filters.course;
 
-      const availabilityValue = normalizeAvailability(
-        eventItem?.availability ||
-          eventItem?.context?.availability ||
-          eventItem?.locationType,
-      );
-      const availabilityMatch =
-        !filters.availability || availabilityValue === filters.availability;
-
       const normalizedLocationValue = normalizeCityKey(locationValue);
       const normalizedSelectedLocation = normalizeCityKey(filters.location);
       const locationMatch =
@@ -179,7 +151,6 @@ export default function useSchedulerFilters(events) {
       return (
         teacherMatch &&
         courseMatch &&
-        availabilityMatch &&
         locationMatch &&
         periodMatch &&
         searchMatch
