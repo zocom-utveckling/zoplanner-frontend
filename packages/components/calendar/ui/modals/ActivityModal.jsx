@@ -4,17 +4,36 @@ export default function ActivityModal({
   formData,
   onChange,
   onSubmit,
+  mode = "create",
+  onStartEdit,
+  onDelete,
 }) {
   if (!isOpen) return null;
 
+  const isViewMode = mode === "view";
+  const submitLabel = mode === "edit" ? "Spara" : "Lägg till";
+  const title = mode === "create" ? "Lägg till aktivitet" : "Aktivitet";
+
+  function handleOverlayClick(event) {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  }
+
+  function handleStartEditClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    onStartEdit?.();
+  }
+
   return (
-    <div className="scheduler-modal-overlay" onClick={onClose}>
+    <div className="scheduler-modal-overlay" onClick={handleOverlayClick}>
       <div
         className="scheduler-modal-content"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="scheduler-modal-header">
-          <h2>Lägg till aktivitet</h2>
+          <h2>{title}</h2>
           <button className="scheduler-close-btn" onClick={onClose}>
             ×
           </button>
@@ -29,6 +48,7 @@ export default function ActivityModal({
               name="title"
               value={formData.title}
               onChange={onChange}
+              disabled={isViewMode}
               required
               placeholder="T.ex. Möte med kursledare"
             />
@@ -41,6 +61,7 @@ export default function ActivityModal({
               name="type"
               value={formData.type}
               onChange={onChange}
+              disabled={isViewMode}
               required
             >
               <option value="meeting">Möte</option>
@@ -59,6 +80,7 @@ export default function ActivityModal({
               name="date"
               value={formData.date}
               onChange={onChange}
+              disabled={isViewMode}
               required
             />
           </div>
@@ -72,6 +94,7 @@ export default function ActivityModal({
                 name="startTime"
                 value={formData.startTime}
                 onChange={onChange}
+                disabled={isViewMode}
                 required
               />
             </div>
@@ -84,6 +107,7 @@ export default function ActivityModal({
                 name="endTime"
                 value={formData.endTime}
                 onChange={onChange}
+                disabled={isViewMode}
                 required
               />
             </div>
@@ -96,6 +120,7 @@ export default function ActivityModal({
               name="description"
               value={formData.description}
               onChange={onChange}
+              disabled={isViewMode}
               rows="4"
               placeholder="Lägg till eventuella anteckningar..."
             />
@@ -109,9 +134,28 @@ export default function ActivityModal({
             >
               Avbryt
             </button>
-            <button type="submit" className="scheduler-btn-submit">
-              Lägg till
-            </button>
+            {mode !== "create" ? (
+              <button
+                type="button"
+                className="scheduler-btn-cancel"
+                onClick={onDelete}
+              >
+                Ta bort
+              </button>
+            ) : null}
+            {isViewMode ? (
+              <button
+                type="button"
+                className="scheduler-btn-submit"
+                onClick={handleStartEditClick}
+              >
+                Redigera
+              </button>
+            ) : (
+              <button type="submit" className="scheduler-btn-submit">
+                {submitLabel}
+              </button>
+            )}
           </div>
         </form>
       </div>

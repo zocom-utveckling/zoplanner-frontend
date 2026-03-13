@@ -10,7 +10,11 @@ import useSchedulerFilters from "../hooks/useSchedulerFilters";
 import { useMemo } from "react";
 import "./index.css";
 
-export default function Scheduler({ user, monthOnly = false, allSchedules = false }) {
+export default function Scheduler({
+  user,
+  monthOnly = false,
+  allSchedules = false,
+}) {
   const {
     view,
     setView,
@@ -26,9 +30,10 @@ export default function Scheduler({ user, monthOnly = false, allSchedules = fals
     initialView: monthOnly ? "month" : "week",
     lockedView: monthOnly ? "month" : null,
   });
-  const { events, loading, addEvent, removeEvent } = useSchedulerEvents(user, {
-    includeAllConsultants: allSchedules,
-  });
+  const { events, loading, addEvent, updateEvent, removeEvent } =
+    useSchedulerEvents(user, {
+      includeAllConsultants: allSchedules,
+    });
   const { filters, filterOptions, filteredEvents, handleFilterChange } =
     useSchedulerFilters(events);
   const availableViews = useMemo(
@@ -36,22 +41,42 @@ export default function Scheduler({ user, monthOnly = false, allSchedules = fals
     [monthOnly],
   );
   const showFilters = monthOnly || allSchedules;
-  const {
-    selectedEvent,
-    handleOpenEventModal,
-    handleCloseEventModal,
-  } = useEventDetailsModal();
+  const { selectedEvent, handleOpenEventModal, handleCloseEventModal } =
+    useEventDetailsModal();
   const {
     isActivityModalOpen,
     activityFormData,
+    activityModalMode,
     handleOpenActivityModal,
+    handleOpenActivityModalForEvent,
     handleCloseActivityModal,
+    handleStartEditingActivity,
+    handleDeleteActivity,
     handleActivityChange,
     handleActivitySubmit,
   } = useActivityForm({
     onDateSelected: setFocusDate,
     onCreateEvent: addEvent,
+    onDeleteEvent: removeEvent,
+    onUpdateEvent: updateEvent,
   });
+
+  function isAddButtonActivity(eventItem) {
+    return (
+      eventItem?.source === "local" &&
+      typeof eventItem?.id === "string" &&
+      eventItem.id.startsWith("local-")
+    );
+  }
+
+  function handleEventClick(eventItem) {
+    if (isAddButtonActivity(eventItem)) {
+      handleOpenActivityModalForEvent(eventItem);
+      return;
+    }
+
+    handleOpenEventModal(eventItem);
+  }
 
   function handleDeleteEvent(eventToDelete) {
     if (!eventToDelete?.id) return;
@@ -88,7 +113,7 @@ export default function Scheduler({ user, monthOnly = false, allSchedules = fals
         loading={loading}
         monthOnly={monthOnly}
         allSchedules={allSchedules}
-        onEventClick={handleOpenEventModal}
+        onEventClick={handleEventClick}
         onDayClick={handleOpenActivityModal}
       />
 
@@ -96,6 +121,9 @@ export default function Scheduler({ user, monthOnly = false, allSchedules = fals
         isOpen={isActivityModalOpen}
         onClose={handleCloseActivityModal}
         formData={activityFormData}
+        mode={activityModalMode}
+        onStartEdit={handleStartEditingActivity}
+        onDelete={handleDeleteActivity}
         onChange={handleActivityChange}
         onSubmit={handleActivitySubmit}
       />

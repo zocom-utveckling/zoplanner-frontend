@@ -45,10 +45,29 @@ export default function useSchedulerEvents(user, options = {}) {
 
   function updateEvent(updatedEvent) {
     if (!updatedEvent?.id) return;
+
+    let eventToPersist = updatedEvent;
+    const isPotentialLocalEvent =
+      typeof updatedEvent.id === "string" &&
+      (updatedEvent.id.startsWith("local-") ||
+        updatedEvent.id.startsWith("manual-"));
+    const shouldPersistLocally =
+      user?.id && (updatedEvent.source === "local" || isPotentialLocalEvent);
+
+    if (shouldPersistLocally) {
+      const savedEvent = saveLocalActivity(user.id, {
+        ...updatedEvent,
+        source: "local",
+      });
+      if (savedEvent) {
+        eventToPersist = savedEvent;
+      }
+    }
+
     setEvents((prev) =>
       prev.map((eventItem) =>
         eventItem.id === updatedEvent.id
-          ? { ...eventItem, ...updatedEvent }
+          ? { ...eventItem, ...eventToPersist }
           : eventItem,
       ),
     );
