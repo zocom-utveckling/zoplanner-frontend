@@ -6,7 +6,15 @@ export function useCourseSetupForm (onSave) {
     const [startDate, setStartDate] = useState("");
     const [durationWeeks, setDurationWeeks] = useState("");
     const [totalHours, setTotalHours] = useState("");
-    const [sessionCount, setSessionCount] = useState("");
+    const [selectedWeekdays, setSelectedWeekdays] = useState([]);
+
+    function handleWeekdayToggle(day) {
+  setSelectedWeekdays((prev) =>
+    prev.includes(day)
+      ? prev.filter((weekday) => weekday !== day)
+      : [...prev, day]
+  );
+}
 
     function handleChange (event) {
         const {name, value} = event.target;
@@ -28,9 +36,6 @@ export function useCourseSetupForm (onSave) {
             setTotalHours(value);
             break;
 
-            case "sessionCount":
-            setSessionCount(value);
-            break;
 
             default:
                 break;
@@ -46,19 +51,21 @@ export function useCourseSetupForm (onSave) {
             startDate,
             durationWeeks,
             totalHours,
-            sessionCount,
+            selectedWeekdays,
+
         });
         
 
         console.log("Saved course draft:", courseDraft);
 
-        onSave?. (courseDraft);
+        onSave?.(courseDraft);
 
         setCourseName("");
         setStartDate("");
         setDurationWeeks("");
         setTotalHours("");
-        setSessionCount("");
+        setSelectedWeekdays([]);
+  
 
     }
 
@@ -67,9 +74,10 @@ export function useCourseSetupForm (onSave) {
         startDate,
         durationWeeks,
         totalHours,
-        sessionCount,
+        selectedWeekdays,
         handleChange,
         handleSubmit,
+        handleWeekdayToggle,
     };
 }
 

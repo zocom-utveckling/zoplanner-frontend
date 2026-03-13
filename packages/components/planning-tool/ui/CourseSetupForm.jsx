@@ -6,78 +6,117 @@ export default function CourseSetupForm({ onSave }) {
     startDate,
     durationWeeks,
     totalHours,
-    sessionCount,
+    selectedWeekdays,
+    handleWeekdayToggle,
     handleChange,
     handleSubmit,
   } = useCourseSetupForm(onSave);
 
   return (
     <section className="course-setup">
-      <h2>Registrera kurs</h2>
+      <h2>Kurs och preliminärt schema</h2>
 
       <form className="course-setup-form" onSubmit={handleSubmit}>
-        <div className="course-setup-field">
-          <label htmlFor="courseName">Kursnamn</label>
-          <input
-            id="courseName"
-            name="courseName"
-            type="text"
-            placeholder="Till exempel React grundkurs"
-            value={courseName}
-            onChange={handleChange}
-          ></input>
-        </div>
-        <div className="course-setup-field">
-          <label htmlFor="startDate">StartDatum</label>
-          <input
-            id="startDate"
-            name="startDate"
-            type="date"
-            value={startDate}
-            onChange={handleChange}
-          ></input>
+        <div className="course-setup-field-container">
+          <div className="course-setup-field">
+            <label htmlFor="courseName">Kursnamn</label>
+            <input
+              id="courseName"
+              name="courseName"
+              type="text"
+              placeholder="Till exempel React grundkurs"
+              value={courseName}
+              onChange={handleChange}
+            ></input>
+          </div>
+          <div className="course-setup-field">
+            <label htmlFor="startDate">StartDatum</label>
+            <input
+              id="startDate"
+              name="startDate"
+              type="date"
+              value={startDate}
+              onChange={handleChange}
+            ></input>
+          </div>
+
+          <div className="course-setup-field">
+            <label htmlFor="totalHours">Totalt antal timmar</label>
+            <input
+              id="totalHours"
+              name="totalHours"
+              type="number"
+              min="1"
+              placeholder="Till exempel 8"
+              value={totalHours}
+              onChange={handleChange}
+            ></input>
+          </div>
         </div>
 
-        <div className="course-setup-field">
-          <label htmlFor="durationWeeks">Antal veckor</label>
-          <input
-            id="durationWeeks"
-            name="durationWeeks"
-            type="number"
-            min="1"
-            placeholder="Till exempel 6"
-            value={durationWeeks}
-            onChange={handleChange}
-          ></input>
-        </div>
+        <div className="course-setup-field-container">
+          <div className="course-setup-field">
+            <label htmlFor="durationWeeks">Antal veckor</label>
+            <input
+              id="durationWeeks"
+              name="durationWeeks"
+              type="number"
+              min="1"
+              placeholder="Till exempel 6"
+              value={durationWeeks}
+              onChange={handleChange}
+            ></input>
+          </div>
+          <div className="course-setup-field">
+            <span>Veckodagar</span>
 
-        <div className="course-setup-field">
-          <label htmlFor="totalHours">Totalt antal timmar</label>
-          <input
-            id="totalHours"
-            name="totalHours"
-            type="number"
-            min="1"
-            placeholder="Till exempel 8"
-            value={totalHours}
-            onChange={handleChange}
-          ></input>
-        </div>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedWeekdays.includes("MONDAY")}
+                onChange={() => handleWeekdayToggle("MONDAY")}
+              />
+              Måndag
+            </label>
 
-        <div className="course-setup-field">
-          <label htmlFor="sessionCount">Antal tillfällen</label>
-          <input
-            id="sessionCount"
-            name="sessionCount"
-            type="number"
-            min="1"
-            placeholder="Till exmepel 8"
-            value={sessionCount}
-            onChange={handleChange}
-          ></input>
-        </div>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedWeekdays.includes("TUESDAY")}
+                onChange={() => handleWeekdayToggle("TUESDAY")}
+              />
+              Tisdag
+            </label>
 
-        <button type="submit">Spara kurs</button>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedWeekdays.includes("WEDNESDAY")}
+                onChange={() => handleWeekdayToggle("WEDNESDAY")}
+              />
+              Onsdag
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedWeekdays.includes("THURSDAY")}
+                onChange={() => handleWeekdayToggle("THURSDAY")}
+              />
+              Torsdag
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedWeekdays.includes("FRIDAY")}
+                onChange={() => handleWeekdayToggle("FRIDAY")}
+              />
+              Fredag
+            </label>
+          </div>
+          <button type="submit">Generera schemautkast</button>
+        </div>
       </form>
     </section>
   );

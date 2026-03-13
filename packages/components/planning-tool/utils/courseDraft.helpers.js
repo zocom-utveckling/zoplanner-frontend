@@ -1,27 +1,36 @@
+import { generateSessionsDraft } from "./generateSessionsDraft";
+
 export function buildCourseDraft({
 courseName,
 classId = null,
 startDate,
 durationWeeks,
 totalHours,
-sessionCount,
+selectedWeekdays,
 }){
 const parsedDurationWeeks = Number(durationWeeks);
 const parsedTotalHours = Number(totalHours);
-const parsedSessionCount = Number(sessionCount);
+const sessionCount = selectedWeekdays.length * parsedDurationWeeks;
 
 const hoursPerSession = 
- parsedSessionCount > 0 ? parsedTotalHours / parsedSessionCount : 0;
+ sessionCount > 0 ? parsedTotalHours / sessionCount : 0;
 
  return {
-    courseName: courseName.trim(),
+    courseName: courseName?.trim() || "",
     classId,
     startDate,
     durationWeeks: parsedDurationWeeks,
     totalHours: parsedTotalHours,
-    sessionCount: parsedSessionCount,
-    hoursPerSession,
-    sessionDraft: [],
-    sonsultantId: null,
- };
+    selectedWeekdays,
+   sessionCount,
+   hoursPerSession,
+   sessionsDraft: generateSessionsDraft({
+      courseName,
+      startDate,
+      durationWeeks,
+      totalHours,
+      selectedWeekdays,
+    }),
+    consultantId: null,
+}
 }
