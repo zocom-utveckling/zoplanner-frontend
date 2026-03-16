@@ -1,6 +1,6 @@
 import "./index.css";
-import PlannerMonthView from "../../../components/planning-tool/ui/PlannerMonthView";
-import { useMemo, useState } from "react";
+import { PlannerMonthView, CourseSetupForm } from "@zoplanner/planning-tool";
+import { useMemo, useState, useEffect } from "react";
 import {
   startOfMonth,
   endOfMonth,
@@ -10,37 +10,55 @@ import {
 } from "date-fns";
 
 function AdminPage() {
-  const [focusDate, setFocusDays] = useState(new Date());
+  const [focusDate, setFocusDate] = useState(new Date());
 
-  const monthGridDays = useMemo(() => {
+  const [courseDraft, setCourseDraft] = useState(null);
+
+  //Debugging purpose
+  useEffect(() => {
+    console.log("courseDraft updated:", courseDraft);
+  }, [courseDraft]);
+
+  const calendarGridDays = useMemo(() => {
+    if (courseDraft?.startDate && courseDraft?.durationWeeks) {
+      const [year, month, day] = courseDraft.startDate.split("-").map(Number);
+      const courseStartDate = new Date(year, month - 1, day);
+
+      const courseEndDate = new Date(courseStartDate);
+      courseEndDate.setDate(
+        courseStartDate.getDate() + courseDraft.durationWeeks * 7 - 1,
+      );
+
+      const start = startOfWeek(courseStartDate, { weekStartsOn: 1 });
+      const end = endOfWeek(courseEndDate, { weekStartsOn: 1 });
+
+      return eachDayOfInterval({ start, end });
+    }
+
     const start = startOfWeek(startOfMonth(focusDate), { weekStartsOn: 1 });
     const end = endOfWeek(endOfMonth(focusDate), { weekStartsOn: 1 });
-    return eachDayOfInterval({ start, end });
-  }, [focusDate]);
 
-  const events = [
-    {
-      id: "1",
-      title: "React grundkurs",
+    return eachDayOfInterval({ start, end });
+  }, [focusDate, courseDraft]);
+
+  //Debugging purpose
+  useEffect(() => {
+    console.log("calendarGridDays:", calendarGridDays);
+  }, [calendarGridDays]);
+
+  const events = useMemo(() => {
+    if (!courseDraft?.sessionsDraft) {
+      return [];
+    }
+
+    return courseDraft.sessionsDraft.map((session, index) => ({
+      id: String(index + 1),
+      title: session.title,
       type: "session",
-      start: new Date(2026, 2, 10),
-      end: new Date(2026, 2, 10),
-    },
-    {
-      id: "2",
-      title: "Frontend Workshop",
-      type: "session",
-      start: new Date(2026, 2, 12),
-      end: new Date(2026, 2, 12),
-    },
-    {
-      id: "3",
-      title: "Javascript pass",
-      type: "session",
-      start: new Date(2026, 2, 17),
-      end: new Date(2026, 2, 17),
-    },
-  ];
+      start: new Date(session.dateStart),
+      end: new Date(session.dateEnd),
+    }));
+  }, [courseDraft]);
 
   return (
     <>
@@ -51,36 +69,7 @@ function AdminPage() {
         <div>
           <div className="admin-grid">
             <section className="admin-card">
-              <h3>Kurser</h3>
-              <p>Idé/förslag under utformning:</p>
-              <p> Här kommer man kunna registrera, redigera och söka kurser </p>
-            </section>
-            <section className="admin-card">
-              <h3>Konsulter</h3>
-              <p>Idé/förslag under utformning:</p>
-              <p>
-                {" "}
-                Här kommer man kunna registrera, redigera och söka
-                konsulter{" "}
-              </p>
-            </section>
-            <section className="admin-card">
-              <h3>Kunder</h3>
-              <p>Idé/förslag under utformning:</p>
-              <p>
-                {" "}
-                Här kommer man kunna registrera, redigera, söka kunder och
-                beställningar{" "}
-              </p>
-            </section>
-            <section className="admin-card">
-              <h3>Planering</h3>
-              <p>Idé/förslag under utformning:</p>
-              <p>
-                {" "}
-                Här kommer det finnas verktyg för att lägga schema, ändra
-                enstaka lektioner, skapa uppdrag och tilldela{" "}
-              </p>
+              <CourseSetupForm onSave={setCourseDraft} />
             </section>
           </div>
           <div className="schemaplanerar-container">
@@ -88,7 +77,7 @@ function AdminPage() {
               <h1>Schemaplanerare</h1>
             </div>
             <PlannerMonthView
-              monthGridDays={monthGridDays}
+              monthGridDays={calendarGridDays}
               focusDate={focusDate}
               events={events}
               onDayClick={(day) => console.log("clicked day", day)}

@@ -1,4 +1,5 @@
 import "./index.css";
+import Holidays from "date-holidays";
 
 import {
   format,
@@ -19,7 +20,16 @@ export default function PlannerMonthView({
   onEventClick,
 }) {
   const weekdays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
+  const visibleMonths = Array.from(
+    new Set(
+      monthGridDays.map((day) =>
+        format(day, "MMMM").replace(/^./, (c) => c.toUpperCase()),
+      ),
+    ),
+  );
 
+  const visibleYear = format(monthGridDays[0], "yyyy");
+  const hd = new Holidays("SE");
   const weeks = [];
   for (let i = 0; i < monthGridDays.length; i += 7) {
     weeks.push(monthGridDays.slice(i, i + 7));
@@ -27,6 +37,14 @@ export default function PlannerMonthView({
 
   return (
     <div className="planner-month-wrap">
+      <div className="planner-month-period-header">
+        <div className="planner-month-period-spacer" />
+        <div className="planner-month-period-months">
+          {visibleMonths.join(" – ")}
+        </div>
+        <div className="planner-month-period-year">{visibleYear}</div>
+      </div>
+
       <div className="planner-month-weekdays">
         <div className="planner-month-weeknumber-header">V.</div>
         {weekdays.map((w) => (
@@ -44,9 +62,10 @@ export default function PlannerMonthView({
             <div key={week[0].toISOString()} className="planner-month-week-row">
               <div className="planner-month-weeknumber-cell"> {weekNumber}</div>
               {week.map((d) => {
-                const inMonth = isSameMonth(d, focusDate);
                 const dayOfWeek = getDay(d);
                 const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                const holiday = hd.isHoliday(d);
+                const isHoliday = Boolean(holiday);
 
                 const dayEvents = events
                   .filter((e) => {
@@ -64,11 +83,11 @@ export default function PlannerMonthView({
                     key={d.toISOString()}
                     className={[
                       "planner-month-cell",
-                      !inMonth ? "planner-month-cell--out-of-month" : "",
                       isSameDay(d, focusDate)
                         ? "planner-month-cell--focus-day"
                         : "",
                       isWeekend ? "planner-month-cell--weekend" : "",
+                      isHoliday ? "planner-month-cell--holiday" : "",
                     ]
                       .filter(Boolean)
                       .join(" ")}
@@ -77,16 +96,28 @@ export default function PlannerMonthView({
                     <div className="planner-month-cell-header">
                       {format(d, "d")}
                     </div>
+
+                    {holiday?.[0]?.name && (
+                      <div className="planner-month-holiday">
+                        {holiday[0].name}
+                      </div>
+                    )}
+
                     <div className="planner-month-events">
                       {dayEvents.map((e) => {
                         const isMultiDay = Boolean(
                           e.end && !isSameDay(e.start, e.end),
                         );
+                        const eventFallsOnHoliday = isHoliday;
+
                         const pillClass = [
                           "planner-month-event-pill",
                           isMultiDay
                             ? "planner-month-event-pill--start"
                             : "planner-month-event-pill--single",
+                          eventFallsOnHoliday
+                            ? "planner-month-event-pill--holiday"
+                            : "",
                         ].join(" ");
 
                         return (
