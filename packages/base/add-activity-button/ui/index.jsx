@@ -174,7 +174,11 @@ function AddActivityButton({ onSubmit }) {
                 >
                   Avbryt
                 </button>
-                <button type="submit" className="btn-submit" disabled={isSubmitting}>
+                <button
+                  type="submit"
+                  className="btn-submit"
+                  disabled={isSubmitting}
+                >
                   {isSubmitting ? "Sparar..." : "Lägg till"}
                 </button>
               </div>
