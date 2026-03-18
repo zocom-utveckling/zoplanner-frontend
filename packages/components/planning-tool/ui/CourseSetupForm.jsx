@@ -4,12 +4,15 @@ export default function CourseSetupForm({ onSave }) {
   const {
     courseName,
     startDate,
-    durationWeeks,
+    endDate,
     totalHours,
     selectedWeekdays,
     handleWeekdayToggle,
+    handleWeekdayTimeChange,
     handleChange,
     handleSubmit,
+    getStartTimeForDay,
+    isSelected,
   } = useCourseSetupForm(onSave);
 
   return (
@@ -30,6 +33,18 @@ export default function CourseSetupForm({ onSave }) {
             ></input>
           </div>
           <div className="course-setup-field">
+            <label htmlFor="totalHours">Totalt antal timmar</label>
+            <input
+              id="totalHours"
+              name="totalHours"
+              type="number"
+              min="1"
+              placeholder="Till exempel 6"
+              value={totalHours}
+              onChange={handleChange}
+            ></input>
+          </div>
+          <div className="course-setup-field">
             <label htmlFor="startDate">StartDatum</label>
             <input
               id="startDate"
@@ -41,14 +56,12 @@ export default function CourseSetupForm({ onSave }) {
           </div>
 
           <div className="course-setup-field">
-            <label htmlFor="totalHours">Totalt antal timmar</label>
+            <label htmlFor="endDate">Slutdatum</label>
             <input
-              id="totalHours"
-              name="totalHours"
-              type="number"
-              min="1"
-              placeholder="Till exempel 8"
-              value={totalHours}
+              id="endDate"
+              name="endDate"
+              type="date"
+              value={endDate}
               onChange={handleChange}
             ></input>
           </div>
@@ -56,64 +69,90 @@ export default function CourseSetupForm({ onSave }) {
 
         <div className="course-setup-field-container">
           <div className="course-setup-field">
-            <label htmlFor="durationWeeks">Antal veckor</label>
-            <input
-              id="durationWeeks"
-              name="durationWeeks"
-              type="number"
-              min="1"
-              placeholder="Till exempel 6"
-              value={durationWeeks}
-              onChange={handleChange}
-            ></input>
-          </div>
-          <div className="course-setup-field">
-            <span>Veckodagar</span>
+            <span>Dag och tid</span>
 
             <label>
               <input
                 type="checkbox"
-                checked={selectedWeekdays.includes("MONDAY")}
-                onChange={() => handleWeekdayToggle("MONDAY")}
+                checked={isSelected("MONDAY")}
+                onChange={(event) => handleWeekdayToggle("MONDAY")}
               />
               Måndag
             </label>
 
+            {isSelected("MONDAY") && (
+              <input
+                type="time"
+                value={getStartTimeForDay("MONDAY")}
+                onChange={(event) => handleWeekdayTimeChange("MONDAY", event)}
+              />
+            )}
+
             <label>
               <input
                 type="checkbox"
-                checked={selectedWeekdays.includes("TUESDAY")}
+                checked={isSelected("TUESDAY")}
                 onChange={() => handleWeekdayToggle("TUESDAY")}
               />
               Tisdag
             </label>
+            {isSelected("TUESDAY") && (
+              <input
+                type="time"
+                value={getStartTimeForDay("TUESDAY")}
+                onChange={(event) => handleWeekdayTimeChange("TUESDAY", event)}
+              />
+            )}
 
             <label>
               <input
                 type="checkbox"
-                checked={selectedWeekdays.includes("WEDNESDAY")}
+                checked={isSelected("WEDNESDAY")}
                 onChange={() => handleWeekdayToggle("WEDNESDAY")}
               />
               Onsdag
             </label>
+            {isSelected("WEDNESDAY") && (
+              <input
+                type="time"
+                value={getStartTimeForDay("WEDNESDAY")}
+                onChange={(event) =>
+                  handleWeekdayTimeChange("WEDNESDAY", event)
+                }
+              />
+            )}
 
             <label>
               <input
                 type="checkbox"
-                checked={selectedWeekdays.includes("THURSDAY")}
+                checked={isSelected("THURSDAY")}
                 onChange={() => handleWeekdayToggle("THURSDAY")}
               />
               Torsdag
             </label>
+            {isSelected("THURSDAY") && (
+              <input
+                type="time"
+                value={getStartTimeForDay("THURSDAY")}
+                onChange={(event) => handleWeekdayTimeChange("THURSDAY", event)}
+              />
+            )}
 
             <label>
               <input
                 type="checkbox"
-                checked={selectedWeekdays.includes("FRIDAY")}
+                checked={isSelected("FRIDAY")}
                 onChange={() => handleWeekdayToggle("FRIDAY")}
               />
               Fredag
             </label>
+            {isSelected("FRIDAY") && (
+              <input
+                type="time"
+                value={getStartTimeForDay("FRIDAY")}
+                onChange={(event) => handleWeekdayTimeChange("FRIDAY", event)}
+              />
+            )}
           </div>
           <button type="submit">Generera schemautkast</button>
         </div>

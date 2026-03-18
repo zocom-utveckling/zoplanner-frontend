@@ -129,7 +129,12 @@ export default function PlannerMonthView({
                               onEventClick?.(e);
                             }}
                           >
-                            {e.title.split("\n")[0]}
+                            <span className="planner-month-event-time">
+                              {format(e.start, "HH:mm")}
+                            </span>{" "}
+                            <span className="planner-month-event-title">
+                              {e.title.split("\n")[0]}
+                            </span>
                           </div>
                         );
                       })}
