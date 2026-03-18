@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import "./index.css";
+import "react-icons/fa"
+import { FaPlus } from "react-icons/fa";
+import { SendAssignmentNotification } from "../../../components/notis-knapp";
 function CoursesPage() {
   const [assignments, setAssignments] = useState([]);
   const consultantId = localStorage.getItem("consultantId");
+  const [show,setShow]=useState(false)
   const maxShownSessions = 2;
   useEffect(() => {
     async function getAssignments() {
@@ -76,6 +80,8 @@ function CoursesPage() {
           )}
         </div>
       </div>
+      <div onClick={()=> setShow(!show)}><FaPlus/></div>
+      {show && <SendAssignmentNotification/> }
     </>
   );
 }
