@@ -165,10 +165,44 @@ function Sidebar({ user }) {
     };
   }, [user?.id, user?.consultantId, user?.consultant?.id]);
 
-  const handleSubmitActivity = (activityData) => {
-    const localEvent = createLocalActivityFromForm(user, activityData);
-    if (!localEvent) return;
-    saveLocalActivity(user.id, localEvent);
+  const handleSubmitActivity = async (activityData) => {
+    if (!user?.id) return false;
+
+    const userId = user?.id || null;
+
+    const payload = {
+      title: activityData?.title || "Aktivitet",
+      type: activityData?.type || "meeting",
+      date: activityData?.date,
+      startTime: activityData?.startTime,
+      endTime: activityData?.endTime,
+      description: activityData?.description || "",
+      ...(userId ? { userId } : {}),
+    };
+
+    try {
+      const response = await fetch(`http://localhost:5027/api/Activities`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const localEvent = createLocalActivityFromForm(user, activityData);
+      if (!localEvent) {
+        return false;
+      }
+
+      saveLocalActivity(user.id, localEvent);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const listedUsers = user
