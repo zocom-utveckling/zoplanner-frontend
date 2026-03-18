@@ -1,5 +1,11 @@
 import "./index.css";
-import { PlannerMonthView, CourseSetupForm } from "@zoplanner/planning-tool";
+import {
+  PlannerMonthView,
+  CourseSetupForm,
+  PlanningDraftList,
+  loadPlanningDrafts,
+  upsertPlanningDraft,
+} from "@zoplanner/planning-tool";
 import { useMemo, useState, useEffect } from "react";
 import {
   startOfMonth,
@@ -14,20 +20,29 @@ function AdminPage() {
 
   const [courseDraft, setCourseDraft] = useState(null);
 
-  //Debugging purpose
+  const [planningDrafts, setPlanningDrafts] = useState([]);
+
   useEffect(() => {
-    console.log("courseDraft updated:", courseDraft);
+    const drafts = loadPlanningDrafts();
+    setPlanningDrafts(drafts);
+  }, []);
+
+  useEffect(() => {
+    if (!courseDraft) return;
+    upsertPlanningDraft(courseDraft);
+    setPlanningDrafts(loadPlanningDrafts());
   }, [courseDraft]);
-
   const calendarGridDays = useMemo(() => {
-    if (courseDraft?.startDate && courseDraft?.durationWeeks) {
-      const [year, month, day] = courseDraft.startDate.split("-").map(Number);
-      const courseStartDate = new Date(year, month - 1, day);
+    if (courseDraft?.startDate && courseDraft?.endDate) {
+      const [startYear, startMonth, startDay] = courseDraft.startDate
+        .split("-")
+        .map(Number);
+      const [endYear, endMonth, endDay] = courseDraft.endDate
+        .split("-")
+        .map(Number);
 
-      const courseEndDate = new Date(courseStartDate);
-      courseEndDate.setDate(
-        courseStartDate.getDate() + courseDraft.durationWeeks * 7 - 1,
-      );
+      const courseStartDate = new Date(startYear, startMonth - 1, startDay);
+      const courseEndDate = new Date(endYear, endMonth - 1, endDay);
 
       const start = startOfWeek(courseStartDate, { weekStartsOn: 1 });
       const end = endOfWeek(courseEndDate, { weekStartsOn: 1 });
@@ -41,23 +56,23 @@ function AdminPage() {
     return eachDayOfInterval({ start, end });
   }, [focusDate, courseDraft]);
 
-  //Debugging purpose
-  useEffect(() => {
-    console.log("calendarGridDays:", calendarGridDays);
-  }, [calendarGridDays]);
-
   const events = useMemo(() => {
     if (!courseDraft?.sessionsDraft) {
       return [];
     }
 
-    return courseDraft.sessionsDraft.map((session, index) => ({
-      id: String(index + 1),
-      title: session.title,
-      type: "session",
-      start: new Date(session.dateStart),
-      end: new Date(session.dateEnd),
-    }));
+    return courseDraft.sessionsDraft.map((session, index) => {
+      const parsedStart = new Date(session.timeStart);
+      const parsedEnd = new Date(session.timeEnd);
+
+      return {
+        id: String(index + 1),
+        title: session.title,
+        type: "session",
+        start: parsedStart,
+        end: parsedEnd,
+      };
+    });
   }, [courseDraft]);
 
   return (
@@ -70,6 +85,12 @@ function AdminPage() {
           <div className="admin-grid">
             <section className="admin-card">
               <CourseSetupForm onSave={setCourseDraft} />
+            </section>
+            <section className="admin-card">
+              <PlanningDraftList
+                drafts={planningDrafts}
+                onSelect={(draft) => setCourseDraft(draft)}
+              />
             </section>
           </div>
           <div className="schemaplanerar-container">
