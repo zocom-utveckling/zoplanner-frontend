@@ -5,6 +5,7 @@ import {
   PlanningDraftList,
   loadPlanningDrafts,
   upsertPlanningDraft,
+  removePlanningDraft,
 } from "@zoplanner/planning-tool";
 import { useMemo, useState, useEffect } from "react";
 import {
@@ -90,6 +91,7 @@ function AdminPage() {
               <PlanningDraftList
                 drafts={planningDrafts}
                 onSelect={(draft) => setCourseDraft(draft)}
+                removePlanningDraft={removePlanningDraft}
               />
             </section>
           </div>
