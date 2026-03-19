@@ -2,38 +2,43 @@
 export function generateSessionsDraft({
     courseName,
     startDate,
-    durationWeeks,
+    endDate,
     totalHours,
     selectedWeekdays,
 }){
-const parsedDurationWeeks = Number(durationWeeks);
 const parsedTotalHours = Number(totalHours);
 
 
 if (
     !startDate || 
-    Number.isNaN(parsedDurationWeeks) ||
+    !endDate ||
     Number.isNaN(parsedTotalHours) ||
-    parsedDurationWeeks < 1 ||
     parsedTotalHours < 1 ||
     !selectedWeekdays?.length
-)
-{
+){
     return [];
 }
 
-const sessionCount = selectedWeekdays.length * parsedDurationWeeks;
+ const hasMissingTime = selectedWeekdays.some((item) => !item.startTime);
 
-  if (sessionCount < 1) {
+  if (hasMissingTime) {
     return [];
   }
 
-const sessions = [];
-const [year, month, day] = startDate.split("-").map(Number);
-const baseDate = new Date(year, month - 1, day);
-const hoursPerSession = parsedTotalHours / sessionCount;
+const [startYear, startMonth, startDay] = startDate.split("-").map(Number);
+const [endYear, endMonth, endDay] = endDate.split("-").map(Number);
 
-const totalDays = parsedDurationWeeks * 7;
+const baseDate = new Date(startYear, startMonth - 1, startDay);
+const finalDate = new Date(endYear, endMonth - 1, endDay);
+
+if (finalDate < baseDate) {
+  return [];
+}
+
+const totalDays = 
+Math.floor((finalDate - baseDate) / (1000 * 60 * 60 * 24)) + 1;
+
+const matchingDates = [];
 
     for (let dayOffset = 0; dayOffset < totalDays; dayOffset += 1) {
         const sessionDate = new Date(baseDate);
@@ -41,32 +46,53 @@ const totalDays = parsedDurationWeeks * 7;
         
          const weekdayName = getWeekdayName(sessionDate);
 
-    if (!selectedWeekdays.includes(weekdayName)) {
-      continue;
+         const weekdayConfig = selectedWeekdays.find(
+          (item) => item.day === weekdayName
+         );
+
+         if (weekdayConfig) {
+          matchingDates.push({
+            date: new Date(sessionDate),
+            startTime: weekdayConfig.startTime,
+          });
+         }
     }
+ const sessionCount = matchingDates.length;
+if (sessionCount < 1) {
+  return [];
+}
+  
 
-        const timeStart = new Date(sessionDate);
-        timeStart.setHours(9, 0, 0, 0);
+const hoursPerSession = parsedTotalHours / sessionCount;
 
-        const timeEnd = new Date(timeStart);
-        timeEnd.setMinutes(timeEnd.getMinutes() + hoursPerSession * 60);
-        
-        const dateString = formatDate(sessionDate);
-        const startDateTime = formatDateTime(timeStart);
-        const endDateTime = formatDateTime(timeEnd);
 
-        sessions.push({
-            title: buildSessionTitle(courseName, sessions.length),
+return matchingDates.map(({ date, startTime }, index) => {
+  const [hours, minutes] = startTime.split(":").map(Number);
+
+ const timeStart = new Date(date);
+        timeStart.setHours(hours, minutes, 0, 0);
+
+ const timeEnd = new Date(timeStart);
+        timeEnd.setMinutes(timeEnd.getMinutes() + hoursPerSession * 60); 
+
+ const dateString = formatDate(date);
+ const startDateTime = formatDateTime(timeStart);
+ const endDateTime = formatDateTime(timeEnd);
+
+ return {
+            title: buildSessionTitle(courseName, index),
             dateStart: dateString,
             dateEnd: dateString,
             timeStart: startDateTime,
             timeEnd: endDateTime,
             hours: roundToTwoDecimals(hoursPerSession),
             location: "ONSITE",
+        };
         });
-    }
-    return sessions;
-}
+        
+      }
+  
+
 
 function buildSessionTitle(courseName, index) {
   const safeCourseName = courseName?.trim() || "Kurs";

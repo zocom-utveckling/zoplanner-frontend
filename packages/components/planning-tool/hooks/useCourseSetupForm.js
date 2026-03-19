@@ -4,18 +4,39 @@ import { buildCourseDraft } from "../utils/courseDraft.helpers";
 export function useCourseSetupForm (onSave) {
     const [courseName, setCourseName] = useState("");
     const [startDate, setStartDate] = useState("");
-    const [durationWeeks, setDurationWeeks] = useState("");
+    const [endDate, setEndDate] = useState("");
     const [totalHours, setTotalHours] = useState("");
     const [selectedWeekdays, setSelectedWeekdays] = useState([]);
 
     function handleWeekdayToggle(day) {
+  setSelectedWeekdays((prev) => {
+    const exists = prev.some((item) => item.day === day);
+
+  if (exists) {
+    return prev.filter((item) => item.day !== day);
+  }
+   return [...prev, { day, startTime: ""}];
+
+    });
+}
+
+function handleWeekdayTimeChange(day, event) {
+    const value = event.target.value;
+
   setSelectedWeekdays((prev) =>
-    prev.includes(day)
-      ? prev.filter((weekday) => weekday !== day)
-      : [...prev, day]
+    prev.map((item) =>
+      item.day === day ? { ...item, startTime: value } : item
+    )
   );
 }
 
+function getStartTimeForDay(day) {
+    return selectedWeekdays.find((item) => item.day === day)?.startTime || "";
+}
+
+function isSelected(day) {
+    return selectedWeekdays.some((item) => item.day === day);
+}
     function handleChange (event) {
         const {name, value} = event.target;
 
@@ -28,8 +49,8 @@ export function useCourseSetupForm (onSave) {
             setStartDate(value);
             break;
 
-            case "durationWeeks":
-            setDurationWeeks(value);
+            case "endDate":
+            setEndDate(value);
             break;
 
             case "totalHours":
@@ -45,14 +66,18 @@ export function useCourseSetupForm (onSave) {
     function handleSubmit (event) {
         event.preventDefault();
 
+        const hasMissingTime = selectedWeekdays.some((item) => !item.startTime);
+
+        if (hasMissingTime) {
+            return;
+        }
+
         const courseDraft = buildCourseDraft({
-            
             courseName,
             startDate,
-            durationWeeks,
+            endDate,
             totalHours,
             selectedWeekdays,
-
         });
         
 
@@ -62,7 +87,7 @@ export function useCourseSetupForm (onSave) {
 
         setCourseName("");
         setStartDate("");
-        setDurationWeeks("");
+        setEndDate("");
         setTotalHours("");
         setSelectedWeekdays([]);
   
@@ -72,12 +97,15 @@ export function useCourseSetupForm (onSave) {
     return {
         courseName,
         startDate,
-        durationWeeks,
+        endDate,
         totalHours,
         selectedWeekdays,
         handleChange,
         handleSubmit,
         handleWeekdayToggle,
+        handleWeekdayTimeChange,
+        getStartTimeForDay,
+        isSelected,
     };
 }
 
