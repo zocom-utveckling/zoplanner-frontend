@@ -168,6 +168,24 @@ function Sidebar({ user }) {
   const handleSubmitActivity = async (activityData) => {
     if (!user?.id) return false;
 
+    // Temporär fallback: vi sparar alltid aktiviteten lokalt först så att
+    // användaren får ett fungerande flöde medan backend för Activities ännu
+    // inte stödjer hela create-flödet med userId hela vägen till databasen.
+    const localEvent = createLocalActivityFromForm(user, activityData);
+    if (!localEvent) {
+      return false;
+    }
+
+    // `syncStatus: "local-only"` markerar att eventet just nu bara finns i
+    // localStorage. När backend är klar kan detta användas för riktig synk.
+    saveLocalActivity(user.id, {
+      ...localEvent,
+      context: {
+        ...(localEvent.context || {}),
+        syncStatus: "local-only",
+      },
+    });
+
     const userId = user?.id || null;
 
     const payload = {
@@ -181,6 +199,8 @@ function Sidebar({ user }) {
     };
 
     try {
+      // Vi försöker fortfarande spara till backend för att vara redo när deras
+      // create-endpoint fungerar, men UI:t ska inte blockeras av 500-svar.
       const response = await fetch(`http://localhost:5027/api/Activities`, {
         method: "POST",
         headers: {
@@ -190,18 +210,14 @@ function Sidebar({ user }) {
       });
 
       if (!response.ok) {
-        return false;
+        // Returnerar ändå `true` eftersom användaren redan fått en lokal save.
+        return true;
       }
 
-      const localEvent = createLocalActivityFromForm(user, activityData);
-      if (!localEvent) {
-        return false;
-      }
-
-      saveLocalActivity(user.id, localEvent);
       return true;
     } catch {
-      return false;
+      // Nätverks- eller backendfel ska inte stoppa det lokala fallback-flödet.
+      return true;
     }
   };
 

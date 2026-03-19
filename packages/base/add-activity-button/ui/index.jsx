@@ -41,6 +41,9 @@ function AddActivityButton({ onSubmit }) {
 
     try {
       if (onSubmit) {
+        // `onSubmit` kan just nu spara lokalt även om backend misslyckas.
+        // Därför används `false` bara när själva frontend-flödet inte kunde
+        // skapa/spara aktiviteten överhuvudtaget.
         const wasSaved = await onSubmit(formData);
         if (wasSaved === false) {
           setSubmitError("Kunde inte spara aktivitet i databasen.");
@@ -48,6 +51,8 @@ function AddActivityButton({ onSubmit }) {
         }
       }
 
+      // Vid lyckad submit återställer vi formuläret och stänger modalen,
+      // oavsett om sparningen gick till backend eller till lokal fallback.
       setFormData({
         title: "",
         description: "",
