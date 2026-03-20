@@ -1,3 +1,5 @@
+import { appRoutesConfig } from "@zoplanner/app-routes";
+
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
 import {
@@ -78,7 +80,7 @@ function Navbar({ user, activePage, setActivePage }) {
               <button
                 onClick={() => {
                   setActivePage("adminpanel");
-                  navigate(`/admin-page/${user.id}`);
+                  navigate(appRoutesConfig.admin.replace(":id", user.id));
                 }}
                 className={activePage == "adminpanel" ? "active" : ""}
               >
