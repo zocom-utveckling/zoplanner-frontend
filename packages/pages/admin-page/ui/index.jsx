@@ -7,8 +7,8 @@ import {
   upsertPlanningDraft,
 } from "@zoplanner/planning-tool";
 import { Navbar } from "@zoplanner/navbar";
-import { useUserById, useAccess } from "@zoplanner/app-hooks";
-import { useMemo, useState, useEffect } from "react";
+import { useUserById, useAccess } from "../../../app-hooks";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import {
   startOfMonth,
@@ -99,9 +99,6 @@ function AdminPage() {
         setActivePage={setActivePage}
       />
       <div className="admin-container">
-        <div className="admin-header">
-          <h1>Adminpanelen</h1>
-        </div>
         <div>
           <div className="admin-grid">
             <section className="admin-card">
