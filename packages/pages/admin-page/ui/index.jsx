@@ -6,7 +6,10 @@ import {
   loadPlanningDrafts,
   upsertPlanningDraft,
 } from "@zoplanner/planning-tool";
+import { Navbar } from "@zoplanner/navbar";
+import { useUserById, useAccess } from "@zoplanner/app-hooks";
 import { useMemo, useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   startOfMonth,
   endOfMonth,
@@ -16,6 +19,11 @@ import {
 } from "date-fns";
 
 function AdminPage() {
+  const { id } = useParams();
+  const { user, loading } = useUserById(id);
+  const { canOpenAdminPage } = useAccess(user);
+  console.log("AdminPage user:", user);
+  const [activePage, setActivePage] = useState("adminpanel");
   const [focusDate, setFocusDate] = useState(new Date());
 
   const [courseDraft, setCourseDraft] = useState(null);
@@ -75,8 +83,21 @@ function AdminPage() {
     });
   }, [courseDraft]);
 
+  if (loading) {
+    return <div>Laddar användare...</div>;
+  }
+
+  if (!canOpenAdminPage) {
+    return <div>Du har inte behörighet att visa adminpanelen.</div>;
+  }
+
   return (
     <>
+      <Navbar
+        user={user}
+        activePage={activePage}
+        setActivePage={setActivePage}
+      />
       <div className="admin-container">
         <div className="admin-header">
           <h1>Adminpanelen</h1>

@@ -77,7 +77,7 @@ function Navbar({ user, activePage, setActivePage }) {
             {isManager && (
               <button
                 onClick={() => {
-                  setActivePage("admin");
+                  setActivePage("adminpanel");
                   navigate(`/admin-page/${user.id}`);
                 }}
                 className={activePage == "adminpanel" ? "active" : ""}
