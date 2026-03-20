@@ -80,8 +80,8 @@ function CoursesPage() {
           )}
         </div>
       </div>
-      <div onClick={()=> setShow(!show)}><FaPlus/></div>
-      {show && <SendAssignmentNotification/> }
+     
+       <SendAssignmentNotification/> 
     </>
   );
 }

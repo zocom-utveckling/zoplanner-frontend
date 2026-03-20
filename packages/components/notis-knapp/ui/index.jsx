@@ -1,49 +1,22 @@
 import { useEffect, useState } from "react";
 import "./index.css"
 import { AddSession } from "../add-session/ui";
+import { data } from "react-router-dom";
 function SendAssignmentNotification() {
-const [managerId] = useState(() => localStorage.getItem("managerId"))
-const [manager,setManager]=useState(null)
-const [consultants,setConsultants]=useState([])
-const [selectedConsultant,setSelectedConsultant]=useState("")
-const [courses,setCourses]=useState([])
-const [selectedCourse,setSelectedCourse]=useState("")
-const [dateStart,setDateStart]=useState("")
-const [dateEnd,setDateEnd]=useState("")
-const [users,setUsers]=useState([])
-const [done,setDone]=useState(false)
-const [assignmentId,setAssignmentId]=useState(null)
-    const allConsultants = consultants.filter(consultant => consultant.managerId === Number(managerId))
-  console.log(allConsultants)
-
-/*useEffect(()=>{
-    async function getManager(){
-        const res = await fetch(`http://localhost:5027/api/Manager/${managerId}`)
-        const data = await res.json()
-        if(res.ok){
-            setManager(data)
-            console.log(data)
+    async function sendAssignmentNotification() {
+        const email= prompt("Ange mottagarens e-postadress:");
+        if (!email) {
+            alert("E-postadress krävs");
+            return;
         }
-        else{
-            console.log(data.message)
-        }
-    }
-    getManager()
-},[managerId])*/
-async function sendNotification(assignmentId) {
-  const consultant = consultants.find(c => c.id === Number(selectedConsultant))
-  const user = users.find(u => u.id === consultant.userId)
-
   const notification = {
-    eventType: "NEW_ASSIGNMENT",
-    eventId: crypto.randomUUID().toString(),
-    timestamp: new Date().toISOString(),
-    teacherId: consultant.id.toString(),
-    teacherEmail: user.email,
-    assignmentId: assignmentId.toString(),
+    
+    teacherId: "1",
+    teacherEmail: email,
+    assignmentId: "1",
     assignmentDescription: "New assignment created",
-    teacherName: user.name,
-    assignmentDueDate: new Date(dateEnd).toISOString()
+    teacherName: "Lärare-1",
+    assignmentDueDate: "2026-12-31T23:59:59.000Z"
   }
 
   const res = await fetch("http://localhost:5027/api/Notification/send-new-assignment", {
@@ -51,156 +24,113 @@ async function sendNotification(assignmentId) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(notification)
   })
-
+const data = await res.json()
   if (!res.ok) {
-    const data = await res.json()
     console.log("notification error:", data.message)
   }
-  else{
-    alert("Notis skickad")
-  }
+  
+    alert(data.message)
+  
 }
-
-const handleSubmit = async (e)=>{
-e.preventDefault()
-const assignment = { consultantId:Number(selectedConsultant),dateStart,dateEnd,courseId:Number(selectedCourse)}
-const res = await fetch(`http://localhost:5027/api/Assignment`,{
-    method:"POST",
-                headers:{"Content-Type":"application/json"},
-                body:JSON.stringify(assignment)
-})
+async function sendDirektMessage() {
+    const email= prompt("Ange mottagarens e-postadress:");
+    const message = prompt("Ange meddelandetext:");
+    if (!email || !message) {
+        alert("E-postadress och meddelande krävs");
+        return;
+    }
+    const notification = {
+       RecipientEmail: email,
+        message,
+        subject: "Direkt meddelande från Zoplanner"
+    }
+    const res = await fetch("http://localhost:5027/api/Notification/send-direct-message", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(notification)
+  })
 const data = await res.json()
-if(res.ok){
-    alert("uppdrag skaoades")
-    setDone(true)
-    setAssignmentId(data.id)
-    await sendNotification(data.id)
+  if (!res.ok) {
+    console.log("notification error:", data.message)
+  }
+  
+    alert(data.message)
 }
-else{
-    console.log(data.message)
-}
-
-}
-useEffect(()=>{
-async function getConsultants(){
-    const res = await fetch(`http://localhost:5027/api/Consultant`)
-    const data = await res.json()
-    if(res.ok){
-    
-        setConsultants(data)
-        
+async function sendScheduleUpdated() {
+    const email= prompt("Ange mottagarens e-postadress:");
+    if (!email) {
+        alert("E-postadress krävs");
+        return;
     }
-    else{
-        console.log("backend error")
-    }
-}
-getConsultants()
-},[managerId])
-
-
-useEffect(()=>{
-    
-    async function getCourses(){
-        const res = await fetch(`http://localhost:5027/api/Course`)
-        const data = await res.json()
-        if(res.ok){
-            setCourses(data)
-        }
-        else{
-            console.log(data.message)
-        }
+    const notification = {
+       
+  
+  teacherId: "1",
+  teacherEmail: email,
+  subject: "Schedule update – week 12",
+  message: "Your schedule has been updated.",
+  
 
     }
-    getCourses()
-},[])
-useEffect(()=>{
-    
-    async function getUsers(){
-        const res = await fetch(`http://localhost:5027/api/User`)
-        const data = await res.json()
-        if(res.ok){
-            setUsers(data)
-        }
-        else{
-            console.log(data.message)
-        }
-
+    const res = await fetch("http://localhost:5027/api/Notification/send-schedule-updated", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(notification)
+  })
+const data = await res.json()
+  if (!res.ok) {
+    console.log("notification error:", data.message)
+  }
+  
+    alert(data.message)
+}
+async function sendScheduleCalendar() {
+    const email= prompt("Ange mottagarens e-postadress:");
+    if (!email) {
+        alert("E-postadress krävs");
+        return;
     }
-    getUsers()
-},[])
+    const notification = {
+        EventType: "SCHEDULE_CALENDAR",
+        teacherName: "Lärare-1",
+        teacherEmail: email,
+        monthTitle: "Mars 2026",
+        weekRange: "v.2-8",
+        days:[
+            {
+                DayNumber: "1",
+                ContentHtml: "<div>Morning session</div>"
 
-
-return(
-    <>
-    <div className="assignment-container">
-        <div className="assignment-content">
-            <form onSubmit={handleSubmit}>
-                <section>
-                    <label>lärare</label>
-                 {allConsultants.length > 0 
-  ?<select required value={selectedConsultant} onChange={e => setSelectedConsultant(e.target.value)}>
-  {allConsultants.map((consultant) => {
-    const user = users.find(u => u.id === consultant.userId)
-
-    return (
-      <option key={consultant.id} value={consultant.id}>
-        {user?.name || "Unknown"}
-      </option>
-    )
-  })}
-</select>
-  : <div>Ingen lärare hittades</div>
+            }
+        ]
+    }
+    const res = await fetch("http://localhost:5027/api/Notification/send-schedule-calendar", {  
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(notification)
+  })
+const data = await res.json()
+  if (!res.ok) {
+    console.log("notification error:", data.message)
+    return;
+  }
+  
+    alert(data.message)
 }
 
-                </section>
-                 <section>
-                    <label >Kurs</label>
-                    {courses.length >0 ? <select required value={selectedCourse} onChange={e=> setSelectedCourse(e.target.value)} > 
-                        {courses.map((course)=>(
-                            <option key={course.id} value={course.id}>{course.name}</option>
-                        ))}
-                    </select>:<div>ingen kurs hittades</div>}
-                    </section>
-                    <section>
-    <label>Startdatum</label>
-    <input 
-        type="date" 
-        required 
-        value={dateStart} 
-        onChange={e => setDateStart(e.target.value)} 
-    />
-</section>
+return(<>
+<div className="notis-knapp-container">
+    <button type="button" onClick={()=>sendDirektMessage()}>Skicka direkt meddelande</button>
+    <button type="button" onClick={()=> sendAssignmentNotification()}>Skicka ny uppdrag</button>
+    <button type="button" onClick={()=>sendScheduleUpdated()}>Skicka schema uppdaterad</button>
+    <button type="button" onClick={()=>sendScheduleCalendar()}>Skicka Schema kalendar</button>
+</div>
 
-<section>
-    <label>Slutdatum</label>
-    <input 
-        type="date" 
-        required 
-        value={dateEnd} 
-        onChange={e => setDateEnd(e.target.value)} 
-    />
-</section>
-<button type="submit">Skapa uppdrag</button>
-            </form>
-        </div>
-
-    </div>
-    </>
-)
-
-
-
-
-
-
-
-
-
-
-
+</>)
 
 }
 
 
 
 export { SendAssignmentNotification };
+
