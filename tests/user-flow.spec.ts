@@ -17,6 +17,15 @@ test.describe.serial('ZoPlanner - Hela användarflödet', () => {
     });
   });
 
+  test.afterAll(async ({ request }) => {
+    const res = await request.get('http://localhost:8080/api/users');
+    const users = await res.json();
+    const testUser = users.find((u: any) => u.username.startsWith('testuser'));
+    if (testUser) {
+        await request.delete(`http://localhost:8080/api/users/${testUser.id}`);
+    }
+});
+
   test('1. Registrera ny användare som Manager', async ({ page }) => {
     await page.goto(BASE_URL + '/register');
     await page.fill('input[placeholder="Enter your full name"]', TEST_USER.name);
