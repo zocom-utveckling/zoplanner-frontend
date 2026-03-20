@@ -1,4 +1,4 @@
-import { appRoutesConfig } from "@zoplanner/app-routes";
+import { appRoutesConfig } from "../../../app-routes/appRoutes.config";
 
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
