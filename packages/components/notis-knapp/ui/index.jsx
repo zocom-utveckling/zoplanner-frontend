@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./index.css"
-import { AddSession } from "../add-session/ui";
-import { data } from "react-router-dom";
+
+
 function SendAssignmentNotification() {
     async function sendAssignmentNotification() {
         const email= prompt("Ange mottagarens e-postadress:");
@@ -11,12 +11,13 @@ function SendAssignmentNotification() {
         }
   const notification = {
     
-    teacherId: "1",
+   eventType: "NEW_ASSIGNMENT",
     teacherEmail: email,
-    assignmentId: "1",
+    
     assignmentDescription: "New assignment created",
     teacherName: "Lärare-1",
-    assignmentDueDate: "2026-12-31T23:59:59.000Z"
+    assignmentDueDate: "2026-03-15T17:00:00.000Z"
+
   }
 
   const res = await fetch("http://localhost:5027/api/Notification/send-new-assignment", {
@@ -27,6 +28,7 @@ function SendAssignmentNotification() {
 const data = await res.json()
   if (!res.ok) {
     console.log("notification error:", data.message)
+    return
   }
   
     alert(data.message)
@@ -40,9 +42,10 @@ async function sendDirektMessage() {
         return;
     }
     const notification = {
+        EventType: "DIRECT_MESSAGE",
        RecipientEmail: email,
-        message,
-        subject: "Direkt meddelande från Zoplanner"
+       Message: message,
+        Subject: "Direkt meddelande från Zoplanner"
     }
     const res = await fetch("http://localhost:5027/api/Notification/send-direct-message", {
     method: "POST",
@@ -52,6 +55,7 @@ async function sendDirektMessage() {
 const data = await res.json()
   if (!res.ok) {
     console.log("notification error:", data.message)
+    return
   }
   
     alert(data.message)
@@ -64,10 +68,10 @@ async function sendScheduleUpdated() {
     }
     const notification = {
        
+  eventType: "SCHEDULE_UPDATED",
   
-  teacherId: "1",
   teacherEmail: email,
-  subject: "Schedule update – week 12",
+
   message: "Your schedule has been updated.",
   
 
@@ -80,6 +84,7 @@ async function sendScheduleUpdated() {
 const data = await res.json()
   if (!res.ok) {
     console.log("notification error:", data.message)
+    return
   }
   
     alert(data.message)
