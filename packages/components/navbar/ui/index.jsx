@@ -1,3 +1,5 @@
+import { appRoutesConfig } from "../../../app-routes/appRoutes.config";
+
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
 import {
@@ -77,8 +79,8 @@ function Navbar({ user, activePage, setActivePage }) {
             {isManager && (
               <button
                 onClick={() => {
-                  setActivePage("admin");
-                  navigate(`/admin-page/${user.id}`);
+                  setActivePage("adminpanel");
+                  navigate(appRoutesConfig.admin.replace(":id", user.id));
                 }}
                 className={activePage == "adminpanel" ? "active" : ""}
               >
