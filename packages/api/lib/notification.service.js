@@ -1,4 +1,4 @@
-export function createNotificationService (api) {
+export function createNotificationService(api) {
     return {
 
          send: async (payload) => {
