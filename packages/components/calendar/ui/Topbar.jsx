@@ -1,9 +1,13 @@
 import { memo } from "react";
+import { format } from "date-fns";
+import sv from "date-fns/locale/sv";
 
 function Topbar({
   title,
+  focusDate,
   view,
   setView,
+  allSchedules = false,
   availableViews = ["day", "week", "month"],
   showFilters = false,
   filterOptions = {
@@ -23,6 +27,16 @@ function Topbar({
   onPrev,
   onNext,
 }) {
+  function capitalizeWords(value) {
+    if (!value) return "";
+    return value
+      .split(" ")
+      .map((part) =>
+        part ? part.charAt(0).toLocaleUpperCase("sv") + part.slice(1) : part,
+      )
+      .join(" ");
+  }
+
   function getSwedishLabel(value) {
     if (value === "REMOTE") return "Distans";
     if (value === "ONSITE") return "På plats";
@@ -31,18 +45,33 @@ function Topbar({
   }
 
   return (
-    <div className="topbar">
-      <div className="title-with-nav">
-        <button className="nav-btn" onClick={onPrev}>
-          ←
-        </button>
-        <div className="title">{title}</div>
-        <button className="nav-btn" onClick={onNext}>
-          →
-        </button>
+    <div className={`topbar ${allSchedules ? "topbar--all-schedules" : ""}`}>
+      <div className={allSchedules ? "topbar-heading" : "title-with-nav"}>
+        {allSchedules ? (
+          <>
+            <h1 className="topbar-heading__title">Allas scheman</h1>
+            <p className="topbar-heading__subtitle">
+              {capitalizeWords(
+                format(focusDate || new Date(), "EEEE d MMMM", { locale: sv }),
+              )}
+            </p>
+          </>
+        ) : (
+          <>
+            <button className="nav-btn" onClick={onPrev}>
+              ←
+            </button>
+            <div className="title">{title}</div>
+            <button className="nav-btn" onClick={onNext}>
+              →
+            </button>
+          </>
+        )}
       </div>
 
-      <div className="controls">
+      <div
+        className={`controls ${allSchedules ? "controls--all-schedules" : ""}`}
+      >
         {showFilters ? (
           <>
             <input
@@ -112,6 +141,19 @@ function Topbar({
               <option value="thisMonth">Denna månad</option>
               <option value="next30Days">Nästa 30 dagar</option>
             </select>
+
+            {allSchedules ? (
+              <select
+                className="filter-select"
+                value={filters.sortBy}
+                onChange={(event) =>
+                  onFilterChange?.("sortBy", event.target.value)
+                }
+              >
+                <option value="name-asc">Sortera efter: Namn A-Ö</option>
+                <option value="name-desc">Sortera efter: Namn Ö-A</option>
+              </select>
+            ) : null}
           </>
         ) : (
           <>

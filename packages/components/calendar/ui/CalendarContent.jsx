@@ -1,6 +1,7 @@
 import { memo } from "react";
 import TimeGridView from "./TimeGridView";
 import MonthView from "./MonthView";
+import AllSchedulesView from "./AllSchedulesView";
 
 function CalendarContent({
   view,
@@ -8,6 +9,7 @@ function CalendarContent({
   weekDays,
   monthGridDays,
   filteredEvents,
+  filters,
   loading,
   monthOnly,
   allSchedules,
@@ -16,6 +18,14 @@ function CalendarContent({
 }) {
   return (
     <div className="content-card">
+      {allSchedules && (
+        <AllSchedulesView
+          events={filteredEvents}
+          sortBy={filters?.sortBy}
+          onEventClick={onEventClick}
+        />
+      )}
+
       {view === "day" && (
         <TimeGridView
           days={[focusDate]}
@@ -30,7 +40,7 @@ function CalendarContent({
           onEventClick={onEventClick}
         />
       )}
-      {view === "month" && (
+      {view === "month" && !allSchedules && (
         <MonthView
           monthGridDays={monthGridDays}
           focusDate={focusDate}

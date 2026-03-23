@@ -50,7 +50,7 @@ export default function useSchedulerEvents(user, options = {}) {
     return () => {
       isCancelled = true;
     };
-  }, [user?.id, options?.includeAllConsultants]);
+  }, [user?.id, options?.includeAllConsultants, options?.onlyBookedPasses]);
 
   return {
     events,

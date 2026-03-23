@@ -444,6 +444,10 @@ export async function fetchSchedulerEvents(user, options = {}) {
       });
     }
 
+    if (options?.onlyBookedPasses || sessions.length > 0) {
+      return;
+    }
+
     const start =
       toDateWithTime(assignment?.course?.dateStart, 8, 0) ||
       toDateWithTime(assignment?.dateStart, 8, 0) ||

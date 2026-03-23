@@ -10,7 +10,11 @@ import useSchedulerFilters from "../hooks/useSchedulerFilters";
 import { useMemo } from "react";
 import "./index.css";
 
-export default function Scheduler({ user, monthOnly = false, allSchedules = false }) {
+export default function Scheduler({
+  user,
+  monthOnly = false,
+  allSchedules = false,
+}) {
   const {
     view,
     setView,
@@ -28,19 +32,20 @@ export default function Scheduler({ user, monthOnly = false, allSchedules = fals
   });
   const { events, loading, addEvent, removeEvent } = useSchedulerEvents(user, {
     includeAllConsultants: allSchedules,
+    onlyBookedPasses: allSchedules,
   });
   const { filters, filterOptions, filteredEvents, handleFilterChange } =
-    useSchedulerFilters(events);
+    useSchedulerFilters(events, {
+      defaultPeriod: allSchedules ? "today" : "all",
+      defaultSortBy: "name-asc",
+    });
   const availableViews = useMemo(
     () => (monthOnly ? ["month"] : ["day", "week", "month"]),
     [monthOnly],
   );
   const showFilters = monthOnly || allSchedules;
-  const {
-    selectedEvent,
-    handleOpenEventModal,
-    handleCloseEventModal,
-  } = useEventDetailsModal();
+  const { selectedEvent, handleOpenEventModal, handleCloseEventModal } =
+    useEventDetailsModal();
   const {
     isActivityModalOpen,
     activityFormData,
@@ -67,8 +72,10 @@ export default function Scheduler({ user, monthOnly = false, allSchedules = fals
     <main className="main">
       <Topbar
         title={title}
+        focusDate={focusDate}
         view={view}
         setView={setView}
+        allSchedules={allSchedules}
         availableViews={availableViews}
         showFilters={showFilters}
         filterOptions={filterOptions}
@@ -85,6 +92,7 @@ export default function Scheduler({ user, monthOnly = false, allSchedules = fals
         weekDays={weekDays}
         monthGridDays={monthGridDays}
         filteredEvents={filteredEvents}
+        filters={filters}
         loading={loading}
         monthOnly={monthOnly}
         allSchedules={allSchedules}

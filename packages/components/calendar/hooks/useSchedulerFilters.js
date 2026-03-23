@@ -57,14 +57,15 @@ function intersectsPeriod(eventItem, period) {
   return eventStart <= periodEnd && safeEventEnd >= periodStart;
 }
 
-export default function useSchedulerFilters(events) {
-  const [filters, setFilters] = useState({
+export default function useSchedulerFilters(events, options = {}) {
+  const [filters, setFilters] = useState(() => ({
     teacher: "",
     course: "",
     location: "",
-    period: "all",
+    period: options?.defaultPeriod || "all",
     searchQuery: "",
-  });
+    sortBy: options?.defaultSortBy || "name-asc",
+  }));
   const [consultantUsers, setConsultantUsers] = useState([]);
   const [userCities, setUserCities] = useState([]);
 
@@ -120,7 +121,7 @@ export default function useSchedulerFilters(events) {
   }, [events, consultantUsers, userCities]);
 
   const filteredEvents = useMemo(() => {
-    return events.filter((eventItem) => {
+    const visibleEvents = events.filter((eventItem) => {
       const consultantName = eventItem?.context?.consultant || "";
       const courseName = eventItem?.context?.course || eventItem?.title || "";
       const locationValue =
@@ -156,6 +157,29 @@ export default function useSchedulerFilters(events) {
         searchMatch
       );
     });
+
+    const nextEvents = [...visibleEvents];
+    const direction = filters.sortBy === "name-desc" ? -1 : 1;
+
+    nextEvents.sort((eventA, eventB) => {
+      const eventATeacher = eventA?.context?.consultant || "";
+      const eventBTeacher = eventB?.context?.consultant || "";
+      const byTeacher =
+        eventATeacher.localeCompare(eventBTeacher, "sv", {
+          sensitivity: "base",
+        }) * direction;
+
+      if (byTeacher !== 0) return byTeacher;
+
+      const byStart = eventA.start - eventB.start;
+      if (byStart !== 0) return byStart;
+
+      return (eventA.title || "").localeCompare(eventB.title || "", "sv", {
+        sensitivity: "base",
+      });
+    });
+
+    return nextEvents;
   }, [events, filters]);
 
   const handleFilterChange = useCallback((filterKey, value) => {
