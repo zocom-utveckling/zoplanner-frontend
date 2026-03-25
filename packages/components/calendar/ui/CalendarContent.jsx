@@ -15,25 +15,30 @@ function CalendarContent({
   allSchedules,
   onEventClick,
   onDayClick,
+  onFocusDateChange,
 }) {
   return (
     <div className="content-card">
       {allSchedules && (
         <AllSchedulesView
+          view={view}
+          focusDate={focusDate}
+          weekDays={weekDays}
           events={filteredEvents}
           sortBy={filters?.sortBy}
           onEventClick={onEventClick}
+          onDaySelect={onFocusDateChange}
         />
       )}
 
-      {view === "day" && (
+      {view === "day" && !allSchedules && (
         <TimeGridView
           days={[focusDate]}
           events={filteredEvents}
           onEventClick={onEventClick}
         />
       )}
-      {view === "week" && (
+      {view === "week" && !allSchedules && (
         <TimeGridView
           days={weekDays}
           events={filteredEvents}

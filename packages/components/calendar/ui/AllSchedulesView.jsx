@@ -1,5 +1,14 @@
 import { useMemo } from "react";
-import { differenceInMinutes, format, startOfDay } from "date-fns";
+import {
+  differenceInMinutes,
+  eachDayOfInterval,
+  endOfMonth,
+  format,
+  startOfDay,
+  startOfMonth,
+} from "date-fns";
+import { isSameDay } from "date-fns";
+import sv from "date-fns/locale/sv";
 
 const HOURS_START = 8;
 const HOURS_END = 18;
@@ -22,7 +31,15 @@ function formatAvailability(value) {
   return String(value).toUpperCase();
 }
 
-export default function AllSchedulesView({ events, sortBy, onEventClick }) {
+export default function AllSchedulesView({
+  view,
+  focusDate,
+  weekDays = [],
+  events,
+  sortBy,
+  onEventClick,
+  onDaySelect,
+}) {
   const timeSlots = useMemo(() => {
     const slots = [];
 
@@ -37,6 +54,14 @@ export default function AllSchedulesView({ events, sortBy, onEventClick }) {
 
     return slots;
   }, []);
+
+  const monthDays = useMemo(() => {
+    const safeDate = focusDate || new Date();
+    return eachDayOfInterval({
+      start: startOfMonth(safeDate),
+      end: endOfMonth(safeDate),
+    });
+  }, [focusDate]);
 
   const { consultantRows, unassignedEvents } = useMemo(() => {
     const rowsByConsultant = new Map();
@@ -96,6 +121,48 @@ export default function AllSchedulesView({ events, sortBy, onEventClick }) {
       </aside>
 
       <section className="all-schedules-board">
+        {view === "week" && weekDays.length > 0 ? (
+          <div className="all-schedules-weekdays">
+            {weekDays.map((day) => (
+              <button
+                key={day.toISOString()}
+                type="button"
+                className={`all-schedules-weekdays__item ${
+                  focusDate && isSameDay(day, focusDate)
+                    ? "all-schedules-weekdays__item--active"
+                    : ""
+                }`}
+                onClick={() => onDaySelect?.(day)}
+              >
+                {format(day, "EEEE d MMM", { locale: sv })}
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        {view === "month" && monthDays.length > 0 ? (
+          <div
+            className="all-schedules-monthdays"
+            role="tablist"
+            aria-label="Månadens dagar"
+          >
+            {monthDays.map((day) => (
+              <button
+                key={day.toISOString()}
+                type="button"
+                className={`all-schedules-monthdays__item ${
+                  focusDate && isSameDay(day, focusDate)
+                    ? "all-schedules-monthdays__item--active"
+                    : ""
+                }`}
+                onClick={() => onDaySelect?.(day)}
+              >
+                {format(day, "EEE d", { locale: sv })}
+              </button>
+            ))}
+          </div>
+        ) : null}
+
         <div className="all-schedules-board__viewport">
           <div className="all-schedules-board__header">
             <div className="all-schedules-board__name-col" />

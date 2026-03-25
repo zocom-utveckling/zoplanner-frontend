@@ -27,8 +27,8 @@ export default function Scheduler({
     goPrev,
     goNext,
   } = useSchedulerNavigation({
-    initialView: monthOnly ? "month" : "week",
-    lockedView: monthOnly ? "month" : null,
+    initialView: monthOnly && !allSchedules ? "month" : "week",
+    lockedView: monthOnly && !allSchedules ? "month" : null,
   });
   const { events, loading, addEvent, removeEvent } = useSchedulerEvents(user, {
     includeAllConsultants: allSchedules,
@@ -38,10 +38,13 @@ export default function Scheduler({
     useSchedulerFilters(events, {
       defaultPeriod: allSchedules ? "today" : "all",
       defaultSortBy: "name-asc",
+      navigationDate: focusDate,
+      navigationView: view,
+      useNavigationPeriod: allSchedules,
     });
   const availableViews = useMemo(
-    () => (monthOnly ? ["month"] : ["day", "week", "month"]),
-    [monthOnly],
+    () => (monthOnly && !allSchedules ? ["month"] : ["day", "week", "month"]),
+    [monthOnly, allSchedules],
   );
   const showFilters = monthOnly || allSchedules;
   const { selectedEvent, handleOpenEventModal, handleCloseEventModal } =
@@ -98,6 +101,7 @@ export default function Scheduler({
         allSchedules={allSchedules}
         onEventClick={handleOpenEventModal}
         onDayClick={handleOpenActivityModal}
+        onFocusDateChange={setFocusDate}
       />
 
       <ActivityModal

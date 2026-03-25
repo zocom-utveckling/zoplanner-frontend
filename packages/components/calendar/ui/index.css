@@ -24,6 +24,27 @@
   gap: 8px;
 }
 
+.topbar-all-schedules-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.topbar-heading--with-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-all-schedules-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
 .topbar-heading__title {
   margin: 0;
   font-size: 42px;
@@ -32,7 +53,7 @@
 }
 
 .topbar-heading__subtitle {
-  margin: 4px 0 0;
+  margin: 0;
   font-size: 30px;
   font-weight: 500;
   color: var(--text-muted);
@@ -83,6 +104,10 @@
   justify-content: flex-start;
   width: 100%;
   gap: 12px;
+}
+
+.controls--all-schedules-filters {
+  align-items: flex-start;
 }
 
 .small-btn {
@@ -214,6 +239,71 @@
   border-radius: 14px;
   overflow: hidden;
   background: var(--surface);
+}
+
+.all-schedules-weekdays {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface);
+}
+
+.all-schedules-weekdays__item {
+  border: none;
+  padding: 10px 12px;
+  border-right: 1px solid var(--border-subtle);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--surface);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.all-schedules-weekdays__item:last-child {
+  border-right: none;
+}
+
+.all-schedules-weekdays__item:hover {
+  background: var(--surface-muted);
+}
+
+.all-schedules-weekdays__item--active {
+  color: var(--active-fg);
+  background: var(--active-bg);
+}
+
+.all-schedules-monthdays {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  background: var(--surface);
+}
+
+.all-schedules-monthdays__item {
+  flex: 0 0 auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--surface);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.all-schedules-monthdays__item:hover {
+  background: var(--surface-muted);
+}
+
+.all-schedules-monthdays__item--active {
+  color: var(--active-fg);
+  border-color: var(--active-bg);
+  background: var(--active-bg);
 }
 
 .all-schedules-board__viewport {
