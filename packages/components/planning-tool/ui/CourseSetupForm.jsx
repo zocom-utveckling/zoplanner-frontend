@@ -1,4 +1,5 @@
 import { useCourseSetupForm } from "../hooks/useCourseSetupForm";
+import { useCustomers } from "../../../app-hooks/useCustomers";
 
 export default function CourseSetupForm({ onSave }) {
   const {
@@ -15,12 +16,35 @@ export default function CourseSetupForm({ onSave }) {
     isSelected,
   } = useCourseSetupForm(onSave);
 
+  const {
+    customers,
+    selectedCustomer,
+    selectedCustomerId,
+    setSelectedCustomerId,
+    loading,
+  } = useCustomers();
+
   return (
     <section className="course-setup">
       <h2>Kurs och preliminärt schema</h2>
 
       <form className="course-setup-form" onSubmit={handleSubmit}>
         <div className="course-setup-field-container">
+          <div className="course-setup-field">
+            <label htmlFor="customer">Kund</label>
+            <select
+              id="customer"
+              value={selectedCustomerId || ""}
+              onChange={(e) => setSelectedCustomerId(Number(e.target.value))}
+            >
+              <option value="">Välj kund</option>
+              {customers.map((customer) => (
+                <option key={customer.id} value={customer.id}>
+                  {customer.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="course-setup-field">
             <label htmlFor="courseName">Kursnamn</label>
             <input
