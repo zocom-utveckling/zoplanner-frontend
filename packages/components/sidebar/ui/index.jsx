@@ -185,7 +185,7 @@ function Sidebar({ user }) {
             onClick={() => setIsUsersOpen((prev) => !prev)}
             aria-expanded={isUsersOpen}
           >
-            <span className="sidebar-users__title">Schema</span>
+            <span className="sidebar-users__title">Team</span>
             <span
               className={`sidebar-users__chevron${isUsersOpen ? " is-open" : ""}`}
               aria-hidden="true"
