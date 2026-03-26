@@ -32,7 +32,7 @@ function CalendarContent({
           onEventClick={onEventClick}
           onDaySelect={(day) => {
             onFocusDateChange?.(day);
-            onViewChange?.("week");
+            onViewChange?.(view);
           }}
         />
       )}

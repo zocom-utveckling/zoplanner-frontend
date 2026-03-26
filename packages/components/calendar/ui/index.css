@@ -276,8 +276,7 @@
 
 .all-schedules-monthdays {
   display: flex;
-  gap: 8px;
-  padding: 8px 10px;
+  padding: 0;
   border-bottom: 1px solid var(--border-subtle);
   overflow-x: auto;
   background: var(--surface);
@@ -285,25 +284,7 @@
 
 .all-schedules-monthdays__item {
   flex: 0 0 auto;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  background: var(--surface);
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.all-schedules-monthdays__item:hover {
-  background: var(--surface-muted);
-}
-
-.all-schedules-monthdays__item--active {
-  color: var(--active-fg);
-  border-color: var(--active-bg);
-  background: var(--active-bg);
+  border-right: 1px solid var(--border-subtle);
 }
 
 .all-schedules-board__viewport {

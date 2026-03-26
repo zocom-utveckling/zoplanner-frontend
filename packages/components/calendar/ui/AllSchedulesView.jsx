@@ -65,7 +65,7 @@ export default function AllSchedulesView({
   }, [focusDate]);
 
   const visibleEvents = useMemo(() => {
-    if (view !== "week") return events;
+    if (view !== "week" && view !== "month") return events;
     const safeDate = focusDate || new Date();
     return events.filter((eventItem) => isSameDay(eventItem.start, safeDate));
   }, [events, focusDate, view]);
@@ -171,14 +171,14 @@ export default function AllSchedulesView({
               <button
                 key={day.toISOString()}
                 type="button"
-                className={`all-schedules-monthdays__item ${
+                className={`all-schedules-weekdays__item all-schedules-monthdays__item ${
                   focusDate && isSameDay(day, focusDate)
-                    ? "all-schedules-monthdays__item--active"
+                    ? "all-schedules-weekdays__item--active"
                     : ""
                 }`}
                 onClick={() => onDaySelect?.(day)}
               >
-                {format(day, "EEE d", { locale: sv })}
+                {format(day, "EEEE d MMM", { locale: sv })}
               </button>
             ))}
           </div>
