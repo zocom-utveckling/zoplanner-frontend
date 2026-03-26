@@ -32,18 +32,11 @@ function CalendarContent({
           onEventClick={onEventClick}
           onDaySelect={(day) => {
             onFocusDateChange?.(day);
-            onViewChange?.("day");
+            onViewChange?.("week");
           }}
         />
       )}
 
-      {view === "day" && !allSchedules && (
-        <TimeGridView
-          days={[focusDate]}
-          events={filteredEvents}
-          onEventClick={onEventClick}
-        />
-      )}
       {view === "week" && !allSchedules && (
         <TimeGridView
           days={weekDays}

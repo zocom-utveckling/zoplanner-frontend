@@ -8,7 +8,7 @@ function Topbar({
   view,
   setView,
   allSchedules = false,
-  availableViews = ["day", "week", "month"],
+  availableViews = ["week", "month"],
   showFilters = false,
   filterOptions = {
     teachers: [],
@@ -69,14 +69,6 @@ function Topbar({
   function renderViewSegment() {
     return (
       <div className="segment">
-        {availableViews.includes("day") && (
-          <button
-            className={`segment-btn ${view === "day" ? "segment-active" : ""}`}
-            onClick={() => setView("day")}
-          >
-            Dagsvy
-          </button>
-        )}
         {availableViews.includes("week") && (
           <button
             className={`segment-btn ${view === "week" ? "segment-active" : ""}`}

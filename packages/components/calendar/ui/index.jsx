@@ -48,7 +48,7 @@ export default function Scheduler({
     useNavigationPeriod: allSchedules,
   });
   const availableViews = useMemo(
-    () => (monthOnly && !allSchedules ? ["month"] : ["day", "week", "month"]),
+    () => (monthOnly && !allSchedules ? ["month"] : ["week", "month"]),
     [monthOnly, allSchedules],
   );
   const showFilters = monthOnly || allSchedules;

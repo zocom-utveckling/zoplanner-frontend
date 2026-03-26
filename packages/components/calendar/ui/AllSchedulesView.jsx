@@ -64,6 +64,12 @@ export default function AllSchedulesView({
     });
   }, [focusDate]);
 
+  const visibleEvents = useMemo(() => {
+    if (view !== "week") return events;
+    const safeDate = focusDate || new Date();
+    return events.filter((eventItem) => isSameDay(eventItem.start, safeDate));
+  }, [events, focusDate, view]);
+
   const { consultantRows, unassignedEvents } = useMemo(() => {
     const rowsByConsultant = new Map();
     const unassigned = [];
@@ -80,7 +86,7 @@ export default function AllSchedulesView({
       }
     });
 
-    events.forEach((eventItem) => {
+    visibleEvents.forEach((eventItem) => {
       const consultantName = eventItem?.context?.consultant || "";
       const availability =
         eventItem?.context?.availability || eventItem?.locationType || "";
@@ -122,7 +128,7 @@ export default function AllSchedulesView({
       consultantRows: rows,
       unassignedEvents: unassigned,
     };
-  }, [events, allConsultants, sortBy]);
+  }, [visibleEvents, allConsultants, sortBy]);
 
   return (
     <div className="all-schedules-layout">
@@ -136,7 +142,7 @@ export default function AllSchedulesView({
       </aside>
 
       <section className="all-schedules-board">
-        {(view === "week" || view === "day") && weekDays.length > 0 ? (
+        {view === "week" && weekDays.length > 0 ? (
           <div className="all-schedules-weekdays">
             {weekDays.map((day) => (
               <button
