@@ -108,6 +108,7 @@ export default function Scheduler({
         onEventClick={handleOpenEventModal}
         onDayClick={handleOpenActivityModal}
         onFocusDateChange={setFocusDate}
+        onViewChange={setView}
       />
 
       <ActivityModal

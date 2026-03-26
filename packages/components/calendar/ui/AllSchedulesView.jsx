@@ -136,7 +136,7 @@ export default function AllSchedulesView({
       </aside>
 
       <section className="all-schedules-board">
-        {view === "week" && weekDays.length > 0 ? (
+        {(view === "week" || view === "day") && weekDays.length > 0 ? (
           <div className="all-schedules-weekdays">
             {weekDays.map((day) => (
               <button

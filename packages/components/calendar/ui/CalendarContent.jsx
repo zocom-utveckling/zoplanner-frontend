@@ -17,6 +17,7 @@ function CalendarContent({
   onEventClick,
   onDayClick,
   onFocusDateChange,
+  onViewChange,
 }) {
   return (
     <div className="content-card">
@@ -29,7 +30,10 @@ function CalendarContent({
           allConsultants={allConsultants}
           sortBy={filters?.sortBy}
           onEventClick={onEventClick}
-          onDaySelect={onFocusDateChange}
+          onDaySelect={(day) => {
+            onFocusDateChange?.(day);
+            onViewChange?.("day");
+          }}
         />
       )}
 
