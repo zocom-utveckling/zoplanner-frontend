@@ -36,6 +36,7 @@ export default function AllSchedulesView({
   focusDate,
   weekDays = [],
   events,
+  allConsultants = [],
   sortBy,
   onEventClick,
   onDaySelect,
@@ -67,6 +68,18 @@ export default function AllSchedulesView({
     const rowsByConsultant = new Map();
     const unassigned = [];
 
+    // Seed all known consultants as free rows first
+    allConsultants.forEach((name) => {
+      if (name) {
+        rowsByConsultant.set(name, {
+          name,
+          availability: "",
+          events: [],
+          free: true,
+        });
+      }
+    });
+
     events.forEach((eventItem) => {
       const consultantName = eventItem?.context?.consultant || "";
       const availability =
@@ -82,10 +95,12 @@ export default function AllSchedulesView({
           name: consultantName,
           availability: formatAvailability(availability),
           events: [],
+          free: false,
         });
       }
 
       const row = rowsByConsultant.get(consultantName);
+      row.free = false;
       if (!row.availability && availability) {
         row.availability = formatAvailability(availability);
       }
@@ -107,7 +122,7 @@ export default function AllSchedulesView({
       consultantRows: rows,
       unassignedEvents: unassigned,
     };
-  }, [events, sortBy]);
+  }, [events, allConsultants, sortBy]);
 
   return (
     <div className="all-schedules-layout">
@@ -180,10 +195,15 @@ export default function AllSchedulesView({
 
           <div className="all-schedules-board__rows">
             {consultantRows.map((row) => (
-              <div key={row.name} className="all-schedules-row">
+              <div
+                key={row.name}
+                className={`all-schedules-row${row.free ? " all-schedules-row--free" : ""}`}
+              >
                 <div className="all-schedules-row__name-col">
                   <div className="all-schedules-row__name">{row.name}</div>
-                  {row.availability ? (
+                  {row.free ? (
+                    <div className="all-schedules-row__free-badge">Ledig</div>
+                  ) : row.availability ? (
                     <div className="all-schedules-row__availability">
                       {row.availability}
                     </div>

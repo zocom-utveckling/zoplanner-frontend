@@ -215,5 +215,6 @@ export default function useSchedulerFilters(events, options = {}) {
     filterOptions,
     filteredEvents,
     handleFilterChange,
+    consultantUsers,
   };
 }

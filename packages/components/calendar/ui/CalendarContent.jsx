@@ -9,6 +9,7 @@ function CalendarContent({
   weekDays,
   monthGridDays,
   filteredEvents,
+  allConsultants = [],
   filters,
   loading,
   monthOnly,
@@ -25,6 +26,7 @@ function CalendarContent({
           focusDate={focusDate}
           weekDays={weekDays}
           events={filteredEvents}
+          allConsultants={allConsultants}
           sortBy={filters?.sortBy}
           onEventClick={onEventClick}
           onDaySelect={onFocusDateChange}

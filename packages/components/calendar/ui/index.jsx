@@ -34,14 +34,19 @@ export default function Scheduler({
     includeAllConsultants: allSchedules,
     onlyBookedPasses: allSchedules,
   });
-  const { filters, filterOptions, filteredEvents, handleFilterChange } =
-    useSchedulerFilters(events, {
-      defaultPeriod: allSchedules ? "today" : "all",
-      defaultSortBy: "name-asc",
-      navigationDate: focusDate,
-      navigationView: view,
-      useNavigationPeriod: allSchedules,
-    });
+  const {
+    filters,
+    filterOptions,
+    filteredEvents,
+    handleFilterChange,
+    consultantUsers,
+  } = useSchedulerFilters(events, {
+    defaultPeriod: allSchedules ? "today" : "all",
+    defaultSortBy: "name-asc",
+    navigationDate: focusDate,
+    navigationView: view,
+    useNavigationPeriod: allSchedules,
+  });
   const availableViews = useMemo(
     () => (monthOnly && !allSchedules ? ["month"] : ["day", "week", "month"]),
     [monthOnly, allSchedules],
@@ -95,6 +100,7 @@ export default function Scheduler({
         weekDays={weekDays}
         monthGridDays={monthGridDays}
         filteredEvents={filteredEvents}
+        allConsultants={allSchedules ? consultantUsers : []}
         filters={filters}
         loading={loading}
         monthOnly={monthOnly}
