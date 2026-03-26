@@ -1,76 +1,160 @@
 import { useEffect, useState } from "react";
-import { fetchSchedulerEvents } from "../data/schedulerData";
-import {
-  listLocalActivities,
-  removeLocalActivity,
-  saveLocalActivity,
-  subscribeToLocalActivityChanges,
-} from "../data/localActivityStorage";
+import { fetchSchedulerEvents, toLocalDateTime } from "../data/schedulerData";
 
-function isLocalEvent(eventItem) {
-  return eventItem?.source === "local";
+function toDatePart(value) {
+  const date = toLocalDateTime(value);
+  if (!date) return null;
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
-function mergeWithLocalEvents(remoteEvents, userId) {
-  return [...remoteEvents, ...listLocalActivities(userId)];
+function toTimePart(value) {
+  const date = toLocalDateTime(value);
+  if (!date) return null;
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
+function toEventFromActivity(activity, fallbackEvent) {
+  if (!activity) return fallbackEvent;
+
+  const start =
+    activity?.date && activity?.startTime
+      ? toLocalDateTime(`${activity.date} ${activity.startTime}:00`)
+      : null;
+  const end =
+    activity?.date && activity?.endTime
+      ? toLocalDateTime(`${activity.date} ${activity.endTime}:00`)
+      : null;
+
+  return {
+    ...fallbackEvent,
+    id: activity?.id ?? fallbackEvent?.id,
+    title: activity?.title ?? fallbackEvent?.title,
+    subtitle: activity?.description ?? fallbackEvent?.subtitle,
+    description: activity?.description ?? fallbackEvent?.description,
+    start: start || fallbackEvent?.start,
+    end: end || fallbackEvent?.end,
+    type: activity?.type ?? fallbackEvent?.type,
+  };
+}
+
+function toActivityPayload(eventItem, userId) {
+  return {
+    title: eventItem?.title || "Aktivitet",
+    type: eventItem?.type || "meeting",
+    date: toDatePart(eventItem?.start),
+    startTime: toTimePart(eventItem?.start),
+    endTime: toTimePart(eventItem?.end),
+    description: eventItem?.description || eventItem?.subtitle || "",
+    ...(userId ? { userId } : {}),
+  };
 }
 
 export default function useSchedulerEvents(user, options = {}) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  function addEvent(newEvent) {
+  async function addEvent(newEvent) {
     if (!newEvent) return;
 
-    let eventToAdd = newEvent;
     if (user?.id) {
-      const savedEvent = saveLocalActivity(user.id, {
-        ...newEvent,
-        source: "local",
-      });
-      if (savedEvent) {
-        eventToAdd = savedEvent;
+      const payload = toActivityPayload(newEvent, user.id);
+
+      try {
+        const response = await fetch(`http://localhost:5027/api/Activities`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          const createdActivity = await response.json().catch(() => null);
+          const createdEvent = toEventFromActivity(createdActivity, {
+            ...newEvent,
+            source: "activity",
+          });
+
+          setEvents((prev) => [...prev, createdEvent]);
+          return;
+        }
+        return;
+      } catch {
+        return;
       }
     }
-
-    setEvents((prev) => [...prev, eventToAdd]);
   }
 
-  function removeEvent(eventId) {
-    if (user?.id) {
-      removeLocalActivity(user.id, eventId);
+  async function removeEvent(eventId) {
+    if (!eventId) return;
+
+    const activityId = Number(eventId);
+    if (!Number.isFinite(activityId)) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5027/api/Activities/${activityId}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!response.ok) {
+        return;
+      }
+    } catch {
+      return;
     }
+
     setEvents((prev) => prev.filter((eventItem) => eventItem.id !== eventId));
   }
 
-  function updateEvent(updatedEvent) {
+  async function updateEvent(updatedEvent) {
     if (!updatedEvent?.id) return;
 
-    let eventToPersist = updatedEvent;
-    const isPotentialLocalEvent =
-      typeof updatedEvent.id === "string" &&
-      (updatedEvent.id.startsWith("local-") ||
-        updatedEvent.id.startsWith("manual-"));
-    const shouldPersistLocally =
-      user?.id && (updatedEvent.source === "local" || isPotentialLocalEvent);
+    const eventToPersist = updatedEvent;
 
-    if (shouldPersistLocally) {
-      const savedEvent = saveLocalActivity(user.id, {
-        ...updatedEvent,
-        source: "local",
-      });
-      if (savedEvent) {
-        eventToPersist = savedEvent;
+    const activityId = Number(updatedEvent.id);
+    if (!Number.isFinite(activityId)) return;
+
+    const payload = toActivityPayload(updatedEvent, user?.id);
+
+    try {
+      const response = await fetch(
+        `http://localhost:5027/api/Activities/${activityId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      if (!response.ok) {
+        return;
       }
-    }
 
-    setEvents((prev) =>
-      prev.map((eventItem) =>
-        eventItem.id === updatedEvent.id
-          ? { ...eventItem, ...eventToPersist }
-          : eventItem,
-      ),
-    );
+      const updatedActivity = await response.json().catch(() => null);
+      const nextEvent = toEventFromActivity(updatedActivity, eventToPersist);
+
+      setEvents((prev) =>
+        prev.map((eventItem) =>
+          eventItem.id === updatedEvent.id
+            ? { ...eventItem, ...nextEvent }
+            : eventItem,
+        ),
+      );
+    } catch {
+      // no-op
+    }
   }
 
   useEffect(() => {
@@ -86,9 +170,9 @@ export default function useSchedulerEvents(user, options = {}) {
 
       try {
         const nextEvents = await fetchSchedulerEvents(user, options);
-        if (!isCancelled) setEvents(mergeWithLocalEvents(nextEvents, user.id));
+        if (!isCancelled) setEvents(nextEvents);
       } catch {
-        if (!isCancelled) setEvents(mergeWithLocalEvents([], user.id));
+        if (!isCancelled) setEvents([]);
       } finally {
         if (!isCancelled) setLoading(false);
       }
@@ -100,21 +184,6 @@ export default function useSchedulerEvents(user, options = {}) {
       isCancelled = true;
     };
   }, [user?.id, options?.includeAllConsultants]);
-
-  useEffect(() => {
-    if (!user?.id) return () => {};
-
-    return subscribeToLocalActivityChanges((changedUserId) => {
-      if (String(changedUserId) !== String(user.id)) return;
-
-      setEvents((prev) => {
-        const remoteEvents = prev.filter(
-          (eventItem) => !isLocalEvent(eventItem),
-        );
-        return [...remoteEvents, ...listLocalActivities(user.id)];
-      });
-    });
-  }, [user?.id]);
 
   return {
     events,

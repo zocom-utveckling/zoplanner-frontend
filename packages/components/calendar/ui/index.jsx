@@ -62,10 +62,14 @@ export default function Scheduler({
   });
 
   function isAddButtonActivity(eventItem) {
+    const hasDatabaseId = Number.isFinite(Number(eventItem?.id));
+
     return (
-      eventItem?.source === "local" &&
-      typeof eventItem?.id === "string" &&
-      eventItem.id.startsWith("local-")
+      hasDatabaseId ||
+      (eventItem?.source === "local" &&
+        typeof eventItem?.id === "string" &&
+        (eventItem.id.startsWith("local-") ||
+          eventItem.id.startsWith("manual-")))
     );
   }
 
