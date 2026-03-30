@@ -101,6 +101,8 @@ export default function useActivityForm({
   function handleActivitySubmit(event) {
     event.preventDefault();
 
+    const normalizedTitle = activityFormData.title?.trim() || "Aktivitet";
+
     const start = toLocalDateTime(
       `${activityFormData.date} ${activityFormData.startTime}:00`,
     );
@@ -115,7 +117,7 @@ export default function useActivityForm({
     if (activityModalMode === "edit" && editingEventId) {
       onUpdateEvent?.({
         id: editingEventId,
-        title: activityFormData.title,
+        title: normalizedTitle,
         subtitle: activityFormData.description,
         description: activityFormData.description,
         start,
@@ -125,7 +127,7 @@ export default function useActivityForm({
     } else {
       onCreateEvent({
         id: `manual-${Date.now()}`,
-        title: activityFormData.title,
+        title: normalizedTitle,
         subtitle: activityFormData.description,
         description: activityFormData.description,
         start,

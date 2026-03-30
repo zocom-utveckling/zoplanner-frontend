@@ -41,7 +41,7 @@ export default function ActivityModal({
 
         <form onSubmit={onSubmit} className="scheduler-activity-form">
           <div className="scheduler-form-group">
-            <label htmlFor="title">Titel *</label>
+            <label htmlFor="title">Titel</label>
             <input
               type="text"
               id="title"
@@ -49,7 +49,6 @@ export default function ActivityModal({
               value={formData.title}
               onChange={onChange}
               disabled={isViewMode}
-              required
               placeholder="T.ex. Möte med kursledare"
             />
           </div>

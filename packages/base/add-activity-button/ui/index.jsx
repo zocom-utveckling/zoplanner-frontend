@@ -39,12 +39,17 @@ function AddActivityButton({ onSubmit }) {
     setSubmitError("");
     setIsSubmitting(true);
 
+    const normalizedFormData = {
+      ...formData,
+      title: formData?.title?.trim() || "Aktivitet",
+    };
+
     try {
       if (onSubmit) {
         // `onSubmit` kan just nu spara lokalt även om backend misslyckas.
         // Därför används `false` bara när själva frontend-flödet inte kunde
         // skapa/spara aktiviteten överhuvudtaget.
-        const wasSaved = await onSubmit(formData);
+        const wasSaved = await onSubmit(normalizedFormData);
         if (wasSaved === false) {
           setSubmitError("Kunde inte spara aktivitet i databasen.");
           return;
@@ -91,14 +96,13 @@ function AddActivityButton({ onSubmit }) {
 
             <form onSubmit={handleSubmit} className="activity-form">
               <div className="form-group">
-                <label htmlFor="title">Titel *</label>
+                <label htmlFor="title">Titel</label>
                 <input
                   type="text"
                   id="title"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  required
                   placeholder="T.ex. Möte med kursledare"
                 />
               </div>
