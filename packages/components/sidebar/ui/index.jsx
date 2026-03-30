@@ -252,7 +252,7 @@ function Sidebar({ user }) {
 
       <AddActivityButton onSubmit={handleSubmitActivity} />
 
-      <MonthCalendar />
+      <MonthCalendar onSubmit={handleSubmitActivity} />
     </aside>
   );
 }

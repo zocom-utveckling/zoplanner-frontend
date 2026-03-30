@@ -5,6 +5,8 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const today = new Date();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -83,6 +85,8 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
     const dayStr = String(day).padStart(2, "0");
     const selectedDate = `${year}-${month}-${dayStr}`;
 
+    setSubmitError("");
+
     setFormData({
       title: "",
       description: "",
@@ -95,6 +99,8 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
   };
 
   const handleCloseModal = () => {
+    if (isSubmitting) return;
+    setSubmitError("");
     setIsModalOpen(false);
   };
 
@@ -106,21 +112,41 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (onSubmit) {
-      onSubmit(formData);
+
+    setSubmitError("");
+    setIsSubmitting(true);
+
+    const normalizedFormData = {
+      ...formData,
+      title: formData?.title?.trim() || "Aktivitet",
+    };
+
+    try {
+      if (onSubmit) {
+        const wasSaved = await onSubmit(normalizedFormData);
+        if (wasSaved === false) {
+          setSubmitError("Kunde inte spara aktivitet i databasen.");
+          return;
+        }
+      }
+
+      // Reset form
+      setFormData({
+        title: "",
+        description: "",
+        date: "",
+        startTime: "",
+        endTime: "",
+        type: "meeting",
+      });
+      setIsModalOpen(false);
+    } catch {
+      setSubmitError("Kunde inte spara aktivitet i databasen.");
+    } finally {
+      setIsSubmitting(false);
     }
-    // Reset form
-    setFormData({
-      title: "",
-      description: "",
-      date: "",
-      startTime: "",
-      endTime: "",
-      type: "meeting",
-    });
-    setIsModalOpen(false);
   };
 
   const days = getDaysInMonth();
@@ -173,14 +199,13 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
 
             <form onSubmit={handleSubmit} className="activity-form">
               <div className="form-group">
-                <label htmlFor="title">Titel *</label>
+                <label htmlFor="title">Titel</label>
                 <input
                   type="text"
                   id="title"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  required
                   placeholder="T.ex. Möte med kursledare"
                 />
               </div>
@@ -257,13 +282,24 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
                   type="button"
                   className="btn-cancel"
                   onClick={handleCloseModal}
+                  disabled={isSubmitting}
                 >
                   Avbryt
                 </button>
-                <button type="submit" className="btn-submit">
-                  Lägg till
+                <button
+                  type="submit"
+                  className="btn-submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Sparar..." : "Lägg till"}
                 </button>
               </div>
+
+              {submitError ? (
+                <p className="form-error" role="alert">
+                  {submitError}
+                </p>
+              ) : null}
             </form>
           </div>
         </div>
