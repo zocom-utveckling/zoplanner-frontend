@@ -9,7 +9,7 @@ export default function PlanningDraftList({
 
   return (
     <div className="planning-draft-list">
-      <h3>Utkast</h3>
+      <h3>Utkast till scheman</h3>
 
       {drafts.map((draft) => {
         const isSelected = draft.id === selectedDraftId;

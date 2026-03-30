@@ -1,5 +1,6 @@
 import { useCourseSetupForm } from "../hooks/useCourseSetupForm";
-import { useCustomers } from "../../../app-hooks/useCustomers";
+// import { useCustomers } from "../../../app-hooks/useCustomers";
+import { useState } from "react";
 
 export default function CourseSetupForm({ onSave }) {
   const {
@@ -16,13 +17,22 @@ export default function CourseSetupForm({ onSave }) {
     isSelected,
   } = useCourseSetupForm(onSave);
 
-  const {
+  /* const {
     customers,
     selectedCustomer,
     selectedCustomerId,
     setSelectedCustomerId,
     loading,
-  } = useCustomers();
+  } = useCustomers(); */
+
+  const mockCustomers = [
+    { id: 1, name: "AcadeMedia" },
+    { id: 2, name: "NTI Gymnasiet" },
+    { id: 3, name: "Yrgo" },
+  ];
+
+  const [selectedCustomerId, setSelectedCustomerId] = useState("");
+  const customers = mockCustomers;
 
   return (
     <section className="course-setup">
@@ -35,7 +45,7 @@ export default function CourseSetupForm({ onSave }) {
             <select
               id="customer"
               value={selectedCustomerId || ""}
-              onChange={(e) => setSelectedCustomerId(Number(e.target.value))}
+              onChange={(e) => setSelectedCustomerId(e.target.value)}
             >
               <option value="">Välj kund</option>
               {customers.map((customer) => (
