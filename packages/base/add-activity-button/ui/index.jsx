@@ -3,6 +3,8 @@ import "./index.css";
 
 function AddActivityButton({ onSubmit }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -13,10 +15,13 @@ function AddActivityButton({ onSubmit }) {
   });
 
   const handleAddActivity = () => {
+    setSubmitError("");
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
+    if (isSubmitting) return;
+    setSubmitError("");
     setIsModalOpen(false);
   };
 
@@ -28,21 +33,45 @@ function AddActivityButton({ onSubmit }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (onSubmit) {
-      onSubmit(formData);
+
+    setSubmitError("");
+    setIsSubmitting(true);
+
+    const normalizedFormData = {
+      ...formData,
+      title: formData?.title?.trim() || "Aktivitet",
+    };
+
+    try {
+      if (onSubmit) {
+        // `onSubmit` kan just nu spara lokalt även om backend misslyckas.
+        // Därför används `false` bara när själva frontend-flödet inte kunde
+        // skapa/spara aktiviteten överhuvudtaget.
+        const wasSaved = await onSubmit(normalizedFormData);
+        if (wasSaved === false) {
+          setSubmitError("Kunde inte spara aktivitet i databasen.");
+          return;
+        }
+      }
+
+      // Vid lyckad submit återställer vi formuläret och stänger modalen,
+      // oavsett om sparningen gick till backend eller till lokal fallback.
+      setFormData({
+        title: "",
+        description: "",
+        date: "",
+        startTime: "",
+        endTime: "",
+        type: "meeting",
+      });
+      setIsModalOpen(false);
+    } catch {
+      setSubmitError("Kunde inte spara aktivitet i databasen.");
+    } finally {
+      setIsSubmitting(false);
     }
-    // Reset form
-    setFormData({
-      title: "",
-      description: "",
-      date: "",
-      startTime: "",
-      endTime: "",
-      type: "meeting",
-    });
-    setIsModalOpen(false);
   };
 
   return (
@@ -56,21 +85,24 @@ function AddActivityButton({ onSubmit }) {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Lägg till aktivitet</h2>
-              <button className="close-btn" onClick={handleCloseModal}>
+              <button
+                className="close-btn"
+                onClick={handleCloseModal}
+                disabled={isSubmitting}
+              >
                 ×
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="activity-form">
               <div className="form-group">
-                <label htmlFor="title">Titel *</label>
+                <label htmlFor="title">Titel</label>
                 <input
                   type="text"
                   id="title"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  required
                   placeholder="T.ex. Möte med kursledare"
                 />
               </div>
@@ -147,13 +179,24 @@ function AddActivityButton({ onSubmit }) {
                   type="button"
                   className="btn-cancel"
                   onClick={handleCloseModal}
+                  disabled={isSubmitting}
                 >
                   Avbryt
                 </button>
-                <button type="submit" className="btn-submit">
-                  Lägg till
+                <button
+                  type="submit"
+                  className="btn-submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Sparar..." : "Lägg till"}
                 </button>
               </div>
+
+              {submitError ? (
+                <p className="form-error" role="alert">
+                  {submitError}
+                </p>
+              ) : null}
             </form>
           </div>
         </div>

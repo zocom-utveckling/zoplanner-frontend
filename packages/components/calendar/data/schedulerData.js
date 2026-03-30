@@ -243,6 +243,19 @@ export function toLocalDateTime(dateValue) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
+function toActivityDateTime(dateValue, timeValue) {
+  const date = firstNonEmptyString(dateValue);
+  const rawTime = firstNonEmptyString(timeValue);
+  if (!date || !rawTime) return null;
+
+  const normalizedTime = rawTime.split(".")[0];
+  const withSeconds = /^\d{2}:\d{2}$/.test(normalizedTime)
+    ? `${normalizedTime}:00`
+    : normalizedTime;
+
+  return toLocalDateTime(`${date} ${withSeconds}`);
+}
+
 export async function fetchSchedulerEvents(user, options = {}) {
   if (!user?.id) {
     return [];
@@ -267,15 +280,13 @@ export async function fetchSchedulerEvents(user, options = {}) {
       consultantId = match?.id;
     }
 
-    if (!consultantId) {
-      return [];
+    if (consultantId) {
+      const assignmentsRes = await fetch(
+        `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
+      );
+
+      assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
     }
-
-    const assignmentsRes = await fetch(
-      `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
-    );
-
-    assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
   }
 
   const [consultantsRes, usersRes] = await Promise.all([
@@ -334,6 +345,10 @@ export async function fetchSchedulerEvents(user, options = {}) {
 
   const coursesRes = await fetch(`http://localhost:5027/api/Course`);
   const courses = coursesRes.ok ? await coursesRes.json() : [];
+  const activitiesRes = options?.includeAllConsultants
+    ? null
+    : await fetch(`http://localhost:5027/api/Activities`);
+  const activities = activitiesRes?.ok ? await activitiesRes.json() : [];
   const courseMap = new Map(
     (Array.isArray(courses) ? courses : [])
       .map((course) => [
@@ -349,6 +364,34 @@ export async function fetchSchedulerEvents(user, options = {}) {
   );
 
   const nextEvents = [];
+
+  (Array.isArray(activities) ? activities : [])
+    .filter((activity) => {
+      return String(activity?.userId) === String(user?.id);
+    })
+    .forEach((activity) => {
+      const start = toActivityDateTime(activity?.date, activity?.startTime);
+      const end = toActivityDateTime(activity?.date, activity?.endTime);
+      if (!start || !end || end <= start) return;
+
+      nextEvents.push({
+        id: activity?.id,
+        title: firstNonEmptyString(activity?.title) || "Aktivitet",
+        subtitle: firstNonEmptyString(activity?.description) || "",
+        description: firstNonEmptyString(activity?.description) || "",
+        start,
+        end,
+        type: firstNonEmptyString(activity?.type) || "meeting",
+        source: "activity",
+        context: {
+          consultant: firstNonEmptyString(
+            userNameById.get(activity?.userId),
+            user?.name,
+            user?.username,
+          ),
+        },
+      });
+    });
 
   assignments.forEach((assignment) => {
     const consultantName = getAssignmentConsultantName(

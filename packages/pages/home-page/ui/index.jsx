@@ -5,8 +5,8 @@ import { CoursesPage } from "@zoplanner/courses-page";
 import { MessagesPage } from "@zoplanner/messages-page";
 import "./index.css";
 
-import { use, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import { Profile_Page } from "../../profile-page/ui";
 
 function DashboardLayout({ user, activePage, setActivePage, children }) {
@@ -27,8 +27,18 @@ function DashboardLayout({ user, activePage, setActivePage, children }) {
 
 function HomePage() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState(null);
   const [activePage, setActivePage] = useState("dashboard");
+
+  useEffect(() => {
+    const viewFromUrl = searchParams.get("view");
+    if (viewFromUrl) {
+      setActivePage(viewFromUrl);
+    } else {
+      setActivePage("dashboard");
+    }
+  }, [searchParams]);
   console.log(localStorage.getItem("managerId"));
 
   useEffect(() => {

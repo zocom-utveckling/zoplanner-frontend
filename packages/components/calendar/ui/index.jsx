@@ -30,10 +30,13 @@ export default function Scheduler({
     initialView: monthOnly && !allSchedules ? "month" : "week",
     lockedView: monthOnly && !allSchedules ? "month" : null,
   });
-  const { events, loading, addEvent, removeEvent } = useSchedulerEvents(user, {
-    includeAllConsultants: allSchedules,
-    onlyBookedPasses: allSchedules,
-  });
+
+  const { events, loading, addEvent, updateEvent, removeEvent } =
+    useSchedulerEvents(user, {
+      includeAllConsultants: allSchedules,
+      onlyBookedPasses: allSchedules,
+    });
+
   const {
     filters,
     filterOptions,
@@ -47,24 +50,55 @@ export default function Scheduler({
     navigationView: view,
     useNavigationPeriod: allSchedules,
   });
+
   const availableViews = useMemo(
     () => (monthOnly && !allSchedules ? ["month"] : ["week", "month"]),
     [monthOnly, allSchedules],
   );
+
   const showFilters = monthOnly || allSchedules;
+
   const { selectedEvent, handleOpenEventModal, handleCloseEventModal } =
     useEventDetailsModal();
+
   const {
     isActivityModalOpen,
     activityFormData,
+    activityModalMode,
     handleOpenActivityModal,
+    handleOpenActivityModalForEvent,
     handleCloseActivityModal,
+    handleStartEditingActivity,
+    handleDeleteActivity,
     handleActivityChange,
     handleActivitySubmit,
   } = useActivityForm({
     onDateSelected: setFocusDate,
     onCreateEvent: addEvent,
+    onDeleteEvent: removeEvent,
+    onUpdateEvent: updateEvent,
   });
+
+  function isAddButtonActivity(eventItem) {
+    const hasDatabaseId = Number.isFinite(Number(eventItem?.id));
+
+    return (
+      hasDatabaseId ||
+      (eventItem?.source === "local" &&
+        typeof eventItem?.id === "string" &&
+        (eventItem.id.startsWith("local-") ||
+          eventItem.id.startsWith("manual-")))
+    );
+  }
+
+  function handleEventClick(eventItem) {
+    if (isAddButtonActivity(eventItem)) {
+      handleOpenActivityModalForEvent(eventItem);
+      return;
+    }
+
+    handleOpenEventModal(eventItem);
+  }
 
   function handleDeleteEvent(eventToDelete) {
     if (!eventToDelete?.id) return;
@@ -105,7 +139,7 @@ export default function Scheduler({
         loading={loading}
         monthOnly={monthOnly}
         allSchedules={allSchedules}
-        onEventClick={handleOpenEventModal}
+        onEventClick={handleEventClick}
         onDayClick={handleOpenActivityModal}
         onFocusDateChange={setFocusDate}
         onViewChange={setView}
@@ -115,6 +149,9 @@ export default function Scheduler({
         isOpen={isActivityModalOpen}
         onClose={handleCloseActivityModal}
         formData={activityFormData}
+        mode={activityModalMode}
+        onStartEdit={handleStartEditingActivity}
+        onDelete={handleDeleteActivity}
         onChange={handleActivityChange}
         onSubmit={handleActivitySubmit}
       />
