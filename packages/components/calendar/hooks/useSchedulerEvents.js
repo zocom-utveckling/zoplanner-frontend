@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { fetchSchedulerEvents, toLocalDateTime } from "../data/schedulerData";
 
+function emitActivitiesUpdated(userId) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(
+    new CustomEvent("zoplanner:activities:updated", {
+      detail: { userId },
+    }),
+  );
+}
+
 function toDatePart(value) {
   const date = toLocalDateTime(value);
   if (!date) return null;
@@ -59,6 +68,7 @@ function toActivityPayload(eventItem, userId) {
 export default function useSchedulerEvents(user, options = {}) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [refreshToken, setRefreshToken] = useState(0);
 
   async function addEvent(newEvent) {
     if (!newEvent) return;
@@ -109,6 +119,8 @@ export default function useSchedulerEvents(user, options = {}) {
       if (!response.ok) {
         return;
       }
+
+      emitActivitiesUpdated(user?.id ?? null);
     } catch {
       return;
     }
@@ -141,6 +153,8 @@ export default function useSchedulerEvents(user, options = {}) {
       if (!response.ok) {
         return;
       }
+
+      emitActivitiesUpdated(user?.id ?? null);
 
       const updatedActivity = await response.json().catch(() => null);
       const nextEvent = toEventFromActivity(updatedActivity, eventToPersist);
@@ -182,6 +196,35 @@ export default function useSchedulerEvents(user, options = {}) {
 
     return () => {
       isCancelled = true;
+    };
+  }, [user?.id, options?.includeAllConsultants, refreshToken]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    function handleActivitiesUpdated(event) {
+      const changedUserId = event?.detail?.userId;
+      if (options?.includeAllConsultants) {
+        setRefreshToken((current) => current + 1);
+        return;
+      }
+
+      if (!user?.id) return;
+      if (changedUserId == null || String(changedUserId) === String(user.id)) {
+        setRefreshToken((current) => current + 1);
+      }
+    }
+
+    window.addEventListener(
+      "zoplanner:activities:updated",
+      handleActivitiesUpdated,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "zoplanner:activities:updated",
+        handleActivitiesUpdated,
+      );
     };
   }, [user?.id, options?.includeAllConsultants]);
 

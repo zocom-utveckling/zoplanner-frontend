@@ -185,6 +185,14 @@ function Sidebar({ user }) {
         body: JSON.stringify(payload),
       });
 
+      if (response.ok && typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("zoplanner:activities:updated", {
+            detail: { userId },
+          }),
+        );
+      }
+
       return response.ok;
     } catch {
       return false;
