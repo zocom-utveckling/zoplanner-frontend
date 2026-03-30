@@ -280,15 +280,13 @@ export async function fetchSchedulerEvents(user, options = {}) {
       consultantId = match?.id;
     }
 
-    if (!consultantId) {
-      return [];
+    if (consultantId) {
+      const assignmentsRes = await fetch(
+        `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
+      );
+
+      assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
     }
-
-    const assignmentsRes = await fetch(
-      `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
-    );
-
-    assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
   }
 
   const [consultantsRes, usersRes] = await Promise.all([
@@ -347,8 +345,10 @@ export async function fetchSchedulerEvents(user, options = {}) {
 
   const coursesRes = await fetch(`http://localhost:5027/api/Course`);
   const courses = coursesRes.ok ? await coursesRes.json() : [];
-  const activitiesRes = await fetch(`http://localhost:5027/api/Activities`);
-  const activities = activitiesRes.ok ? await activitiesRes.json() : [];
+  const activitiesRes = options?.includeAllConsultants
+    ? null
+    : await fetch(`http://localhost:5027/api/Activities`);
+  const activities = activitiesRes?.ok ? await activitiesRes.json() : [];
   const courseMap = new Map(
     (Array.isArray(courses) ? courses : [])
       .map((course) => [
@@ -367,7 +367,6 @@ export async function fetchSchedulerEvents(user, options = {}) {
 
   (Array.isArray(activities) ? activities : [])
     .filter((activity) => {
-      if (options?.includeAllConsultants) return true;
       return String(activity?.userId) === String(user?.id);
     })
     .forEach((activity) => {
