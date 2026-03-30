@@ -11,12 +11,35 @@ const initialFormData = {
   type: "meeting",
 };
 
-export default function useActivityForm({ onCreateEvent, onDateSelected }) {
+function toFormDataFromEvent(eventItem) {
+  const start = toLocalDateTime(eventItem?.start);
+  const end = toLocalDateTime(eventItem?.end);
+
+  return {
+    title: eventItem?.title || "",
+    description: eventItem?.description || eventItem?.subtitle || "",
+    date: start ? format(start, "yyyy-MM-dd") : "",
+    startTime: start ? format(start, "HH:mm") : "",
+    endTime: end ? format(end, "HH:mm") : "",
+    type: eventItem?.type || "meeting",
+  };
+}
+
+export default function useActivityForm({
+  onCreateEvent,
+  onDeleteEvent,
+  onUpdateEvent,
+  onDateSelected,
+}) {
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
   const [activityFormData, setActivityFormData] = useState(initialFormData);
+  const [activityModalMode, setActivityModalMode] = useState("create");
+  const [editingEventId, setEditingEventId] = useState(null);
 
   function resetForm() {
     setActivityFormData(initialFormData);
+    setActivityModalMode("create");
+    setEditingEventId(null);
   }
 
   function handleOpenActivityModal(date) {
@@ -26,11 +49,45 @@ export default function useActivityForm({ onCreateEvent, onDateSelected }) {
       ...initialFormData,
       date: selectedDate,
     });
+    setActivityModalMode("create");
+    setEditingEventId(null);
+    setIsActivityModalOpen(true);
+  }
+
+  function handleOpenActivityModalForEvent(eventItem) {
+    if (!eventItem?.id) return;
+
+    const start = toLocalDateTime(eventItem.start);
+    if (start) {
+      onDateSelected(start);
+    }
+
+    setActivityFormData(toFormDataFromEvent(eventItem));
+    setEditingEventId(eventItem.id);
+    setActivityModalMode("view");
     setIsActivityModalOpen(true);
   }
 
   function handleCloseActivityModal() {
     setIsActivityModalOpen(false);
+    resetForm();
+  }
+
+  function handleStartEditingActivity() {
+    if (!editingEventId) return;
+    setActivityModalMode("edit");
+  }
+
+  function handleDeleteActivity() {
+    if (!editingEventId) return;
+
+    const confirmed = window.confirm(
+      "Är du säker på att du vill ta bort den här aktiviteten?",
+    );
+    if (!confirmed) return;
+
+    onDeleteEvent?.(editingEventId);
+    handleCloseActivityModal();
   }
 
   function handleActivityChange(event) {
@@ -51,26 +108,44 @@ export default function useActivityForm({ onCreateEvent, onDateSelected }) {
       `${activityFormData.date} ${activityFormData.endTime}:00`,
     );
 
-    if (start && end) {
+    if (!start || !end || end <= start) {
+      return;
+    }
+
+    if (activityModalMode === "edit" && editingEventId) {
+      onUpdateEvent?.({
+        id: editingEventId,
+        title: activityFormData.title,
+        subtitle: activityFormData.description,
+        description: activityFormData.description,
+        start,
+        end,
+        type: activityFormData.type || "meeting",
+      });
+    } else {
       onCreateEvent({
         id: `manual-${Date.now()}`,
         title: activityFormData.title,
         subtitle: activityFormData.description,
+        description: activityFormData.description,
         start,
         end,
         type: activityFormData.type || "manual",
       });
     }
 
-    resetForm();
-    setIsActivityModalOpen(false);
+    handleCloseActivityModal();
   }
 
   return {
     isActivityModalOpen,
     activityFormData,
+    activityModalMode,
     handleOpenActivityModal,
+    handleOpenActivityModalForEvent,
     handleCloseActivityModal,
+    handleStartEditingActivity,
+    handleDeleteActivity,
     handleActivityChange,
     handleActivitySubmit,
   };

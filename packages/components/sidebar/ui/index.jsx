@@ -161,8 +161,34 @@ function Sidebar({ user }) {
     };
   }, [user?.id, user?.consultantId, user?.consultant?.id]);
 
-  const handleSubmitActivity = (activityData) => {
-    console.log("Ny aktivitet:", activityData);
+  const handleSubmitActivity = async (activityData) => {
+    if (!user?.id) return false;
+
+    const userId = user?.id || null;
+
+    const payload = {
+      title: activityData?.title || "Aktivitet",
+      type: activityData?.type || "meeting",
+      date: activityData?.date,
+      startTime: activityData?.startTime,
+      endTime: activityData?.endTime,
+      description: activityData?.description || "",
+      ...(userId ? { userId } : {}),
+    };
+
+    try {
+      const response = await fetch(`http://localhost:5027/api/Activities`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      return response.ok;
+    } catch {
+      return false;
+    }
   };
 
   const listedUsers = user
