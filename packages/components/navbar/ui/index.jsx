@@ -88,19 +88,28 @@ function Navbar({ user, activePage, setActivePage }) {
               </button>
             )}
             <button
-              onClick={() => setActivePage("dashboard")}
+              onClick={() => {
+                setActivePage("dashboard");
+                navigate(appRoutesConfig.home.replace(":id", user.id) + "?view=dashboard");
+              }}
               className={activePage == "dashboard" ? "active" : ""}
             >
               Dashboard
             </button>
             <button
-              onClick={() => setActivePage("courses")}
+              onClick={() => {
+                setActivePage("courses");
+                navigate(appRoutesConfig.home.replace(":id", user.id) + "?view=courses");
+              }}
               className={activePage == "courses" ? "active" : ""}
             >
               Courses
             </button>
             <button
-              onClick={() => setActivePage("messages")}
+              onClick={() => {
+                setActivePage("messages");
+                navigate(appRoutesConfig.home.replace(":id", user.id) + "?view=messages");
+              }}
               className={activePage == "messages" ? "active" : ""}
             >
               Messages
@@ -132,7 +141,10 @@ function Navbar({ user, activePage, setActivePage }) {
 
             {showDropdown && (
               <div className="dropdown">
-                <Link onClick={() => setActivePage("profile")}>
+                <Link
+                  to={appRoutesConfig.profile.replace(":id", user.id)}
+                  onClick={() => setActivePage("profile")}
+                >
                   View profile
                 </Link>
                 <Link to={"#"} onClick={() => setOpenConfirm(true)}>
