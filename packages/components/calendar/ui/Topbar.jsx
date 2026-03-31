@@ -2,6 +2,43 @@ import { memo } from "react";
 import { endOfWeek, format, startOfWeek } from "date-fns";
 import sv from "date-fns/locale/sv";
 
+function getSwedishLabel(value) {
+  if (value === "REMOTE") return "Distans";
+  if (value === "ONSITE") return "På plats";
+  if (value === "HYBRID") return "Hybrid";
+  return value;
+}
+
+function capitalizeWords(value) {
+  if (!value) return "";
+  return value
+    .split(" ")
+    .map((part) =>
+      part ? part.charAt(0).toLocaleUpperCase("sv") + part.slice(1) : part,
+    )
+    .join(" ");
+}
+
+function getAllSchedulesSubtitle(focusDate, view) {
+  const safeDate = focusDate || new Date();
+
+  if (view === "month") {
+    return capitalizeWords(format(safeDate, "MMMM yyyy", { locale: sv }));
+  }
+
+  if (view === "week") {
+    const weekStart = startOfWeek(safeDate, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(safeDate, { weekStartsOn: 1 });
+    return `${format(weekStart, "d MMM", { locale: sv })} – ${format(
+      weekEnd,
+      "d MMM yyyy",
+      { locale: sv },
+    )}`;
+  }
+
+  return capitalizeWords(format(safeDate, "EEEE d MMMM yyyy", { locale: sv }));
+}
+
 function Topbar({
   title,
   focusDate,
@@ -27,45 +64,6 @@ function Topbar({
   onPrev,
   onNext,
 }) {
-  function capitalizeWords(value) {
-    if (!value) return "";
-    return value
-      .split(" ")
-      .map((part) =>
-        part ? part.charAt(0).toLocaleUpperCase("sv") + part.slice(1) : part,
-      )
-      .join(" ");
-  }
-
-  function getSwedishLabel(value) {
-    if (value === "REMOTE") return "Distans";
-    if (value === "ONSITE") return "På plats";
-    if (value === "HYBRID") return "Hybrid";
-    return value;
-  }
-
-  function getAllSchedulesSubtitle() {
-    const safeDate = focusDate || new Date();
-
-    if (view === "month") {
-      return capitalizeWords(format(safeDate, "MMMM yyyy", { locale: sv }));
-    }
-
-    if (view === "week") {
-      const weekStart = startOfWeek(safeDate, { weekStartsOn: 1 });
-      const weekEnd = endOfWeek(safeDate, { weekStartsOn: 1 });
-      return `${format(weekStart, "d MMM", { locale: sv })} – ${format(
-        weekEnd,
-        "d MMM yyyy",
-        { locale: sv },
-      )}`;
-    }
-
-    return capitalizeWords(
-      format(safeDate, "EEEE d MMMM yyyy", { locale: sv }),
-    );
-  }
-
   function renderViewSegment() {
     return (
       <div className="segment">
@@ -89,6 +87,60 @@ function Topbar({
     );
   }
 
+  function renderCommonFilters() {
+    return (
+      <>
+        <input
+          className="search"
+          placeholder="Sök lärare, kurs, ort..."
+          value={filters.searchQuery}
+          onChange={(event) =>
+            onFilterChange?.("searchQuery", event.target.value)
+          }
+        />
+
+        <select
+          className="filter-select"
+          value={filters.teacher}
+          onChange={(event) => onFilterChange?.("teacher", event.target.value)}
+        >
+          <option value="">Alla lärare</option>
+          {filterOptions.teachers.map((teacher) => (
+            <option key={teacher} value={teacher}>
+              {teacher}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="filter-select"
+          value={filters.course}
+          onChange={(event) => onFilterChange?.("course", event.target.value)}
+        >
+          <option value="">Alla kurser</option>
+          {filterOptions.courses.map((course) => (
+            <option key={course} value={course}>
+              {course}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="filter-select"
+          value={filters.location}
+          onChange={(event) => onFilterChange?.("location", event.target.value)}
+        >
+          <option value="">Alla städer</option>
+          {filterOptions.locations.map((locationValue) => (
+            <option key={locationValue} value={locationValue}>
+              {getSwedishLabel(locationValue)}
+            </option>
+          ))}
+        </select>
+      </>
+    );
+  }
+
   return (
     <div className={`topbar ${allSchedules ? "topbar--all-schedules" : ""}`}>
       {allSchedules ? (
@@ -99,7 +151,7 @@ function Topbar({
                 ←
               </button>
               <p className="topbar-heading__subtitle">
-                {getAllSchedulesSubtitle()}
+                {getAllSchedulesSubtitle(focusDate, view)}
               </p>
               <button className="nav-btn" onClick={onNext}>
                 →
@@ -116,59 +168,7 @@ function Topbar({
 
           {showFilters ? (
             <div className="controls controls--all-schedules controls--all-schedules-filters">
-              <input
-                className="search"
-                placeholder="Sök lärare, kurs, ort..."
-                value={filters.searchQuery}
-                onChange={(event) =>
-                  onFilterChange?.("searchQuery", event.target.value)
-                }
-              />
-
-              <select
-                className="filter-select"
-                value={filters.teacher}
-                onChange={(event) =>
-                  onFilterChange?.("teacher", event.target.value)
-                }
-              >
-                <option value="">Alla lärare</option>
-                {filterOptions.teachers.map((teacher) => (
-                  <option key={teacher} value={teacher}>
-                    {teacher}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                className="filter-select"
-                value={filters.course}
-                onChange={(event) =>
-                  onFilterChange?.("course", event.target.value)
-                }
-              >
-                <option value="">Alla kurser</option>
-                {filterOptions.courses.map((course) => (
-                  <option key={course} value={course}>
-                    {course}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                className="filter-select"
-                value={filters.location}
-                onChange={(event) =>
-                  onFilterChange?.("location", event.target.value)
-                }
-              >
-                <option value="">Alla städer</option>
-                {filterOptions.locations.map((locationValue) => (
-                  <option key={locationValue} value={locationValue}>
-                    {getSwedishLabel(locationValue)}
-                  </option>
-                ))}
-              </select>
+              {renderCommonFilters()}
 
               <select
                 className="filter-select"
@@ -198,59 +198,7 @@ function Topbar({
           <div className="controls">
             {showFilters ? (
               <>
-                <input
-                  className="search"
-                  placeholder="Sök lärare, kurs, ort..."
-                  value={filters.searchQuery}
-                  onChange={(event) =>
-                    onFilterChange?.("searchQuery", event.target.value)
-                  }
-                />
-
-                <select
-                  className="filter-select"
-                  value={filters.teacher}
-                  onChange={(event) =>
-                    onFilterChange?.("teacher", event.target.value)
-                  }
-                >
-                  <option value="">Alla lärare</option>
-                  {filterOptions.teachers.map((teacher) => (
-                    <option key={teacher} value={teacher}>
-                      {teacher}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  className="filter-select"
-                  value={filters.course}
-                  onChange={(event) =>
-                    onFilterChange?.("course", event.target.value)
-                  }
-                >
-                  <option value="">Alla kurser</option>
-                  {filterOptions.courses.map((course) => (
-                    <option key={course} value={course}>
-                      {course}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  className="filter-select"
-                  value={filters.location}
-                  onChange={(event) =>
-                    onFilterChange?.("location", event.target.value)
-                  }
-                >
-                  <option value="">Alla städer</option>
-                  {filterOptions.locations.map((locationValue) => (
-                    <option key={locationValue} value={locationValue}>
-                      {getSwedishLabel(locationValue)}
-                    </option>
-                  ))}
-                </select>
+                {renderCommonFilters()}
 
                 <select
                   className="filter-select"

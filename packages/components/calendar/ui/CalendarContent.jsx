@@ -52,7 +52,6 @@ function CalendarContent({
           onDayClick={onDayClick}
           onEventClick={onEventClick}
           showBookedPerson={monthOnly}
-          deduplicateConsultantsPerDay={allSchedules}
         />
       )}
       {loading && filteredEvents.length === 0 ? (

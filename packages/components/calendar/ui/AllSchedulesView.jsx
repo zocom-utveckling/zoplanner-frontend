@@ -4,15 +4,18 @@ import {
   eachDayOfInterval,
   endOfMonth,
   format,
+  isSameDay,
   startOfDay,
   startOfMonth,
 } from "date-fns";
-import { isSameDay } from "date-fns";
 import sv from "date-fns/locale/sv";
 
 const HOURS_START = 8;
 const HOURS_END = 18;
 const SLOT_MINUTES = 30;
+const GRID_START_MIN = HOURS_START * 60;
+const GRID_END_MIN = HOURS_END * 60;
+const TOTAL_GRID_MIN = GRID_END_MIN - GRID_START_MIN;
 
 function minutesFromStartOfDay(date) {
   const start = startOfDay(date);
@@ -25,9 +28,6 @@ function clamp(value, min, max) {
 
 function formatAvailability(value) {
   if (!value) return "";
-  if (value === "REMOTE") return "REMOTE";
-  if (value === "ONSITE") return "ONSITE";
-  if (value === "HYBRID") return "HYBRID";
   return String(value).toUpperCase();
 }
 
@@ -232,28 +232,17 @@ export default function AllSchedulesView({
                   </div>
 
                   {row.events.map((eventItem) => {
-                    const gridStartMin = HOURS_START * 60;
-                    const gridEndMin = HOURS_END * 60;
                     const startMin = minutesFromStartOfDay(eventItem.start);
                     const endMin = minutesFromStartOfDay(eventItem.end);
                     const safeEndMin = Math.max(endMin, startMin + 30);
 
-                    const visibleStart = clamp(
-                      startMin,
-                      gridStartMin,
-                      gridEndMin,
-                    );
-                    const visibleEnd = clamp(
-                      safeEndMin,
-                      gridStartMin,
-                      gridEndMin,
-                    );
-                    const totalGridMin = gridEndMin - gridStartMin;
+                    const visibleStart = clamp(startMin, GRID_START_MIN, GRID_END_MIN);
+                    const visibleEnd = clamp(safeEndMin, GRID_START_MIN, GRID_END_MIN);
 
                     const left =
-                      ((visibleStart - gridStartMin) / totalGridMin) * 100;
+                      ((visibleStart - GRID_START_MIN) / TOTAL_GRID_MIN) * 100;
                     const width =
-                      ((visibleEnd - visibleStart) / totalGridMin) * 100;
+                      ((visibleEnd - visibleStart) / TOTAL_GRID_MIN) * 100;
 
                     if (width <= 0) {
                       return null;
