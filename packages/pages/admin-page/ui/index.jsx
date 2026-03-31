@@ -6,7 +6,13 @@ import {
   upsertPlanningDraft,
 } from "@zoplanner/planning-tool";
 import { Navbar } from "@zoplanner/navbar";
-import { AdminLayout } from "@zoplanner/admin";
+import {
+  AdminLayout,
+  CustomerRegistry,
+  ConsultantRegistry,
+  CourseRegistry,
+  ManagerTaskOverview,
+} from "@zoplanner/admin";
 import { useUserById, useAccess } from "@zoplanner/app-hooks";
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -88,71 +94,20 @@ function AdminPage() {
       >
         {adminView === "overview" && (
           <div>
-            <h1>Översikt</h1>
-            <div className="overview-grid">
-              <div className="overview-card">
-                <h2>Pågående</h2>
-                <h3>Frontendutbildning</h3>
-                <ul>
-                  <li>Granskning av kodprojekt</li>
-                  <li>Förbereda lektion</li>
-                  <li>Möte med kursledare</li>
-                  <li>Sätta betyg på inlämning</li>
-                </ul>
-              </div>
-              <div className="overview-card">
-                <h2>Kommande uppgifter</h2>
-                <ul>
-                  <li>26 apr – Granskning av kodprojekt</li>
-                  <li>27 apr – Förbereda lektion</li>
-                  <li>28 apr – Möte med kursledare</li>
-                </ul>
-              </div>
-              <section className="admin-card">
-                <PlanningDraftList
-                  drafts={planningDrafts}
-                  onSelect={(draft) => setCourseDraft(draft)}
-                />
-              </section>
-            </div>
+            <ManagerTaskOverview />
+
+            <PlanningDraftList
+              drafts={planningDrafts}
+              onSelect={(draft) => setCourseDraft(draft)}
+            />
           </div>
         )}
 
-        {adminView === "customers" && (
-          <div>
-            <h1>Kunder</h1>
-            <button>+ Ny kund</button>
-            <ul>
-              <li>AcadeMedia</li>
-              <li>NTI Gymnasiet</li>
-              <li>Yrgo</li>
-            </ul>
-          </div>
-        )}
+        {adminView === "customers" && <CustomerRegistry />}
 
-        {adminView === "consultants" && (
-          <div>
-            <h1>Konsulter</h1>
-            <button>+ Ny konsult</button>
-            <ul>
-              <li>Anna Svensson</li>
-              <li>Johan Eriksson</li>
-              <li>Maria Lund</li>
-            </ul>
-          </div>
-        )}
+        {adminView === "consultants" && <ConsultantRegistry />}
 
-        {adminView === "courses" && (
-          <div>
-            <h1>Kurser</h1>
-            <button>+ Ny kurs</button>
-            <ul>
-              <li>Frontend Bootcamp</li>
-              <li>Java Grundkurs</li>
-              <li>UX Design</li>
-            </ul>
-          </div>
-        )}
+        {adminView === "courses" && <CourseRegistry />}
 
         {adminView === "planner" && (
           <PlannerMonthView
