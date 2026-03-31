@@ -1,1 +1,1 @@
-export { default as AdminLayout } from "./ui";
+export * from "./ui";
