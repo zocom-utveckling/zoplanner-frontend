@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { customerService } from "../api"; // din export
+import { customerService } from "../api"; 
 
 export function useCustomers() {
   const [customers, setCustomers] = useState([]);
@@ -10,7 +10,7 @@ export function useCustomers() {
     try {
       setLoading(true);
       const res = await customerService.getAll();
-      setCustomers(res.data);
+      setCustomers(res);
     } catch (err) {
       console.error("Failed to load customers", err);
     } finally {
@@ -21,7 +21,7 @@ export function useCustomers() {
   const createCustomer = async (payload) => {
     try {
       const res = await customerService.create(payload);
-      const newCustomer = res.data;
+      const newCustomer = res;
 
       setCustomers((prev) => [...prev, newCustomer]);
       setSelectedCustomerId(newCustomer.id);
