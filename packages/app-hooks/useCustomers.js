@@ -41,12 +41,27 @@ export function useCustomers() {
     loadCustomers();
   }, []);
 
+  const removeCustomer = async (id) => {
+  try {
+    await customerService.remove(id);
+
+    setCustomers((prev) => prev.filter((c) => c.id !== id));
+
+    // om du råkar ha den selected → nollställ
+    setSelectedCustomerId((prev) => (prev === id ? null : prev));
+  } catch (err) {
+    console.error("Failed to delete customer", err);
+    throw err;
+  }
+};
+
   return {
     customers,
     selectedCustomer,
     selectedCustomerId,
     setSelectedCustomerId,
     createCustomer,
+    removeCustomer,
     loading,
     reload: loadCustomers,
   };
