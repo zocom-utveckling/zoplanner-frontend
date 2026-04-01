@@ -15,11 +15,7 @@ export function CustomerRegistry() {
   const [newCustomerName, setNewCustomerName] = useState("");
   const [newCustomerCity, setNewCustomerCity] = useState("");
   const [isCreating, setIsCreating] = useState(false);
-  /*
-  const [editingCustomerId, setEditingCustomerId] = useState(null);
-  const [editName, setEditName] = useState("");
-  const [editCity, setEditCity] = useState("");
-*/
+
   const [search, setSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [openFilter, setOpenFilter] = useState(null); // "city" | "subject"
@@ -98,23 +94,6 @@ export function CustomerRegistry() {
       return true;
     });
 
-  /*
-  const toggleFilter = (key, value = true) => {
-    setFilters((prev) => {
-      if (key === "mine") {
-        return {
-          ...prev,
-          mine: !prev.mine, // 👈 toggle true/false
-        };
-      }
-
-      return {
-        ...prev,
-        [key]: prev[key] === value ? null : value,
-      };
-    });
-  };
-  */
   if (loading) return <p>Laddar kunder...</p>;
   if (!myCustomers.length) return <p>Inga kunder hittades.</p>;
 
