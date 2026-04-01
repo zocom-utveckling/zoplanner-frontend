@@ -1,5 +1,13 @@
+import { useCustomers, useCurrentManagerId } from "@zoplanner/app-hooks";
+
 export function CustomerRegistry() {
-  const customers = ["AcadeMedia", "NTI Gymnasiet", "Yrgo"];
+  const { customers, loading } = useCustomers();
+  const managerId = useCurrentManagerId();
+
+  const myCustomers = customers.filter((c) => c.managerId === managerId);
+
+  if (loading) return <p>Laddar kunder...</p>;
+  if (!myCustomers.length) return <p>Inga kunder hittades.</p>;
 
   return (
     <div>
@@ -8,8 +16,10 @@ export function CustomerRegistry() {
       <button>+ Ny kund</button>
 
       <ul>
-        {customers.map((c) => (
-          <li key={c}>{c}</li>
+        {myCustomers.map((c) => (
+          <li key={c.id}>
+            {c.name} - {c.city}
+          </li>
         ))}
       </ul>
     </div>
