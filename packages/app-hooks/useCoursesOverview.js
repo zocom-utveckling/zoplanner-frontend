@@ -47,6 +47,7 @@ export function useCoursesOverview() {
           return {
             id: course.id,
             name: course.name,
+             managerId: course.managerId,
 
             customerName: customer?.name,
 
