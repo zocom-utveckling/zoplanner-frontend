@@ -62,7 +62,9 @@ export default function useSchedulerNavigation({
       return;
     }
 
-    setFocusDate((currentDate) => addMonths(currentDate, -1));
+    setFocusDate((currentDate) =>
+      startOfMonth(addMonths(startOfMonth(currentDate), -1)),
+    );
   }
 
   function goNext() {
@@ -76,7 +78,9 @@ export default function useSchedulerNavigation({
       return;
     }
 
-    setFocusDate((currentDate) => addMonths(currentDate, 1));
+    setFocusDate((currentDate) =>
+      startOfMonth(addMonths(startOfMonth(currentDate), 1)),
+    );
   }
 
   return {

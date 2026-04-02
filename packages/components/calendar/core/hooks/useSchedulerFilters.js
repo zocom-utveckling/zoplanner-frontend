@@ -21,10 +21,19 @@ function normalizeSearchValue(value) {
   return value.trim().toLocaleLowerCase("sv");
 }
 
-function intersectsPeriod(eventItem, period) {
+function periodFromView(view) {
+  if (view === "day") return "today";
+  if (view === "week") return "thisWeek";
+  return "thisMonth";
+}
+
+function intersectsPeriod(eventItem, period, referenceDate = new Date()) {
   if (!period || period === "all") return true;
 
-  const now = new Date();
+  const baseDate =
+    referenceDate instanceof Date && !Number.isNaN(referenceDate.getTime())
+      ? referenceDate
+      : new Date();
   const eventStart = eventItem?.start instanceof Date ? eventItem.start : null;
   const eventEnd = eventItem?.end instanceof Date ? eventItem.end : eventStart;
 
@@ -39,17 +48,17 @@ function intersectsPeriod(eventItem, period) {
   let periodEnd = null;
 
   if (period === "today") {
-    periodStart = startOfDay(now);
-    periodEnd = endOfDay(now);
+    periodStart = startOfDay(baseDate);
+    periodEnd = endOfDay(baseDate);
   } else if (period === "thisWeek") {
-    periodStart = startOfWeek(now, { weekStartsOn: 1 });
-    periodEnd = endOfWeek(now, { weekStartsOn: 1 });
+    periodStart = startOfWeek(baseDate, { weekStartsOn: 1 });
+    periodEnd = endOfWeek(baseDate, { weekStartsOn: 1 });
   } else if (period === "thisMonth") {
-    periodStart = startOfMonth(now);
-    periodEnd = endOfMonth(now);
+    periodStart = startOfMonth(baseDate);
+    periodEnd = endOfMonth(baseDate);
   } else if (period === "next30Days") {
-    periodStart = startOfDay(now);
-    periodEnd = endOfDay(addDays(now, 30));
+    periodStart = startOfDay(baseDate);
+    periodEnd = endOfDay(addDays(baseDate, 30));
   }
 
   if (!periodStart || !periodEnd) return true;
@@ -57,14 +66,19 @@ function intersectsPeriod(eventItem, period) {
   return eventStart <= periodEnd && safeEventEnd >= periodStart;
 }
 
-export default function useSchedulerFilters(events) {
-  const [filters, setFilters] = useState({
+export default function useSchedulerFilters(events, options = {}) {
+  const navigationDate = options?.navigationDate;
+  const navigationView = options?.navigationView || "month";
+  const useNavigationPeriod = Boolean(options?.useNavigationPeriod);
+
+  const [filters, setFilters] = useState(() => ({
     teacher: "",
     course: "",
     location: "",
-    period: "all",
+    period: options?.defaultPeriod || "all",
     searchQuery: "",
-  });
+    sortBy: options?.defaultSortBy || "name-asc",
+  }));
   const [consultantUsers, setConsultantUsers] = useState([]);
   const [userCities, setUserCities] = useState([]);
 
@@ -120,7 +134,11 @@ export default function useSchedulerFilters(events) {
   }, [events, consultantUsers, userCities]);
 
   const filteredEvents = useMemo(() => {
-    return events.filter((eventItem) => {
+    const effectivePeriod = useNavigationPeriod
+      ? periodFromView(navigationView)
+      : filters.period;
+
+    const visibleEvents = events.filter((eventItem) => {
       const consultantName = eventItem?.context?.consultant || "";
       const courseName = eventItem?.context?.course || eventItem?.title || "";
       const locationValue =
@@ -139,7 +157,11 @@ export default function useSchedulerFilters(events) {
         !normalizedSelectedLocation ||
         normalizedLocationValue === normalizedSelectedLocation;
 
-      const periodMatch = intersectsPeriod(eventItem, filters.period);
+      const periodMatch = intersectsPeriod(
+        eventItem,
+        effectivePeriod,
+        navigationDate,
+      );
 
       const query = normalizeSearchValue(filters.searchQuery);
       const searchMatch =
@@ -156,7 +178,30 @@ export default function useSchedulerFilters(events) {
         searchMatch
       );
     });
-  }, [events, filters]);
+
+    const nextEvents = [...visibleEvents];
+    const direction = filters.sortBy === "name-desc" ? -1 : 1;
+
+    nextEvents.sort((eventA, eventB) => {
+      const eventATeacher = eventA?.context?.consultant || "";
+      const eventBTeacher = eventB?.context?.consultant || "";
+      const byTeacher =
+        eventATeacher.localeCompare(eventBTeacher, "sv", {
+          sensitivity: "base",
+        }) * direction;
+
+      if (byTeacher !== 0) return byTeacher;
+
+      const byStart = eventA.start - eventB.start;
+      if (byStart !== 0) return byStart;
+
+      return (eventA.title || "").localeCompare(eventB.title || "", "sv", {
+        sensitivity: "base",
+      });
+    });
+
+    return nextEvents;
+  }, [events, filters, navigationDate, navigationView, useNavigationPeriod]);
 
   const handleFilterChange = useCallback((filterKey, value) => {
     setFilters((prev) => ({
@@ -170,5 +215,6 @@ export default function useSchedulerFilters(events) {
     filterOptions,
     filteredEvents,
     handleFilterChange,
+    consultantUsers,
   };
 }

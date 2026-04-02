@@ -43,7 +43,10 @@ export default function MonthView({
         {monthGridDays.map((d) => {
           const inMonth = isSameMonth(d, focusDate);
           const allDayEvents = events
-            .filter((e) => e.type !== "session")
+            .filter((e) => {
+              if (e.type === "session") return isSameDay(e.start, d);
+              return true;
+            })
             .filter((e) => {
               if (isSameDay(e.start, d)) return true;
               if (!e.end) return false;

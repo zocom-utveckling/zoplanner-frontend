@@ -105,7 +105,7 @@ function AdminPage() {
 
         {adminView === "customers" && <CustomerRegistry />}
 
-        {adminView === "consultants" && <ConsultantRegistry />}
+        {adminView === "consultants" && <ConsultantRegistry user={user} />}
 
         {adminView === "courses" && <CourseRegistry />}
 

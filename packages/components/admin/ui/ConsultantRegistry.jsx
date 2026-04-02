@@ -1,13 +1,19 @@
-export function ConsultantRegistry() {
+import { AllSchedulesScheduler } from "@zoplanner/calendar";
+
+export function ConsultantRegistry({ user }) {
+  if (!user) {
+    return null;
+  }
+
   return (
-    <div>
-      <h1>Konsulter</h1>
-      <button>+ Ny konsult</button>
-      <ul>
-        <li>Anna Svensson</li>
-        <li>Johan Eriksson</li>
-        <li>Maria Lund</li>
-      </ul>
-    </div>
+    <>
+      <div className="consultant-registry__header">
+        <h1>Konsulter</h1>
+        <button type="button" className="consultant-registry__add-button">
+          Lägg till konsult
+        </button>
+      </div>
+      <AllSchedulesScheduler user={user} />
+    </>
   );
 }
