@@ -1,20 +1,16 @@
-import Topbar from "./Topbar";
-import CalendarContent from "./CalendarContent";
-import ActivityModal from "./modals/ActivityModal";
-import EventDetailsModal from "./modals/EventDetailsModal";
-import useSchedulerNavigation from "../hooks/useSchedulerNavigation";
-import useActivityForm from "../hooks/useActivityForm";
-import useEventDetailsModal from "../hooks/useEventDetailsModal";
-import useSchedulerEvents from "../hooks/useSchedulerEvents";
-import useSchedulerFilters from "../hooks/useSchedulerFilters";
-import { useMemo } from "react";
-import "./index.css";
+import "./DashboardScheduler.css";
+import DashboardTopbar from "./DashboardTopbar";
+import DashboardCalendarContent from "./DashboardCalendarContent";
+import ActivityModal from "../core/ui/modals/ActivityModal";
+import EventDetailsModal from "../core/ui/modals/EventDetailsModal";
+import useSchedulerNavigation from "../core/hooks/useSchedulerNavigation";
+import useActivityForm from "../core/hooks/useActivityForm";
+import useEventDetailsModal from "../core/hooks/useEventDetailsModal";
+import useSchedulerEvents from "../core/hooks/useSchedulerEvents";
+import useSchedulerFilters from "../core/hooks/useSchedulerFilters";
+import "../core/index.css";
 
-export default function Scheduler({
-  user,
-  monthOnly = false,
-  allSchedules = false,
-}) {
+export function DashboardScheduler({ user }) {
   const {
     view,
     setView,
@@ -26,23 +22,22 @@ export default function Scheduler({
     goToday,
     goPrev,
     goNext,
-  } = useSchedulerNavigation({
-    initialView: monthOnly ? "month" : "week",
-    lockedView: monthOnly ? "month" : null,
-  });
+  } = useSchedulerNavigation();
+
   const { events, loading, addEvent, updateEvent, removeEvent } =
-    useSchedulerEvents(user, {
-      includeAllConsultants: allSchedules,
-    });
-  const { filters, filterOptions, filteredEvents, handleFilterChange } =
-    useSchedulerFilters(events);
-  const availableViews = useMemo(
-    () => (monthOnly ? ["month"] : ["day", "week", "month"]),
-    [monthOnly],
-  );
-  const showFilters = monthOnly || allSchedules;
+    useSchedulerEvents(user);
+
+  const { filteredEvents } = useSchedulerFilters(events, {
+    defaultPeriod: "all",
+    defaultSortBy: "name-asc",
+    navigationDate: focusDate,
+    navigationView: view,
+    useNavigationPeriod: false,
+  });
+
   const { selectedEvent, handleOpenEventModal, handleCloseEventModal } =
     useEventDetailsModal();
+
   const {
     isActivityModalOpen,
     activityFormData,
@@ -94,29 +89,22 @@ export default function Scheduler({
 
   return (
     <main className="main">
-      <Topbar
+      <DashboardTopbar
         title={title}
         view={view}
         setView={setView}
-        availableViews={availableViews}
-        showFilters={showFilters}
-        filterOptions={filterOptions}
-        filters={filters}
-        onFilterChange={handleFilterChange}
         onGoToday={goToday}
         onPrev={goPrev}
         onNext={goNext}
       />
 
-      <CalendarContent
+      <DashboardCalendarContent
         view={view}
         focusDate={focusDate}
         weekDays={weekDays}
         monthGridDays={monthGridDays}
         filteredEvents={filteredEvents}
         loading={loading}
-        monthOnly={monthOnly}
-        allSchedules={allSchedules}
         onEventClick={handleEventClick}
         onDayClick={handleOpenActivityModal}
       />
