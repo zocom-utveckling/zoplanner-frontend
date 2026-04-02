@@ -95,7 +95,6 @@ export function CustomerRegistry() {
     });
 
   if (loading) return <p>Laddar kunder...</p>;
-  if (!myCustomers.length) return <p>Inga kunder hittades.</p>;
 
   const handleCreateCustomer = async () => {
     try {
@@ -258,34 +257,42 @@ export function CustomerRegistry() {
 
       <div className="customer-registry__list-container">
         <ul className="customer-registry__list">
-          {filteredCustomers.map((c) => (
-            <li
-              key={c.id}
-              onClick={() => setSelectedCustomerId(c.id)}
-              style={{ cursor: "pointer" }}
-              className="customer-registry__item"
-            >
-              <span>
-                {c.name} - {c.city}
-              </span>
-              <div className="customer-registry__actions">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const confirmed = window.confirm(
-                      `Är du säker på att du vill ta bort ${c.name}?`,
-                    );
-
-                    if (confirmed) {
-                      removeCustomer(c.id);
-                    }
-                  }}
-                >
-                  Ta bort
-                </button>
-              </div>
+          {filteredCustomers.length === 0 ? (
+            <li className="customer-registry__empty">
+              {customers.length === 0
+                ? "Inga kunder ännu. Klicka på + Ny kund för att lägga till."
+                : "Inga kunder matchar din sökning eller filter."}
             </li>
-          ))}
+          ) : (
+            filteredCustomers.map((c) => (
+              <li
+                key={c.id}
+                onClick={() => setSelectedCustomerId(c.id)}
+                style={{ cursor: "pointer" }}
+                className="customer-registry__item"
+              >
+                <span>
+                  {c.name} - {c.city}
+                </span>
+                <div className="customer-registry__actions">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const confirmed = window.confirm(
+                        `Är du säker på att du vill ta bort ${c.name}?`,
+                      );
+
+                      if (confirmed) {
+                        removeCustomer(c.id);
+                      }
+                    }}
+                  >
+                    Ta bort
+                  </button>
+                </div>
+              </li>
+            ))
+          )}
         </ul>
       </div>
 
