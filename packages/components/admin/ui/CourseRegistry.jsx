@@ -1,28 +1,12 @@
 import "./index.css";
 import { useState } from "react";
+import { useCoursesOverview, useCurrentManagerId } from "@zoplanner/app-hooks";
 
 export function CourseRegistry() {
   // TEMP DATA (ersätt senare med hook)
-  const managerId = 1;
+  const managerId = useCurrentManagerId();
 
-  const [courses, setCourses] = useState([
-    {
-      id: 1,
-      name: "React Grundkurs",
-      customer: "Norrsken Gymnasium",
-      managerId: 1,
-      startDate: "2026-04-01",
-      endDate: "2026-04-30",
-    },
-    {
-      id: 2,
-      name: "Node.js Backend",
-      customer: "Södervik Skola",
-      managerId: 2,
-      startDate: "2026-02-01",
-      endDate: "2026-03-01",
-    },
-  ]);
+  const { courses, loading } = useCoursesOverview();
 
   const [filters, setFilters] = useState({
     mine: false,
