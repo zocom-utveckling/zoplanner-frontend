@@ -1,12 +1,10 @@
-import { Scheduler } from "@zoplanner/calendar";
+import { DashboardScheduler } from "@zoplanner/calendar";
 
-function Dashboard({ user, monthOnly = false, allSchedules = false }) {
+function Dashboard({ user }) {
   if (!user) {
     return null;
   }
-  return (
-    <Scheduler user={user} monthOnly={monthOnly} allSchedules={allSchedules} />
-  );
+  return <DashboardScheduler user={user} />;
 }
 
 export { Dashboard };

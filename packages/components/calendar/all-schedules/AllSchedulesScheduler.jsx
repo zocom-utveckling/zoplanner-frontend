@@ -1,40 +1,31 @@
-import Topbar from "./Topbar";
-import CalendarContent from "./CalendarContent";
-import ActivityModal from "./modals/ActivityModal";
-import EventDetailsModal from "./modals/EventDetailsModal";
-import useSchedulerNavigation from "../hooks/useSchedulerNavigation";
-import useActivityForm from "../hooks/useActivityForm";
-import useEventDetailsModal from "../hooks/useEventDetailsModal";
-import useSchedulerEvents from "../hooks/useSchedulerEvents";
-import useSchedulerFilters from "../hooks/useSchedulerFilters";
-import { useMemo } from "react";
-import "./index.css";
+import "./AllSchedulesScheduler.css";
+import AllSchedulesTopbar from "./AllSchedulesTopbar";
+import AllSchedulesCalendarContent from "./AllSchedulesCalendarContent";
+import ActivityModal from "../core/ui/modals/ActivityModal";
+import EventDetailsModal from "../core/ui/modals/EventDetailsModal";
+import useSchedulerNavigation from "../core/hooks/useSchedulerNavigation";
+import useActivityForm from "../core/hooks/useActivityForm";
+import useEventDetailsModal from "../core/hooks/useEventDetailsModal";
+import useSchedulerEvents from "../core/hooks/useSchedulerEvents";
+import useSchedulerFilters from "../core/hooks/useSchedulerFilters";
+import "../core/index.css";
 
-export default function Scheduler({
-  user,
-  monthOnly = false,
-  allSchedules = false,
-}) {
+export function AllSchedulesScheduler({ user }) {
   const {
     view,
     setView,
     focusDate,
     setFocusDate,
     weekDays,
-    monthGridDays,
-    title,
     goToday,
     goPrev,
     goNext,
-  } = useSchedulerNavigation({
-    initialView: monthOnly && !allSchedules ? "month" : "week",
-    lockedView: monthOnly && !allSchedules ? "month" : null,
-  });
+  } = useSchedulerNavigation();
 
   const { events, loading, addEvent, updateEvent, removeEvent } =
     useSchedulerEvents(user, {
-      includeAllConsultants: allSchedules,
-      onlyBookedPasses: allSchedules,
+      includeAllConsultants: true,
+      onlyBookedPasses: true,
     });
 
   const {
@@ -44,19 +35,12 @@ export default function Scheduler({
     handleFilterChange,
     consultantUsers,
   } = useSchedulerFilters(events, {
-    defaultPeriod: allSchedules ? "today" : "all",
+    defaultPeriod: "today",
     defaultSortBy: "name-asc",
     navigationDate: focusDate,
     navigationView: view,
-    useNavigationPeriod: allSchedules,
+    useNavigationPeriod: true,
   });
-
-  const availableViews = useMemo(
-    () => (monthOnly && !allSchedules ? ["month"] : ["week", "month"]),
-    [monthOnly, allSchedules],
-  );
-
-  const showFilters = monthOnly || allSchedules;
 
   const { selectedEvent, handleOpenEventModal, handleCloseEventModal } =
     useEventDetailsModal();
@@ -65,7 +49,6 @@ export default function Scheduler({
     isActivityModalOpen,
     activityFormData,
     activityModalMode,
-    handleOpenActivityModal,
     handleOpenActivityModalForEvent,
     handleCloseActivityModal,
     handleStartEditingActivity,
@@ -112,37 +95,28 @@ export default function Scheduler({
 
   return (
     <main className="main">
-      <Topbar
-        title={title}
+      <AllSchedulesTopbar
         focusDate={focusDate}
         view={view}
         setView={setView}
-        allSchedules={allSchedules}
-        availableViews={availableViews}
-        showFilters={showFilters}
-        filterOptions={filterOptions}
         filters={filters}
+        filterOptions={filterOptions}
         onFilterChange={handleFilterChange}
         onGoToday={goToday}
         onPrev={goPrev}
         onNext={goNext}
       />
 
-      <CalendarContent
+      <AllSchedulesCalendarContent
         view={view}
         focusDate={focusDate}
         weekDays={weekDays}
-        monthGridDays={monthGridDays}
         filteredEvents={filteredEvents}
-        allConsultants={allSchedules ? consultantUsers : []}
+        allConsultants={consultantUsers}
         filters={filters}
         loading={loading}
-        monthOnly={monthOnly}
-        allSchedules={allSchedules}
         onEventClick={handleEventClick}
-        onDayClick={handleOpenActivityModal}
         onFocusDateChange={setFocusDate}
-        onViewChange={setView}
       />
 
       <ActivityModal
