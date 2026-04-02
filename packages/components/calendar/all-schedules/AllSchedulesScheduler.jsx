@@ -8,9 +8,12 @@ import useActivityForm from "../core/hooks/useActivityForm";
 import useEventDetailsModal from "../core/hooks/useEventDetailsModal";
 import useSchedulerEvents from "../core/hooks/useSchedulerEvents";
 import useSchedulerFilters from "../core/hooks/useSchedulerFilters";
+import { useAccess } from "@zoplanner/app-hooks";
 import "../core/index.css";
 
 export function AllSchedulesScheduler({ user }) {
+  const { canOpenSchedule } = useAccess(user);
+
   const {
     view,
     setView,
@@ -24,7 +27,7 @@ export function AllSchedulesScheduler({ user }) {
 
   const { events, loading, addEvent, updateEvent, removeEvent } =
     useSchedulerEvents(user, {
-      includeAllConsultants: true,
+      includeAllConsultants: canOpenSchedule,
       onlyBookedPasses: true,
     });
 

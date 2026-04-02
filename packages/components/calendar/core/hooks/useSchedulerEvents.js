@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { activityService } from "@zoplanner/api";
 import { fetchSchedulerEvents, toLocalDateTime } from "../data/schedulerData";
 
 function emitActivitiesUpdated(userId) {
@@ -65,6 +66,14 @@ function toActivityPayload(eventItem, userId) {
   };
 }
 
+function unwrapEntity(response) {
+  if (response && typeof response === "object" && response.data) {
+    return response.data;
+  }
+
+  return response;
+}
+
 export default function useSchedulerEvents(user, options = {}) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -77,24 +86,15 @@ export default function useSchedulerEvents(user, options = {}) {
       const payload = toActivityPayload(newEvent, user.id);
 
       try {
-        const response = await fetch(`http://localhost:5027/api/Activities`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
+        const createdActivity = unwrapEntity(
+          await activityService.create(payload),
+        );
+        const createdEvent = toEventFromActivity(createdActivity, {
+          ...newEvent,
+          source: "activity",
         });
 
-        if (response.ok) {
-          const createdActivity = await response.json().catch(() => null);
-          const createdEvent = toEventFromActivity(createdActivity, {
-            ...newEvent,
-            source: "activity",
-          });
-
-          setEvents((prev) => [...prev, createdEvent]);
-          return;
-        }
+        setEvents((prev) => [...prev, createdEvent]);
         return;
       } catch {
         return;
@@ -109,16 +109,7 @@ export default function useSchedulerEvents(user, options = {}) {
     if (!Number.isFinite(activityId)) return;
 
     try {
-      const response = await fetch(
-        `http://localhost:5027/api/Activities/${activityId}`,
-        {
-          method: "DELETE",
-        },
-      );
-
-      if (!response.ok) {
-        return;
-      }
+      await activityService.remove(activityId);
 
       emitActivitiesUpdated(user?.id ?? null);
     } catch {
@@ -139,24 +130,10 @@ export default function useSchedulerEvents(user, options = {}) {
     const payload = toActivityPayload(updatedEvent, user?.id);
 
     try {
-      const response = await fetch(
-        `http://localhost:5027/api/Activities/${activityId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        },
+      const updatedActivity = unwrapEntity(
+        await activityService.update(activityId, payload),
       );
-
-      if (!response.ok) {
-        return;
-      }
-
       emitActivitiesUpdated(user?.id ?? null);
-
-      const updatedActivity = await response.json().catch(() => null);
       const nextEvent = toEventFromActivity(updatedActivity, eventToPersist);
 
       setEvents((prev) =>

@@ -1,3 +1,11 @@
+import {
+  activityService,
+  assignmentService,
+  consultantService,
+  courseService,
+  userService,
+} from "@zoplanner/api";
+
 function firstNonEmptyString(...values) {
   for (const value of values) {
     if (typeof value === "string" && value.trim()) {
@@ -73,10 +81,21 @@ function toDisplayCity(cityValue) {
     .join(" ");
 }
 
+function toArray(value) {
+  if (Array.isArray(value)) {
+    return value;
+  }
+
+  if (Array.isArray(value?.data)) {
+    return value.data;
+  }
+
+  return [];
+}
+
 export async function fetchUserCities() {
   try {
-    const usersRes = await fetch(`http://localhost:5027/api/User`);
-    const users = usersRes.ok ? await usersRes.json() : [];
+    const users = toArray(await userService.getAll());
 
     const cityMap = new Map();
 
@@ -97,12 +116,12 @@ export async function fetchUserCities() {
 export async function fetchConsultantUsers() {
   try {
     const [consultantsRes, usersRes] = await Promise.all([
-      fetch(`http://localhost:5027/api/Consultant`),
-      fetch(`http://localhost:5027/api/User`),
+      consultantService.getAll(),
+      userService.getAll(),
     ]);
 
-    const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
-    const users = usersRes.ok ? await usersRes.json() : [];
+    const consultants = toArray(consultantsRes);
+    const users = toArray(usersRes);
 
     const userMap = new Map(
       (Array.isArray(users) ? users : [])
@@ -264,16 +283,12 @@ export async function fetchSchedulerEvents(user, options = {}) {
   let assignments = [];
 
   if (options?.includeAllConsultants) {
-    const assignmentsRes = await fetch(`http://localhost:5027/api/Assignment`);
-    assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
+    assignments = toArray(await assignmentService.getAll());
   } else {
     let consultantId = user?.consultantId || user?.consultant?.id;
 
     if (!consultantId) {
-      const consultantsRes = await fetch(
-        `http://localhost:5027/api/Consultant`,
-      );
-      const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
+      const consultants = toArray(await consultantService.getAll());
       const match = consultants.find(
         (consultant) => consultant?.userId === user?.id,
       );
@@ -281,21 +296,19 @@ export async function fetchSchedulerEvents(user, options = {}) {
     }
 
     if (consultantId) {
-      const assignmentsRes = await fetch(
-        `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
+      assignments = toArray(
+        await assignmentService.getByConsultantId(consultantId),
       );
-
-      assignments = assignmentsRes.ok ? await assignmentsRes.json() : [];
     }
   }
 
   const [consultantsRes, usersRes] = await Promise.all([
-    fetch(`http://localhost:5027/api/Consultant`),
-    fetch(`http://localhost:5027/api/User`),
+    consultantService.getAll(),
+    userService.getAll(),
   ]);
 
-  const consultants = consultantsRes.ok ? await consultantsRes.json() : [];
-  const users = usersRes.ok ? await usersRes.json() : [];
+  const consultants = toArray(consultantsRes);
+  const users = toArray(usersRes);
 
   const userNameById = new Map(
     (Array.isArray(users) ? users : [])
@@ -343,12 +356,10 @@ export async function fetchSchedulerEvents(user, options = {}) {
       .filter(([id, name]) => Boolean(id) && Boolean(name)),
   );
 
-  const coursesRes = await fetch(`http://localhost:5027/api/Course`);
-  const courses = coursesRes.ok ? await coursesRes.json() : [];
-  const activitiesRes = options?.includeAllConsultants
-    ? null
-    : await fetch(`http://localhost:5027/api/Activities`);
-  const activities = activitiesRes?.ok ? await activitiesRes.json() : [];
+  const courses = toArray(await courseService.getAll());
+  const activities = options?.includeAllConsultants
+    ? []
+    : toArray(await activityService.getAll());
   const courseMap = new Map(
     (Array.isArray(courses) ? courses : [])
       .map((course) => [
