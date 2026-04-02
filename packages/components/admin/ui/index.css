@@ -125,6 +125,31 @@
 .planner-sidebar-form button:hover {
   background: #3c63d8;
 }
+
+.consultant-registry__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consultant-registry__header h1 {
+  margin: 0;
+}
+
+.consultant-registry__add-button {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  background: #4f7cff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.consultant-registry__add-button:hover {
+  background: #3c63d8;
+}
 .admin-sidebar {
   position: relative;
 }
