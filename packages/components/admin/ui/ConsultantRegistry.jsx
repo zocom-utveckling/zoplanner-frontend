@@ -1,29 +1,44 @@
 import { AllSchedulesScheduler } from "@zoplanner/calendar";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ConsultantInviteModal } from "./ConsultantInviteModal";
+import { managerService } from "@zoplanner/api";
 
 export function ConsultantRegistry({ user }) {
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const navigate = useNavigate();
+
   const handleOpenInvite = () => setIsInviteOpen(true);
   const handleCloseInvite = () => setIsInviteOpen(false);
-  const handleInviteSubmit = (email) => {
+
+  const handleInviteSubmit = async (email) => {
     if (!user?.id) return;
 
     setIsInviteOpen(false);
 
-    const params = new URLSearchParams({
-      managerId: user.id,
-      email,
-    });
+    try {
+      const managers = await managerService.getAll();
 
-    navigate(`/dev-register?${params.toString()}`);
+      const manager = managers.find((m) => m.userId === user.id);
 
-    // TODO: replace with backend-generated invite token
-    // navigate(`/dev-register?token=${inviteToken}`);
+      if (!manager) {
+        alert("Hittade ingen manager kopplad till användaren");
+        return;
+      }
+
+      const params = new URLSearchParams({
+        managerId: manager.id,
+        email,
+      });
+
+      navigate(`/consultant-onboarding?${params.toString()}`);
+      // TODO: replace managerId/email query params with backend-generated invite token
+      // navigate(`/consultant-onboarding?token=${inviteToken}`);
+    } catch (err) {
+      console.error(err);
+      alert("Kunde inte hämta manager");
+    }
   };
-  if (!user) {
-    return null;
-  }
 
   return (
     <>
@@ -41,6 +56,7 @@ export function ConsultantRegistry({ user }) {
       <ConsultantInviteModal
         isOpen={isInviteOpen}
         onClose={handleCloseInvite}
+        onSubmit={handleInviteSubmit}
       />
     </>
   );

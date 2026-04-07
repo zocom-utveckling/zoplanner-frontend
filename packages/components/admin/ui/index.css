@@ -518,3 +518,106 @@
 .modal__btn--primary:hover {
   opacity: 0.9;
 }
+.quick-dev-register__button {
+  background: #d32f2f;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.quick-dev-register__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.4); /* mörk bakgrund */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 1000;
+}
+.quick-dev-register__modal {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+
+  width: 90%;
+  max-width: 500px;   /* 🔥 större */
+  min-height: 200px;  /* 🔥 ger tyngd */
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.quick-dev-register__empty {
+  padding: 16px 0;
+  text-align: center;
+  color: #444;
+}
+.quick-dev-register__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* spacing mellan */
+  margin: 16px 0;
+}
+.quick-dev-register__list button {
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.quick-dev-register__list button:hover {
+  background: #eee;
+  cursor: pointer;
+}
+.quick-dev-register__close {
+  margin-top: 16px;
+  padding: 10px 16px;
+  font-size: 14px;
+
+  border: none;
+  border-radius: 6px;
+  background: #ddd;
+  cursor: pointer;
+}
+.quick-dev-register__close:hover {
+ background: #8d8b8b;
+  cursor: pointer;
+}
+.quick-dev-register__input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 12px;
+
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+}
+.quick-dev-register__continue {
+  margin-top: 12px;
+  padding: 10px;
+  width: 100%;
+
+  border: none;
+  border-radius: 6px;
+  background: #4caf50; /* grön = action */
+  color: white;
+  cursor: pointer;
+}
+
+.quick-dev-register__continue:hover {
+  background: #43a047;
+}
+
+.quick-dev-register__continue:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}

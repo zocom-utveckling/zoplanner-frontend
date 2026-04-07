@@ -1,11 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Register } from "@zoplanner/register-page";
+import { Register, ConsultantOnboarding } from "@zoplanner/register-page";
 import { LoginPage } from "@zoplanner/login-page";
 import { HomePage } from "@zoplanner/home-page";
 import { AdminPage } from "@zoplanner/admin-page";
 
 const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
+  { path: "/consultant-onboarding", element: <ConsultantOnboarding /> },
   { path: "/", element: <LoginPage /> },
   { path: "/login-page", element: <LoginPage /> },
   { path: "home-page", element: <HomePage /> },
