@@ -573,10 +573,23 @@
   border-radius: 6px;
   cursor: pointer;
 }
+.quick-dev-register__list button.selected {
+  background: #dbeafe;       /* ljus blå */
+  border-color: #3b82f6;     /* blå kant */
+  color: #1e3a8a;            /* mörkare text */
+  font-weight: 500;
+}
 
 .quick-dev-register__list button:hover {
   background: #eee;
   cursor: pointer;
+}
+
+.quick-dev-register__list button.selected:hover {
+  background: #c7ddff; /* lite mörkare blå vid hover */
+}
+.quick-dev-register__list button:active {
+  transform: scale(0.98);
 }
 .quick-dev-register__close {
   margin-top: 16px;

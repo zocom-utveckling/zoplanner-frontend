@@ -35,7 +35,6 @@ export function QuickDevRegisterEntry({ managers = [] }) {
   const handleSelectManager = (managerId) => {
     setSelectedManagerId(String(managerId));
   };
-
   const handleContinue = () => {
     if (!selectedManagerId || !email) return;
 
@@ -44,7 +43,9 @@ export function QuickDevRegisterEntry({ managers = [] }) {
       email,
     });
 
-    navigate(`/dev-register?${params.toString()}`);
+    navigate(`/consultant-onboarding?${params.toString()}`);
+    // TODO: replace managerId/email query params with backend-generated invite token
+    // navigate(`/consultant-onboarding?token=${inviteToken}`);
     setIsOpen(false);
   };
 
