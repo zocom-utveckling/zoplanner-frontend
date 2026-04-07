@@ -58,7 +58,7 @@ useEffect(()=>{
           return
          }
         navigate(`/home-page/${data.id}`)
-        alert(data.message || `Welcome ${data.name}`)
+    
       }
       else{
         alert("Incorrect username or password")
