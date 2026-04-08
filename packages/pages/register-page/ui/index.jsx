@@ -1,4 +1,5 @@
-import { useState } from "react"
+{
+  /*import { useState } from "react"
 import "./index.css"
 import { Link, useNavigate } from "react-router-dom"
 const cities =["GÖTEBORG","MALMÖ","STOCKHOLM"]
@@ -147,3 +148,5 @@ function Register(){
     </>)
 }
 export {Register}
+*/
+}
