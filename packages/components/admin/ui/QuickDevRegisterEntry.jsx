@@ -35,6 +35,7 @@ export function QuickDevRegisterEntry({ managers = [] }) {
   const handleSelectManager = (managerId) => {
     setSelectedManagerId(String(managerId));
   };
+
   const handleContinue = () => {
     if (!selectedManagerId || !email) return;
 
@@ -47,6 +48,11 @@ export function QuickDevRegisterEntry({ managers = [] }) {
     // TODO: replace managerId/email query params with backend-generated invite token
     // navigate(`/consultant-onboarding?token=${inviteToken}`);
     setIsOpen(false);
+  };
+
+  const handleCreateManager = () => {
+    setIsOpen(false);
+    navigate("/register?role=MANAGER");
   };
 
   return (
@@ -62,47 +68,65 @@ export function QuickDevRegisterEntry({ managers = [] }) {
       {isOpen && (
         <div className="quick-dev-register__overlay">
           <div className="quick-dev-register__modal">
-            <h2>Select manager</h2>
-
             {managers.length === 0 ? (
-              <div className="quick-dev-register__empty">
-                <p>No managers available yet</p>
-              </div>
+              <>
+                <h2>Create first manager</h2>
+                <div className="quick-dev-register__empty">
+                  <p>No managers available yet.</p>
+                  <p>
+                    You need to create a manager account before registering
+                    consultants.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className="quick-dev-register__continue"
+                  onClick={handleCreateManager}
+                >
+                  Create manager account
+                </button>
+              </>
             ) : (
-              <div className="quick-dev-register__list">
-                {managers.map((manager) => {
-                  const user = managerUsers[manager.id];
-                  const isSelected = selectedManagerId === String(manager.id);
+              <>
+                <h2>Select manager</h2>
 
-                  return (
-                    <button
-                      key={manager.id}
-                      type="button"
-                      onClick={() => handleSelectManager(manager.id)}
-                      className={isSelected ? "selected" : ""}
-                    >
-                      {user ? user.name : "Loading..."}
-                    </button>
-                  );
-                })}
-              </div>
+                <div className="quick-dev-register__list">
+                  {managers.map((manager) => {
+                    const user = managerUsers[manager.id];
+                    const isSelected = selectedManagerId === String(manager.id);
+
+                    return (
+                      <button
+                        key={manager.id}
+                        type="button"
+                        onClick={() => handleSelectManager(manager.id)}
+                        className={isSelected ? "selected" : ""}
+                      >
+                        {user ? user.name : "Loading..."}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <input
+                  type="email"
+                  placeholder="Enter consultant's email"
+                  className="quick-dev-register__input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+
+                <button
+                  type="button"
+                  className="quick-dev-register__continue"
+                  onClick={handleContinue}
+                  disabled={!selectedManagerId || !email}
+                >
+                  Continue
+                </button>
+              </>
             )}
-            <input
-              type="email"
-              placeholder="Enter consultant's email"
-              className="quick-dev-register__input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-
-            <button
-              type="button"
-              className="quick-dev-register__continue"
-              onClick={handleContinue}
-              disabled={!selectedManagerId || !email}
-            >
-              Continue
-            </button>
 
             <button
               type="button"
