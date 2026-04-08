@@ -16,6 +16,81 @@ function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
+function overlaps(a, b) {
+  return a.start < b.end && b.start < a.end;
+}
+
+function addRenderMetadata(eventItem, index) {
+  return {
+    ...eventItem,
+    __renderKey: `${eventItem.id ?? "event"}-${eventItem.start?.getTime?.() ?? ""}-${eventItem.end?.getTime?.() ?? ""}-${index}`,
+  };
+}
+
+function buildEventLayout(dayEvents) {
+  const sorted = dayEvents.map(addRenderMetadata).sort((eventA, eventB) => {
+    const byStart = eventA.start - eventB.start;
+    if (byStart !== 0) return byStart;
+    return eventA.end - eventB.end;
+  });
+
+  const positionedEvents = [];
+  let currentGroup = [];
+
+  function finalizeGroup() {
+    if (currentGroup.length === 0) return;
+
+    const laneEndTimes = [];
+    const groupPlaced = [];
+
+    currentGroup.forEach((eventItem) => {
+      let lane = laneEndTimes.findIndex(
+        (endTime) => endTime <= eventItem.start,
+      );
+      if (lane === -1) {
+        lane = laneEndTimes.length;
+      }
+
+      laneEndTimes[lane] = eventItem.end;
+      groupPlaced.push({ eventItem, lane });
+    });
+
+    const laneCount = Math.max(laneEndTimes.length, 1);
+    groupPlaced.forEach(({ eventItem, lane }) => {
+      positionedEvents.push({
+        ...eventItem,
+        __lane: lane,
+        __laneCount: laneCount,
+      });
+    });
+
+    currentGroup = [];
+  }
+
+  sorted.forEach((eventItem) => {
+    if (currentGroup.length === 0) {
+      currentGroup = [eventItem];
+      return;
+    }
+
+    const intersectsGroup = currentGroup.some((groupEvent) =>
+      overlaps(groupEvent, eventItem),
+    );
+
+    if (intersectsGroup) {
+      currentGroup.push(eventItem);
+      return;
+    }
+
+    finalizeGroup();
+    currentGroup = [eventItem];
+  });
+
+  finalizeGroup();
+
+  return positionedEvents;
+}
+
 export default function TimeGridView({ days, events, onEventClick }) {
   const timeSlots = useMemo(() => {
     const slots = [];
@@ -88,6 +163,7 @@ export default function TimeGridView({ days, events, onEventClick }) {
         >
           {days.map((day) => {
             const dayEvents = events.filter((e) => isSameDay(e.start, day));
+            const positionedDayEvents = buildEventLayout(dayEvents);
 
             return (
               <div
@@ -109,7 +185,7 @@ export default function TimeGridView({ days, events, onEventClick }) {
                 ))}
 
                 {/* events */}
-                {dayEvents.map((e) => {
+                {positionedDayEvents.map((e) => {
                   const startMin = minutesFromStartOfDay(e.start);
                   const endMin = minutesFromStartOfDay(e.end);
 
@@ -128,12 +204,26 @@ export default function TimeGridView({ days, events, onEventClick }) {
                     18,
                   );
 
+                  const laneCount = Math.max(e.__laneCount || 1, 1);
+                  const lane = Math.max(e.__lane || 0, 0);
+                  const laneStartPercent = (lane / laneCount) * 100;
+                  const laneEndPercent = ((lane + 1) / laneCount) * 100;
+
+                  const horizontalStyle =
+                    laneCount > 1
+                      ? {
+                          left: `calc(${laneStartPercent}% + 8px)`,
+                          right: `calc(${100 - laneEndPercent}% + 8px)`,
+                        }
+                      : undefined;
+
                   return (
                     <EventBlock
-                      key={e.id}
+                      key={e.__renderKey}
                       event={e}
                       top={top}
                       height={height}
+                      style={horizontalStyle}
                       onClick={onEventClick}
                     />
                   );

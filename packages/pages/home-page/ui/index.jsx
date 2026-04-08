@@ -1,6 +1,7 @@
 import { Navbar } from "@zoplanner/navbar";
 import { Sidebar } from "@zoplanner/sidebar";
 import { Dashboard } from "@zoplanner/dashboard";
+import { AllSchedulesPage } from "@zoplanner/all-schedules-page";
 import { CoursesPage } from "@zoplanner/courses-page";
 import { MessagesPage } from "@zoplanner/messages-page";
 import "./index.css";

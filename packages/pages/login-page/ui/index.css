@@ -8,3 +8,11 @@
   gap: 8px;
   /* padding: 24px; */
 }
+.login-root {
+  position: relative;
+}
+.quick-dev-register__button {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+}
