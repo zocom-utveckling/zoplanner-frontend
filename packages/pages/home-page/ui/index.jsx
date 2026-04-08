@@ -15,8 +15,8 @@ function DashboardLayout({ user, activePage, setActivePage, children }) {
     <>
       <Navbar
         user={user}
-        activePage={activePage}
-        setActivePage={setActivePage}
+        activePage={"dashboard"}
+       
       />
       <div className="app">
         <Sidebar user={user} />
@@ -85,17 +85,8 @@ function HomePage() {
       activePage={resolvedActivePage}
       setActivePage={setActivePage}
     >
-      {resolvedActivePage == "dashboard" ? (
-        <Dashboard user={user} />
-      ) : resolvedActivePage == "allSchedules" ? (
-        <AllSchedulesPage user={user} />
-      ) : resolvedActivePage == "courses" ? (
-        <CoursesPage user={user} />
-      ) : resolvedActivePage == "profile" ? (
-        <Profile_Page user={user} setUser={setUser} />
-      ) : (
-        <MessagesPage user={user} />
-      )}
+       <Dashboard user={user} />
+     
     </DashboardLayout>
   );
 }

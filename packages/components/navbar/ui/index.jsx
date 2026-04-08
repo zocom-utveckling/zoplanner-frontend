@@ -70,7 +70,7 @@ function Navbar({ user, activePage, setActivePage }) {
             <DarkModeButton />
             {isManager && (
               <button
-                onClick={() => setActivePage("allSchedules")}
+              
                 className={activePage == "allSchedules" ? "active" : ""}
               >
                 Alla scheman
@@ -79,8 +79,8 @@ function Navbar({ user, activePage, setActivePage }) {
             {isManager && (
               <button
                 onClick={() => {
-                  setActivePage("adminpanel");
-                  navigate(appRoutesConfig.admin.replace(":id", user.id));
+                
+                  navigate(`/admin-page/${user.id}`);
                 }}
                 className={activePage == "adminpanel" ? "active" : ""}
               >
@@ -89,30 +89,30 @@ function Navbar({ user, activePage, setActivePage }) {
             )}
             <button
               onClick={() => {
-                setActivePage("dashboard");
-                navigate(appRoutesConfig.home.replace(":id", user.id) + "?view=dashboard");
+                
+                navigate(`/dashboard/${user.id}`);
               }}
               className={activePage == "dashboard" ? "active" : ""}
             >
-              Dashboard
+              Skrivbord
             </button>
             <button
               onClick={() => {
-                setActivePage("courses");
-                navigate(appRoutesConfig.home.replace(":id", user.id) + "?view=courses");
+                
+                navigate(`/assignment-page/${user.id}`);
               }}
-              className={activePage == "courses" ? "active" : ""}
+              className={activePage == "assignments" ? "active" : ""}
             >
-              Courses
+              Uppdrag
             </button>
             <button
               onClick={() => {
-                setActivePage("messages");
-                navigate(appRoutesConfig.home.replace(":id", user.id) + "?view=messages");
+               
+                navigate(`/messages/${user.id}`);
               }}
               className={activePage == "messages" ? "active" : ""}
             >
-              Messages
+              Meddelande
             </button>
           </div>
 
@@ -142,13 +142,13 @@ function Navbar({ user, activePage, setActivePage }) {
             {showDropdown && (
               <div className="dropdown">
                 <Link
-                  to={appRoutesConfig.profile.replace(":id", user.id)}
-                  onClick={() => setActivePage("profile")}
+                  to={`/profile/${user.id}`}
+                  
                 >
-                  View profile
+                  Se profil
                 </Link>
                 <Link to={"#"} onClick={() => setOpenConfirm(true)}>
-                  Log out
+                  Logga ut
                 </Link>
               </div>
             )}
