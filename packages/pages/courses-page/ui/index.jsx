@@ -3,10 +3,14 @@ import "./index.css";
 import "react-icons/fa"
 import { FaPlus } from "react-icons/fa";
 import { SendAssignmentNotification } from "../../../components/notis-knapp";
+import { Navbar } from "@zoplanner/navbar";
+import { useParams } from "react-router-dom";
 function CoursesPage() {
   const [assignments, setAssignments] = useState([]);
   const consultantId = localStorage.getItem("consultantId");
+  const [user, setUser] = useState(null);
   const [show,setShow]=useState(false)
+  const userId =useParams().id
   const maxShownSessions = 2;
   useEffect(() => {
     async function getAssignments() {
@@ -22,10 +26,34 @@ function CoursesPage() {
     }
     getAssignments();
   }, [consultantId]);
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await fetch(`http://localhost:5027/api/User/${userId}`);
+        const data = await res.json();
+        if (res.ok) {
+          setUser(data);
+          console.log(data.name);
+        } else {
+          console.log("Could not fetch user");
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchUser();
+  }, [userId]);
+
+  if (!user) {
+    return <div>Laddar användare...</div>;
+  }
 
   return (
     <>
+      <Navbar activePage={"assignments"} user={user}/>
       <div className="assignment-container">
+         
         <h2>Uppdrag</h2>
         <div className="assignment-content">
           {assignments.length == 0 ? (

@@ -1,14 +1,46 @@
 import { FaEdit, FaUser } from "react-icons/fa";
 import "./index.css";
 import { Button } from "@zoplanner/button";
-import { useEffect, useState } from "react";
+import { useState,useEffect } from "react";
 import { Edit_Profile } from "../edit-profile/ui";
-function Profile_Page({user,setUser}) {
-    const [showEdit,setShowEdit]=useState(false)
-  
-  return(<>
-   {showEdit && <Edit_Profile user={user} onClose={()=> setShowEdit(false)} setUser={setUser}/>}
-    <div className="profile-page-container">
+import { Navbar } from "@zoplanner/navbar";
+import { useParams } from "react-router-dom";
+function Profile_Page({ user:initialUser}) {
+  const [showEdit, setShowEdit] = useState(false);
+  const [user, setUser] = useState(initialUser || null);
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (initialUser || !id) return;
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`http://localhost:5027/api/User/${id}`);
+        const data = await res.json();
+        if (res.ok) {
+          setUser(data);
+        } else {
+          console.error("Could not fetch user");
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchUser();
+  }, [id, initialUser]);
+
+  if (!user) {
+    return <div>Laddar användare...</div>;
+  }
+
+  return (
+    <>
+      <Navbar user={user} activePage={"profile"} />
+      {showEdit && (
+        <Edit_Profile user={user} onClose={() => setShowEdit(false)} setUser={setUser} />
+      )}
+      <div className="profile-page-container">
       <header className="profile-page-header">
         <h2>Profil</h2>
 
