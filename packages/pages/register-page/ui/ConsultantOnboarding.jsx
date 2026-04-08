@@ -142,11 +142,23 @@ export function ConsultantOnboarding() {
     }
   };
 
+  const handleClose = () => {
+    navigate("/");
+  };
+
   return (
     <div className="container">
       <h1>ZoPlanner</h1>
 
       <form onSubmit={handleSubmit}>
+        <button
+          type="button"
+          className="close-button"
+          onClick={handleClose}
+          aria-label="Stäng"
+        >
+          ×
+        </button>
         <h2>Skapa ditt konto</h2>
         <div className="field">
           <div className="label">

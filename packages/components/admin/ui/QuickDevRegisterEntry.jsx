@@ -68,6 +68,14 @@ export function QuickDevRegisterEntry({ managers = [] }) {
       {isOpen && (
         <div className="quick-dev-register__overlay">
           <div className="quick-dev-register__modal">
+            <button
+              type="button"
+              className="quick-dev-register__x"
+              onClick={() => setIsOpen(false)}
+              aria-label="Stäng"
+            >
+              ×
+            </button>
             {managers.length === 0 ? (
               <>
                 <h2>Create first manager</h2>
@@ -135,14 +143,6 @@ export function QuickDevRegisterEntry({ managers = [] }) {
                 </button>
               </>
             )}
-
-            <button
-              type="button"
-              className="quick-dev-register__close"
-              onClick={() => setIsOpen(false)}
-            >
-              Close
-            </button>
           </div>
         </div>
       )}
