@@ -35,6 +35,7 @@ export function QuickDevRegisterEntry({ managers = [] }) {
   const handleSelectManager = (managerId) => {
     setSelectedManagerId(String(managerId));
   };
+
   const handleContinue = () => {
     if (!selectedManagerId || !email) return;
 
@@ -49,6 +50,11 @@ export function QuickDevRegisterEntry({ managers = [] }) {
     setIsOpen(false);
   };
 
+  const handleCreateManager = () => {
+    setIsOpen(false);
+    navigate("/dev-manager-register");
+  };
+
   return (
     <>
       <button
@@ -56,61 +62,87 @@ export function QuickDevRegisterEntry({ managers = [] }) {
         className="quick-dev-register__button"
         onClick={() => setIsOpen(true)}
       >
-        Register consultant
+        Open dev register
       </button>
 
       {isOpen && (
         <div className="quick-dev-register__overlay">
           <div className="quick-dev-register__modal">
-            <h2>Select manager</h2>
-
-            {managers.length === 0 ? (
-              <div className="quick-dev-register__empty">
-                <p>No managers available yet</p>
-              </div>
-            ) : (
-              <div className="quick-dev-register__list">
-                {managers.map((manager) => {
-                  const user = managerUsers[manager.id];
-                  const isSelected = selectedManagerId === String(manager.id);
-
-                  return (
-                    <button
-                      key={manager.id}
-                      type="button"
-                      onClick={() => handleSelectManager(manager.id)}
-                      className={isSelected ? "selected" : ""}
-                    >
-                      {user ? user.name : "Loading..."}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-            <input
-              type="email"
-              placeholder="Enter consultant's email"
-              className="quick-dev-register__input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-
             <button
               type="button"
-              className="quick-dev-register__continue"
-              onClick={handleContinue}
-              disabled={!selectedManagerId || !email}
-            >
-              Continue
-            </button>
-
-            <button
-              type="button"
-              className="quick-dev-register__close"
+              className="quick-dev-register__x"
               onClick={() => setIsOpen(false)}
+              aria-label="Stäng"
             >
-              Close
+              ×
             </button>
+            {managers.length === 0 ? (
+              <>
+                <h2>Create first manager</h2>
+                <div className="quick-dev-register__empty">
+                  <p>No managers available yet.</p>
+                  <p>
+                    You need to create a manager account before registering
+                    consultants.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className="quick-dev-register__continue"
+                  onClick={handleCreateManager}
+                >
+                  Create manager account
+                </button>
+              </>
+            ) : (
+              <>
+                <h2>Select manager</h2>
+
+                <div className="quick-dev-register__list">
+                  {managers.map((manager) => {
+                    const user = managerUsers[manager.id];
+                    const isSelected = selectedManagerId === String(manager.id);
+
+                    return (
+                      <button
+                        key={manager.id}
+                        type="button"
+                        onClick={() => handleSelectManager(manager.id)}
+                        className={isSelected ? "selected" : ""}
+                      >
+                        {user ? user.name : "Loading..."}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <input
+                  type="email"
+                  placeholder="Enter consultant's email"
+                  className="quick-dev-register__input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+
+                <button
+                  type="button"
+                  className="quick-dev-register__continue"
+                  onClick={handleContinue}
+                  disabled={!selectedManagerId || !email}
+                >
+                  Continue
+                </button>
+
+                <button
+                  type="button"
+                  className="quick-dev-register__close"
+                  onClick={handleCreateManager}
+                >
+                  Create manager account
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
