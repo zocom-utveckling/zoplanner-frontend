@@ -1,5 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Register, ConsultantOnboarding } from "@zoplanner/register-page";
+import {
+  Register,
+  ConsultantOnboarding,
+  DevManagerRegister,
+} from "@zoplanner/register-page";
 import { LoginPage } from "@zoplanner/login-page";
 import { HomePage } from "@zoplanner/home-page";
 import { AdminPage } from "@zoplanner/admin-page";
@@ -11,6 +15,7 @@ import { MessagesPage } from "@zoplanner/messages-page";
 const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   { path: "/consultant-onboarding", element: <ConsultantOnboarding /> },
+  { path: "/dev-manager-register", element: <DevManagerRegister /> },
   { path: "/", element: <LoginPage /> },
   { path: "/login-page", element: <LoginPage /> },
   { path: "home-page", element: <HomePage /> },

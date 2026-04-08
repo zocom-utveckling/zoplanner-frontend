@@ -149,28 +149,28 @@ function LoginPage() {
         <div className="container">
           <h1>ZoPlanner</h1>
           <form onSubmit={handleSubmit}>
-            <h2>login</h2>
+            <h2>Logga in</h2>
             <div className="field">
               <div className="label">
-                <FaUser /> <span>Username</span>
+                <FaUser /> <span>Användarnamn</span>
               </div>
               <input
                 type="text"
                 value={username}
                 required
-                placeholder="Enter your username"
+                placeholder="Ange ditt användarnamn"
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div className="field">
               <div className="label">
-                <FaLock /> <span>Password</span>
+                <FaLock /> <span>Lösenord</span>
               </div>
               <input
                 type="password"
                 value={password}
                 required
-                placeholder="Enter your password"
+                placeholder="Ange ditt lösenord"
                 minLength={8}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -181,9 +181,7 @@ function LoginPage() {
                 type="submit"
                 style="submit"
               />
-              <p>
-                Don't have a account?<Link to={"/register"}>Register</Link>
-              </p>
+              <p>Registrering sker via inbjudan. Använd länken i mejlet.</p>
             </div>
           </form>
         </div>

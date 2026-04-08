@@ -52,7 +52,7 @@ export function QuickDevRegisterEntry({ managers = [] }) {
 
   const handleCreateManager = () => {
     setIsOpen(false);
-    navigate("/register?role=MANAGER");
+    navigate("/dev-manager-register");
   };
 
   return (
@@ -62,7 +62,7 @@ export function QuickDevRegisterEntry({ managers = [] }) {
         className="quick-dev-register__button"
         onClick={() => setIsOpen(true)}
       >
-        Register consultant
+        Open dev register
       </button>
 
       {isOpen && (
@@ -124,6 +124,14 @@ export function QuickDevRegisterEntry({ managers = [] }) {
                   disabled={!selectedManagerId || !email}
                 >
                   Continue
+                </button>
+
+                <button
+                  type="button"
+                  className="quick-dev-register__close"
+                  onClick={handleCreateManager}
+                >
+                  Create manager account
                 </button>
               </>
             )}
