@@ -13,10 +13,6 @@ import "../core/index.css";
 
 export function AllSchedulesScheduler({ user }) {
   const { canAccess, access, isLoadingActor } = useCurrentActor(user);
-
-  if (isLoadingActor) {
-    return <main className="main">Laddar...</main>;
-  }
   const canOpenSchedule = canAccess(access.SCHEDULE);
 
   const {
@@ -69,6 +65,10 @@ export function AllSchedulesScheduler({ user }) {
     onDeleteEvent: removeEvent,
     onUpdateEvent: updateEvent,
   });
+
+  if (isLoadingActor) {
+    return <main className="main">Laddar...</main>;
+  }
 
   function isAddButtonActivity(eventItem) {
     const hasDatabaseId = Number.isFinite(Number(eventItem?.id));
