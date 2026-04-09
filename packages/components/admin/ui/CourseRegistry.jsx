@@ -1,10 +1,9 @@
 import "./index.css";
 import { useState } from "react";
-import { useCoursesOverview, useCurrentManagerId } from "@zoplanner/app-hooks";
+import { useCoursesOverview, useCurrentActor } from "@zoplanner/app-hooks";
 
 export function CourseRegistry() {
-  // TEMP DATA (ersätt senare med hook)
-  const managerId = useCurrentManagerId();
+  const { managerId, isManager, isLoadingActor } = useCurrentActor(user);
 
   const { courses, loading } = useCoursesOverview();
 

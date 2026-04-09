@@ -1,5 +1,5 @@
 import "./index.css";
-import { useCustomers, useCurrentManagerId } from "@zoplanner/app-hooks";
+import { useCustomers, useCurrentActor } from "@zoplanner/app-hooks";
 import { useState, useEffect } from "react";
 
 export function CustomerRegistry() {
@@ -11,7 +11,7 @@ export function CustomerRegistry() {
     selectedCustomer,
     setSelectedCustomerId,
   } = useCustomers();
-  const managerId = useCurrentManagerId();
+  const managerId = useCurrentActor();
   const [newCustomerName, setNewCustomerName] = useState("");
   const [newCustomerCity, setNewCustomerCity] = useState("");
   const [isCreating, setIsCreating] = useState(false);
