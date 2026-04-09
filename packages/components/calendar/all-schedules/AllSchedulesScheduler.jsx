@@ -8,11 +8,16 @@ import useActivityForm from "../core/hooks/useActivityForm";
 import useEventDetailsModal from "../core/hooks/useEventDetailsModal";
 import useSchedulerEvents from "../core/hooks/useSchedulerEvents";
 import useSchedulerFilters from "../core/hooks/useSchedulerFilters";
-import { useAccess } from "@zoplanner/app-hooks";
+import { useCurrentActor } from "@zoplanner/app-hooks";
 import "../core/index.css";
 
 export function AllSchedulesScheduler({ user }) {
-  const { canOpenSchedule } = useAccess(user);
+  const { canAccess, access, isLoadingActor } = useCurrentActor(user);
+
+  if (isLoadingActor) {
+    return <main className="main">Laddar...</main>;
+  }
+  const canOpenSchedule = canAccess(access.SCHEDULE);
 
   const {
     view,

@@ -13,7 +13,7 @@ import {
   CourseRegistry,
   ManagerTaskOverview,
 } from "@zoplanner/admin";
-import { useUserById, useAccess } from "@zoplanner/app-hooks";
+import { useUserById, useCurrentActor } from "@zoplanner/app-hooks";
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -27,7 +27,7 @@ import {
 function AdminPage() {
   const { id } = useParams();
   const { user, loading } = useUserById(id);
-  const { canOpenAdminPage } = useAccess(user);
+  const { canAccess, access, isLoadingActor } = useCurrentActor(user);
 
   const [activePage, setActivePage] = useState("adminpanel");
   const [adminView, setAdminView] = useState("planner");
@@ -75,8 +75,13 @@ function AdminPage() {
   }, [courseDraft]);
 
   if (loading) return <div>Laddar användare...</div>;
-  if (!canOpenAdminPage)
+  if (isLoadingActor) return <main className="main">Laddar...</main>;
+
+  const canOpenAdminPage = canAccess(access.ADMIN);
+
+  if (!canOpenAdminPage) {
     return <div>Du har inte behörighet att visa adminpanelen.</div>;
+  }
 
   return (
     <>
@@ -107,7 +112,7 @@ function AdminPage() {
 
         {adminView === "consultants" && <ConsultantRegistry user={user} />}
 
-        {adminView === "courses" && <CourseRegistry />}
+        {adminView === "courses" && <CourseRegistry user={user} />}
 
         {adminView === "planner" && (
           <PlannerMonthView

@@ -1,6 +1,5 @@
 export { useUserById } from "./useUserById";
-export { useAccess} from "./useAccess";
 export { useCustomers} from "./useCustomers";
-export { useCurrentManagerId} from "./useCurrentManagerId";
+export { useCurrentActor} from "./useCurrentActor";
 export { useCoursesOverview} from "./useCoursesOverview";
 

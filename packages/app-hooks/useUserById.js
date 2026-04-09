@@ -7,25 +7,40 @@ function useUserById(id) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let isActive = true;
+
     if (!id) {
-      setLoading(false);
-      return;
-    }
+  setUser(null);
+  setLoading(false);
+  return;
+}
 
     const fetchUser = async () => {
       try {
         setLoading(true);
         const data = await userService.getById(id);
-        setUser(data);
+        if (isActive){
+setUser(data);
         setError(null);
+        }
+        
       } catch (err) {
+        if (isActive) {
         setError(err);
+      }
       } finally {
+       if (isActive) {
         setLoading(false);
+      }
       }
     };
 
     fetchUser();
+
+
+    return () => {
+      isActive = false;
+ };
   }, [id]);
 
   return { user, loading, error };
