@@ -25,7 +25,6 @@ export function toAssignmentPayload(draft, managerId) {
   return {
     managerId,
     consultantId: draft.consultantId ?? null,
-    courseId: draft.courseId ?? null,
     dateStart: draft.startDate,
     dateEnd: draft.endDate,
     published: false,
