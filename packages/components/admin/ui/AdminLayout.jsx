@@ -7,6 +7,7 @@ export function AdminLayout({
   activeView,
   planningDrafts,
   onSelectDraft,
+  onSaveDraft,
 }) {
   return (
     <div className="admin-container">
@@ -15,6 +16,7 @@ export function AdminLayout({
         activeView={activeView}
         planningDrafts={planningDrafts}
         onSelectDraft={onSelectDraft}
+        onSaveDraft={onSaveDraft}
       />
 
       <div className="admin-content">{children}</div>

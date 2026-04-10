@@ -2,7 +2,7 @@ import "./index.css";
 import { useCustomers, useCurrentActor } from "@zoplanner/app-hooks";
 import { useState, useEffect } from "react";
 
-export function CustomerRegistry() {
+export function CustomerRegistry({ user }) {
   const {
     customers,
     loading,
@@ -11,7 +11,7 @@ export function CustomerRegistry() {
     selectedCustomer,
     setSelectedCustomerId,
   } = useCustomers();
-  const managerId = useCurrentActor();
+  const { managerId, isLoadingActor } = useCurrentActor(user);
   const [newCustomerName, setNewCustomerName] = useState("");
   const [newCustomerCity, setNewCustomerCity] = useState("");
   const [isCreating, setIsCreating] = useState(false);
@@ -28,8 +28,6 @@ export function CustomerRegistry() {
 
   // const myCustomers = customers.filter((c) => c.manager_id === managerId);
   // TEMP: backend returns managerId = 0 for all customers
-  const myCustomers = customers;
-
   // TEMP: subject data does not exist in backend yet
   const uniqueSubjects = [];
 
@@ -77,7 +75,7 @@ export function CustomerRegistry() {
     });
   };
 
-  const filteredCustomers = myCustomers
+  const filteredCustomers = customers
     .filter((c) =>
       (c.name || "").toLowerCase().startsWith(search.trim().toLowerCase()),
     )
@@ -97,7 +95,16 @@ export function CustomerRegistry() {
   if (loading) return <p>Laddar kunder...</p>;
 
   const handleCreateCustomer = async () => {
+    if (!managerId) {
+      console.error("Saknar managerId");
+      return;
+    }
     try {
+      console.log("payload", {
+        name: newCustomerName,
+        city: newCustomerCity,
+        managerId,
+      });
       await createCustomer({
         name: newCustomerName,
         city: newCustomerCity,
@@ -109,7 +116,8 @@ export function CustomerRegistry() {
       console.error(err);
     }
   };
-  console.log("openFilter:", openFilter);
+
+  if (loading || isLoadingActor) return <p>Laddar kunder...</p>;
   return (
     <div className="customer-registry">
       <div className="customer-registry__header">

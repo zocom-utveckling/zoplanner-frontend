@@ -8,6 +8,7 @@ export function AdminSidebar({
   activeView,
   planningDrafts = [],
   onSelectDraft,
+  onSaveDraft,
 }) {
   const [plannerPanel, setPlannerPanel] = useState(null);
 
@@ -122,7 +123,14 @@ export function AdminSidebar({
               />
             )}
 
-            {plannerPanel === "new" && <PlannerSidebarForm />}
+            {plannerPanel === "new" && (
+              <PlannerSidebarForm
+                onSave={(draft) => {
+                  onSaveDraft?.(draft);
+                  setPlannerPanel(null);
+                }}
+              />
+            )}
           </div>
         </div>
       )}

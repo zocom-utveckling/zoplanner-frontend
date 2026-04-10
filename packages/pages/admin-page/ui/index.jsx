@@ -4,6 +4,8 @@ import {
   PlanningDraftList,
   loadPlanningDrafts,
   upsertPlanningDraft,
+  toAssignmentPayload,
+  toSessionPayloads,
 } from "@zoplanner/planning-tool";
 import { Navbar } from "@zoplanner/navbar";
 import {
@@ -13,6 +15,7 @@ import {
   CourseRegistry,
   ManagerTaskOverview,
 } from "@zoplanner/admin";
+import { assignmentService, sessionService } from "@zoplanner/api";
 import { useUserById, useCurrentActor } from "@zoplanner/app-hooks";
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -25,9 +28,11 @@ import {
 } from "date-fns";
 
 function AdminPage() {
+  const [showDebug, setShowDebug] = useState(false);
   const { id } = useParams();
   const { user, loading } = useUserById(id);
-  const { canAccess, access, isLoadingActor } = useCurrentActor(user);
+  const { canAccess, access, isLoadingActor, managerId } =
+    useCurrentActor(user);
 
   const [activePage, setActivePage] = useState("adminpanel");
   const [adminView, setAdminView] = useState("planner");
@@ -44,6 +49,15 @@ function AdminPage() {
     upsertPlanningDraft(courseDraft);
     setPlanningDrafts(loadPlanningDrafts());
   }, [courseDraft]);
+
+  const [assignments, setAssignments] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5027/api/Assignment")
+      .then((res) => res.json())
+      .then(setAssignments)
+      .catch(console.error);
+  }, []);
 
   const calendarGridDays = useMemo(() => {
     if (courseDraft?.startDate && courseDraft?.endDate) {
@@ -74,6 +88,34 @@ function AdminPage() {
     }));
   }, [courseDraft]);
 
+  async function handlePublishDraft() {
+    if (!courseDraft || !managerId) {
+      console.error("Saknar courseDraft eller managerId");
+      return;
+    }
+
+    try {
+      const assignmentPayload = toAssignmentPayload(courseDraft, managerId);
+      const createdAssignment =
+        await assignmentService.create(assignmentPayload);
+
+      const sessionPayloads = toSessionPayloads(courseDraft);
+
+      console.log("createdAssignment", createdAssignment);
+      console.log("first session payload", sessionPayloads[0]);
+      console.log("all session payloads", sessionPayloads);
+
+      for (const sessionPayload of sessionPayloads) {
+        await sessionService.create(createdAssignment.id, sessionPayload);
+      }
+
+      alert("Schema sparat som assignment med sessions");
+    } catch (error) {
+      console.error("Kunde inte spara assignment/sessions:", error);
+      alert("Kunde inte spara schema");
+    }
+  }
+
   if (loading) return <div>Laddar användare...</div>;
   if (isLoadingActor) return <main className="main">Laddar...</main>;
 
@@ -96,6 +138,7 @@ function AdminPage() {
         activeView={adminView}
         planningDrafts={planningDrafts}
         onSelectDraft={setCourseDraft}
+        onSaveDraft={setCourseDraft}
       >
         {adminView === "overview" && (
           <div>
@@ -104,22 +147,76 @@ function AdminPage() {
             <PlanningDraftList
               drafts={planningDrafts}
               onSelect={(draft) => setCourseDraft(draft)}
+              selectedDraftId={courseDraft?.id}
             />
+
+            <button onClick={handlePublishDraft} disabled={!courseDraft}>
+              Spara som assignment
+            </button>
           </div>
         )}
 
-        {adminView === "customers" && <CustomerRegistry />}
+        {adminView === "customers" && <CustomerRegistry user={user} />}
 
         {adminView === "consultants" && <ConsultantRegistry user={user} />}
 
         {adminView === "courses" && <CourseRegistry user={user} />}
 
         {adminView === "planner" && (
-          <PlannerMonthView
-            monthGridDays={calendarGridDays}
-            focusDate={focusDate}
-            events={events}
-          />
+          <>
+            <div className="planner-actions">
+              <button onClick={handlePublishDraft} disabled={!courseDraft}>
+                Spara som assignment
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowDebug((prev) => !prev)}
+              style={{
+                position: "fixed",
+                bottom: 10,
+                right: 10,
+                zIndex: 1000,
+              }}
+            >
+              {showDebug ? "Stäng debug" : "Visa debug"}
+            </button>
+
+            {showDebug && (
+              <div
+                style={{
+                  position: "fixed",
+                  bottom: 50,
+                  right: 10,
+                  width: "320px",
+                  maxHeight: "300px",
+                  overflowY: "auto",
+                  background: "#111",
+                  color: "#0f0",
+                  padding: 10,
+                  zIndex: 999,
+                  fontSize: "12px",
+                  border: "1px solid #444",
+                }}
+              >
+                <h3>Assignments (backend)</h3>
+
+                {assignments.map((a) => (
+                  <div key={a.id}>
+                    <div>ID: {a.id}</div>
+                    <div>Manager: {a.managerId}</div>
+                    <div>Sessions: {a.sessions?.length}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <PlannerMonthView
+              monthGridDays={calendarGridDays}
+              focusDate={focusDate}
+              events={events}
+            />
+          </>
         )}
       </AdminLayout>
     </>
