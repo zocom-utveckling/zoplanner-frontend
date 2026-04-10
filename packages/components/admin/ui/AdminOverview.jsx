@@ -1,4 +1,4 @@
-export function ManagerTaskOverview({ ongoingItems, upcomingItems }) {
+export function AdminOverview({ ongoingItems, upcomingItems }) {
   //  mockdata
   const mockOngoing = [
     { id: "1", title: "Frontendutbildning – Granskning av kodprojekt" },

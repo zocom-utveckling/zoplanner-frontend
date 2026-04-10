@@ -92,8 +92,6 @@ export function CustomerRegistry({ user }) {
       return true;
     });
 
-  if (loading) return <p>Laddar kunder...</p>;
-
   const handleCreateCustomer = async () => {
     if (!managerId) {
       console.error("Saknar managerId");

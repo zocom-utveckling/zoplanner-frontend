@@ -1,3 +1,4 @@
+export { PlannerWorkspace } from "./ui";
 export { default as CourseSetupForm } from "./ui/CourseSetupForm";
 export { default as PlannerMonthView } from "./ui/PlannerMonthView";
 export { default as PlanningDraftList } from "./ui/PlanningDraftList";

@@ -1,22 +1,18 @@
 import "./index.css";
-import { AdminSidebar } from "@zoplanner/admin";
+import { AdminSidebar } from "./AdminSidebar";
 
 export function AdminLayout({
   children,
   setView,
   activeView,
-  planningDrafts,
-  onSelectDraft,
-  onSaveDraft,
+  onOpenPlannerPanel,
 }) {
   return (
     <div className="admin-container">
       <AdminSidebar
         setView={setView}
         activeView={activeView}
-        planningDrafts={planningDrafts}
-        onSelectDraft={onSelectDraft}
-        onSaveDraft={onSaveDraft}
+        onOpenPlannerPanel={onOpenPlannerPanel}
       />
 
       <div className="admin-content">{children}</div>

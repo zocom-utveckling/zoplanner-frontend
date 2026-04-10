@@ -4,6 +4,52 @@
   grid-template-columns: 48px repeat(5, 1fr) 0.5fr 0.5fr;
   margin-bottom: 6px;
 }
+
+.planner-workspace {
+  position: relative;
+}
+
+.planner-workspace__overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100vw - 32px));
+  max-height: 85vh;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #d7dce5;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+  z-index: 1200;
+}
+
+.planner-workspace__overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.planner-workspace__overlay-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.planner-workspace__close {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.planner-workspace__overlay-body {
+  padding: 16px 18px;
+}
+
 .planner-month-week-row {
   display: grid;
   grid-template-columns: 48px repeat(5, 1fr) 0.6fr 0.6fr;

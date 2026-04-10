@@ -25,18 +25,24 @@ export function toAssignmentPayload(draft, managerId) {
   return {
     managerId,
     consultantId: draft.consultantId ?? null,
-    classId: draft.classId ?? null,
+    courseId: draft.courseId ?? null,
     dateStart: draft.startDate,
     dateEnd: draft.endDate,
-    status: "DRAFT",
+    published: false,
   };
 }
+
+function normalizeDateTime(value) {
+  if (!value) return value;
+  return value.length === 16 ? `${value}:00` : value;
+}
+
 export function toSessionPayloads(draft) {
   if (!draft?.sessionsDraft?.length) return [];
 
   return draft.sessionsDraft.map((session) => ({
-    timeStart: `${session.timeStart}:00`,
-    timeEnd: `${session.timeEnd}:00`,
+    timeStart: normalizeDateTime(session.timeStart),
+    timeEnd: normalizeDateTime(session.timeEnd),
     location: session.location,
     comment: session.title,
   }));
