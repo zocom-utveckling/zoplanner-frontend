@@ -1,78 +1,26 @@
 import "./index.css";
-import {
-  PlannerMonthView,
-  PlanningDraftList,
-  loadPlanningDrafts,
-  upsertPlanningDraft,
-} from "@zoplanner/planning-tool";
+import { PlannerWorkspace } from "@zoplanner/planning-tool";
 import { Navbar } from "@zoplanner/navbar";
 import {
   AdminLayout,
   CustomerRegistry,
   ConsultantRegistry,
   CourseRegistry,
-  ManagerTaskOverview,
+  AdminOverview,
 } from "@zoplanner/admin";
 import { useUserById, useCurrentActor } from "@zoplanner/app-hooks";
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-} from "date-fns";
 
 function AdminPage() {
   const { id } = useParams();
   const { user, loading } = useUserById(id);
-  const { canAccess, access, isLoadingActor } = useCurrentActor(user);
+  const { canAccess, access, isLoadingActor, managerId } =
+    useCurrentActor(user);
 
   const [activePage, setActivePage] = useState("adminpanel");
   const [adminView, setAdminView] = useState("planner");
-  const [focusDate, setFocusDate] = useState(new Date());
-  const [courseDraft, setCourseDraft] = useState(null);
-  const [planningDrafts, setPlanningDrafts] = useState([]);
-
-  useEffect(() => {
-    setPlanningDrafts(loadPlanningDrafts());
-  }, []);
-
-  useEffect(() => {
-    if (!courseDraft) return;
-    upsertPlanningDraft(courseDraft);
-    setPlanningDrafts(loadPlanningDrafts());
-  }, [courseDraft]);
-
-  const calendarGridDays = useMemo(() => {
-    if (courseDraft?.startDate && courseDraft?.endDate) {
-      const [sy, sm, sd] = courseDraft.startDate.split("-").map(Number);
-      const [ey, em, ed] = courseDraft.endDate.split("-").map(Number);
-
-      const start = startOfWeek(new Date(sy, sm - 1, sd), { weekStartsOn: 1 });
-      const end = endOfWeek(new Date(ey, em - 1, ed), { weekStartsOn: 1 });
-
-      return eachDayOfInterval({ start, end });
-    }
-
-    const start = startOfWeek(startOfMonth(focusDate), { weekStartsOn: 1 });
-    const end = endOfWeek(endOfMonth(focusDate), { weekStartsOn: 1 });
-
-    return eachDayOfInterval({ start, end });
-  }, [focusDate, courseDraft]);
-
-  const events = useMemo(() => {
-    if (!courseDraft?.sessionsDraft) return [];
-
-    return courseDraft.sessionsDraft.map((s, i) => ({
-      id: String(i + 1),
-      title: s.title,
-      type: "session",
-      start: new Date(s.timeStart),
-      end: new Date(s.timeEnd),
-    }));
-  }, [courseDraft]);
+  const [plannerPanel, setPlannerPanel] = useState(null);
 
   if (loading) return <div>Laddar användare...</div>;
   if (isLoadingActor) return <main className="main">Laddar...</main>;
@@ -94,31 +42,23 @@ function AdminPage() {
       <AdminLayout
         setView={setAdminView}
         activeView={adminView}
-        planningDrafts={planningDrafts}
-        onSelectDraft={setCourseDraft}
+        onOpenPlannerPanel={setPlannerPanel}
       >
         {adminView === "overview" && (
           <div>
-            <ManagerTaskOverview />
-
-            <PlanningDraftList
-              drafts={planningDrafts}
-              onSelect={(draft) => setCourseDraft(draft)}
-            />
+            <AdminOverview />
           </div>
         )}
 
-        {adminView === "customers" && <CustomerRegistry />}
-
+        {adminView === "customers" && <CustomerRegistry user={user} />}
         {adminView === "consultants" && <ConsultantRegistry user={user} />}
-
         {adminView === "courses" && <CourseRegistry user={user} />}
 
         {adminView === "planner" && (
-          <PlannerMonthView
-            monthGridDays={calendarGridDays}
-            focusDate={focusDate}
-            events={events}
+          <PlannerWorkspace
+            managerId={managerId}
+            plannerPanel={plannerPanel}
+            onClosePlannerPanel={() => setPlannerPanel(null)}
           />
         )}
       </AdminLayout>

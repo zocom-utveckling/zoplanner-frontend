@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./index.css";
-import { QuickDevRegisterEntry } from "../../../components/admin/ui/QuickDevRegisterEntry";
+import { QuickDevRegisterEntry } from "@zoplanner/admin";
 
 import { Button } from "@zoplanner/button";
 import { authService } from "@zoplanner/api";

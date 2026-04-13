@@ -2,10 +2,9 @@ import "./index.css";
 import { useState } from "react";
 import { useCoursesOverview, useCurrentActor } from "@zoplanner/app-hooks";
 
-export function CourseRegistry() {
-  const { managerId, isManager, isLoadingActor } = useCurrentActor(user);
-
-  const { courses, loading } = useCoursesOverview();
+export function CourseRegistry({ user }) {
+  const { managerId, isLoadingActor } = useCurrentActor(user);
+  const { courses = [], loading } = useCoursesOverview();
 
   const [filters, setFilters] = useState({
     mine: false,
@@ -34,7 +33,7 @@ export function CourseRegistry() {
 
   const filteredCourses = courses
     .filter((c) => {
-      if (filters.mine) {
+      if (filters.mine && managerId) {
         return c.managerId === managerId;
       }
       return true;
@@ -47,13 +46,10 @@ export function CourseRegistry() {
   const handleCreateCourse = (e) => {
     e.preventDefault();
 
-    const newItem = {
+    console.log("Ny kurs (ej sparad ännu):", {
       ...newCourse,
-      id: Date.now(),
       managerId,
-    };
-
-    setCourses((prev) => [...prev, newItem]);
+    });
 
     setNewCourse({
       name: "",
@@ -65,6 +61,9 @@ export function CourseRegistry() {
     setIsCreating(false);
   };
 
+  if (loading || isLoadingActor) {
+    return <p>Laddar kurser...</p>;
+  }
   return (
     <div className="course-registry">
       <div className="course-registry__header">
