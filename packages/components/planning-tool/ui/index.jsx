@@ -3,6 +3,7 @@ import {
   CourseSetupForm,
   PlanningDraftList,
   PlannerMonthView,
+  CourseSummary,
   loadPlanningDrafts,
   upsertPlanningDraft,
   toAssignmentPayload,
@@ -69,25 +70,58 @@ export function PlannerWorkspace({
   }, [courseDraft]);
 
   async function handlePublishDraft() {
-    if (!courseDraft || !managerId) return;
+    if (!courseDraft) return;
+
+    if (!managerId) {
+      alert("Kunde inte identifiera användaren. Försök igen.");
+      return;
+    }
 
     setIsSaving(true);
 
     try {
       const assignmentPayload = toAssignmentPayload(courseDraft, managerId);
-      const createdAssignment =
-        await assignmentService.create(assignmentPayload);
 
-      const sessionPayloads = toSessionPayloads(courseDraft);
+      let createdAssignment;
 
-      for (const sessionPayload of sessionPayloads) {
-        await sessionService.create(createdAssignment.id, sessionPayload);
+      // 🔹 Steg 1: skapa assignment
+      try {
+        createdAssignment = await assignmentService.create(assignmentPayload);
+        console.log("✅ Assignment created:", createdAssignment);
+      } catch (error) {
+        console.error(
+          "❌ Failed to create assignment:",
+          error,
+          assignmentPayload,
+        );
+        alert("Kunde inte spara kursschema.");
+        return;
       }
 
-      alert("Schema sparat som assignment med sessions");
-    } catch (error) {
-      console.error("Kunde inte spara assignment/sessions:", error);
-      alert("Kunde inte spara schema");
+      // 👉 Lägg den HÄR
+      if (!createdAssignment?.id) {
+        console.error("❌ Assignment created without id:", createdAssignment);
+        alert("Kunde inte spara kursschema.");
+        return;
+      }
+      // 🔹 Steg 2: skapa sessions
+      const sessionPayloads = toSessionPayloads(courseDraft);
+
+      try {
+        for (const sessionPayload of sessionPayloads) {
+          await sessionService.create(createdAssignment.id, sessionPayload);
+        }
+        console.log("✅ Sessions created:", sessionPayloads);
+      } catch (error) {
+        console.error("❌ Failed to create sessions:", error, sessionPayloads);
+        alert(
+          "Kursschema sparades, men vissa lektionstillfällen kunde inte sparas.",
+        );
+        return;
+      }
+
+      // 🔹 Success
+      alert("Kursschema sparat med lektionstillfällen");
     } finally {
       setIsSaving(false);
     }
@@ -143,6 +177,10 @@ export function PlannerWorkspace({
           </div>
         </div>
       )}
+
+      {assignments.map((a) => (
+        <CourseSummary key={a.id} assignment={a} />
+      ))}
 
       <PlannerMonthView
         monthGridDays={calendarGridDays}
