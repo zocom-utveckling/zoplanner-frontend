@@ -1,4 +1,4 @@
-export function CourseSummary({ assignment }) {
+export default function CourseSummary({ assignment }) {
   if (!assignment) return null;
 
   const sessions = assignment.sessions ?? [];

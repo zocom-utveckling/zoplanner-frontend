@@ -27,6 +27,7 @@ export function PlannerWorkspace({
   const [courseDraft, setCourseDraft] = useState(null);
   const [planningDrafts, setPlanningDrafts] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [assignments, setAssignments] = useState([]);
 
   useEffect(() => {
     setPlanningDrafts(loadPlanningDrafts());
