@@ -105,11 +105,7 @@ function Navbar({ user, activePage, setActivePage }) {
             >
               Meddelande
             </button>
-            {isManager && (
-              <button className={activePage == "allSchedules" ? "active" : ""}>
-                Alla scheman
-              </button>
-            )}
+
             <button
               onClick={() => {
                 navigate(`/assignment-page/${user.id}`);
