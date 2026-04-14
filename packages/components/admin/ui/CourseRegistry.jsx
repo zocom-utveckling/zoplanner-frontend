@@ -1,179 +1,263 @@
 import "./index.css";
-import { useState } from "react";
-import { useCoursesOverview, useCurrentActor } from "@zoplanner/app-hooks";
+import { useEffect, useState } from "react";
+import { useCurrentActor } from "@zoplanner/app-hooks";
+import { assignmentService } from "@zoplanner/api";
+import { dev } from "@zoplanner/admin";
+import CourseDetailsModal from "./CourseDetailsModal";
 
 export function CourseRegistry({ user }) {
   const { managerId, isLoadingActor } = useCurrentActor(user);
-  const { courses = [], loading } = useCoursesOverview();
+
+  const [assignments, setAssignments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
+
+  const [search, setSearch] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   const [filters, setFilters] = useState({
     mine: false,
-    status: "all", // "all" | "ongoing" | "completed"
+    statuses: [],
   });
 
-  const [isCreating, setIsCreating] = useState(false);
+  useEffect(() => {
+    async function loadAssignments() {
+      try {
+        const data = await assignmentService.getAll();
+        setAssignments(data ?? []);
+      } catch (error) {
+        console.error("Failed to load assignments:", error);
+        setAssignments([]);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  const [newCourse, setNewCourse] = useState({
-    name: "",
-    customer: "",
-    startDate: "",
-    endDate: "",
-  });
+    loadAssignments();
+  }, []);
 
   const today = new Date();
 
-  const getStatus = (course) => {
-    const start = new Date(course.startDate);
-    const end = new Date(course.endDate);
+  const getStatus = (courseLike) => {
+    const start = new Date(courseLike.startDate);
+    const end = new Date(courseLike.endDate);
 
     if (today >= start && today <= end) return "ongoing";
     if (today > end) return "completed";
     return "upcoming";
   };
 
-  const filteredCourses = courses
+  function getStatusLabel(status) {
+    if (status === "ongoing") return "Pågående";
+    if (status === "completed") return "Avslutad";
+    return "Kommande";
+  }
+
+  const courseRows = assignments.map((assignment) => ({
+    id: assignment.id,
+    assignment,
+    name: dev.getCourseNameForAssignment(assignment),
+    customer:
+      assignment.course?.className ||
+      assignment.course?.customerName ||
+      "Kund saknas",
+    startDate: assignment.dateStart,
+    endDate: assignment.dateEnd,
+    sessions: assignment.sessions ?? [],
+    consultantId: assignment.consultantId ?? null,
+    managerId: assignment.managerId ?? null,
+    status: getStatus({
+      startDate: assignment.dateStart,
+      endDate: assignment.dateEnd,
+    }),
+  }));
+
+  const toggleMultiFilter = (key, value) => {
+    setFilters((prev) => {
+      const exists = prev[key].includes(value);
+
+      return {
+        ...prev,
+        [key]: exists
+          ? prev[key].filter((v) => v !== value)
+          : [...prev[key], value],
+      };
+    });
+  };
+
+  const toggleMine = () => {
+    setFilters((prev) => ({
+      ...prev,
+      mine: !prev.mine,
+    }));
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      mine: false,
+      statuses: [],
+    });
+  };
+
+  const filteredCourses = courseRows
     .filter((c) => {
-      if (filters.mine && managerId) {
+      const searchValue = search.trim().toLowerCase();
+
+      if (!searchValue) return true;
+
+      return (
+        (c.name || "").toLowerCase().includes(searchValue) ||
+        (c.customer || "").toLowerCase().includes(searchValue)
+      );
+    })
+    .filter((c) => {
+      if (filters.mine && managerId && c.managerId != null) {
         return c.managerId === managerId;
+      }
+      if (filters.mine && managerId && c.managerId == null) {
+        return true;
       }
       return true;
     })
     .filter((c) => {
-      if (filters.status === "all") return true;
-      return getStatus(c) === filters.status;
+      if (filters.statuses.length > 0) {
+        return filters.statuses.includes(c.status);
+      }
+      return true;
     });
 
-  const handleCreateCourse = (e) => {
-    e.preventDefault();
-
-    console.log("Ny kurs (ej sparad ännu):", {
-      ...newCourse,
-      managerId,
-    });
-
-    setNewCourse({
-      name: "",
-      customer: "",
-      startDate: "",
-      endDate: "",
-    });
-
-    setIsCreating(false);
-  };
+  function handleCloseCourseModal() {
+    setIsCourseModalOpen(false);
+    setSelectedCourse(null);
+  }
 
   if (loading || isLoadingActor) {
     return <p>Laddar kurser...</p>;
   }
+
   return (
     <div className="course-registry">
       <div className="course-registry__header">
         <h1>Kurser</h1>
-        <button onClick={() => setIsCreating(true)}>+ Ny kurs</button>
       </div>
 
-      {/* FILTERS */}
-      <div className="course-registry__filters">
+      <div className="course-registry__toolbar">
         <button
-          onClick={() => setFilters((prev) => ({ ...prev, mine: !prev.mine }))}
-          className={filters.mine ? "active" : ""}
+          className="course-registry__filter-toggle"
+          onClick={() => setShowFilters((prev) => !prev)}
         >
-          Mina
+          Filtrera
         </button>
 
-        <button
-          onClick={() => setFilters((prev) => ({ ...prev, status: "all" }))}
-          className={filters.status === "all" ? "active" : ""}
-        >
-          Alla
-        </button>
-
-        <button
-          onClick={() => setFilters((prev) => ({ ...prev, status: "ongoing" }))}
-          className={filters.status === "ongoing" ? "active" : ""}
-        >
-          Pågående
-        </button>
-
-        <button
-          onClick={() =>
-            setFilters((prev) => ({ ...prev, status: "completed" }))
-          }
-          className={filters.status === "completed" ? "active" : ""}
-        >
-          Avslutade
-        </button>
+        <input
+          className="course-registry__search"
+          type="text"
+          placeholder="Sök kurs eller kund..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
-      {/* CREATE FORM */}
-      {isCreating && (
-        <form className="course-registry__form" onSubmit={handleCreateCourse}>
-          <input
-            type="text"
-            placeholder="Kursnamn"
-            value={newCourse.name}
-            onChange={(e) =>
-              setNewCourse((prev) => ({ ...prev, name: e.target.value }))
-            }
-          />
+      {showFilters && (
+        <div className="course-registry__filters">
+          <span onClick={toggleMine} className={filters.mine ? "active" : ""}>
+            Mina
+          </span>
 
-          <input
-            type="text"
-            placeholder="Kund"
-            value={newCourse.customer}
-            onChange={(e) =>
-              setNewCourse((prev) => ({
-                ...prev,
-                customer: e.target.value,
-              }))
+          <span
+            onClick={resetFilters}
+            className={
+              !filters.mine && filters.statuses.length === 0 ? "active" : ""
             }
-          />
+          >
+            Alla
+          </span>
 
-          <input
-            type="date"
-            value={newCourse.startDate}
-            onChange={(e) =>
-              setNewCourse((prev) => ({
-                ...prev,
-                startDate: e.target.value,
-              }))
-            }
-          />
+          <button
+            type="button"
+            onClick={() => toggleMultiFilter("statuses", "upcoming")}
+            className={filters.statuses.includes("upcoming") ? "active" : ""}
+          >
+            Kommande
+          </button>
 
-          <input
-            type="date"
-            value={newCourse.endDate}
-            onChange={(e) =>
-              setNewCourse((prev) => ({
-                ...prev,
-                endDate: e.target.value,
-              }))
-            }
-          />
+          <button
+            type="button"
+            onClick={() => toggleMultiFilter("statuses", "ongoing")}
+            className={filters.statuses.includes("ongoing") ? "active" : ""}
+          >
+            Pågående
+          </button>
 
-          <button type="submit">Spara</button>
-        </form>
+          <button
+            type="button"
+            onClick={() => toggleMultiFilter("statuses", "completed")}
+            className={filters.statuses.includes("completed") ? "active" : ""}
+          >
+            Avslutade
+          </button>
+        </div>
       )}
 
-      {/* LIST */}
+      <div className="course-registry__active-filters">
+        {filters.mine && (
+          <span className="chip" onClick={toggleMine}>
+            Mina ✕
+          </span>
+        )}
+
+        {filters.statuses.map((status) => (
+          <span
+            key={status}
+            className="chip"
+            onClick={() => toggleMultiFilter("statuses", status)}
+          >
+            {getStatusLabel(status)} ✕
+          </span>
+        ))}
+      </div>
+
       <ul className="course-registry__list">
         {filteredCourses.length === 0 ? (
           <li className="course-registry__empty">
-            Inga kurser matchar filtret.
+            Inga kurser matchar din sökning eller filter.
           </li>
         ) : (
           filteredCourses.map((c) => (
-            <li key={c.id} className="course-registry__item">
-              <span>
-                {c.name} – {c.customer}
-              </span>
-              <span>
-                {c.startDate} → {c.endDate}
-              </span>
-              <span>{getStatus(c)}</span>
+            <li
+              key={c.id}
+              className="course-registry__item"
+              onClick={() => {
+                setSelectedCourse(c);
+                setIsCourseModalOpen(true);
+              }}
+            >
+              <div className="course-item__top">
+                <span className="course-item__name">{c.name}</span>
+                <span
+                  className={`course-item__status course-item__status--${c.status}`}
+                >
+                  {getStatusLabel(c.status)}
+                </span>
+              </div>
+
+              <div className="course-item__meta">
+                <span>
+                  {c.startDate} → {c.endDate}
+                </span>
+                <span>{c.customer}</span>
+              </div>
             </li>
           ))
         )}
       </ul>
+
+      <CourseDetailsModal
+        isOpen={isCourseModalOpen}
+        course={selectedCourse}
+        onClose={handleCloseCourseModal}
+      />
     </div>
   );
 }

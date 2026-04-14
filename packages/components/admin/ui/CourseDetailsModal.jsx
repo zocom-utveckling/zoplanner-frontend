@@ -1,12 +1,5 @@
 import { useMemo } from "react";
-import {
-  format,
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-} from "date-fns";
+import { format, startOfWeek, endOfWeek, eachDayOfInterval } from "date-fns";
 import { PlannerMonthView } from "@zoplanner/planning-tool";
 import "./index.css";
 
@@ -14,36 +7,35 @@ export default function CourseDetailsModal({ isOpen, onClose, course }) {
   if (!isOpen || !course) return null;
 
   const sessions = course.sessions ?? [];
-
-  const focusDate = course.dateStart ? new Date(course.dateStart) : new Date();
+  const focusDate = course?.startDate ? new Date(course.startDate) : new Date();
 
   const monthGridDays = useMemo(() => {
-    if (course.dateStart && course.dateEnd) {
-      const [sy, sm, sd] = course.dateStart.split("-").map(Number);
-      const [ey, em, ed] = course.dateEnd.split("-").map(Number);
+    if (course?.startDate && course?.endDate) {
+      const [sy, sm, sd] = course.startDate.split("-").map(Number);
+      const [ey, em, ed] = course.endDate.split("-").map(Number);
 
-      const start = startOfWeek(new Date(sy, sm - 1, sd), { weekStartsOn: 1 });
-      const end = endOfWeek(endOfMonth(new Date(ey, em - 1, ed)), {
-        weekStartsOn: 1,
+      const courseStart = new Date(sy, sm - 1, sd);
+      const courseEnd = new Date(ey, em - 1, ed);
+
+      return eachDayOfInterval({
+        start: startOfWeek(courseStart, { weekStartsOn: 1 }),
+        end: endOfWeek(courseEnd, { weekStartsOn: 1 }),
       });
-
-      return eachDayOfInterval({ start, end });
     }
 
-    const start = startOfWeek(startOfMonth(focusDate), { weekStartsOn: 1 });
-    const end = endOfWeek(endOfMonth(focusDate), { weekStartsOn: 1 });
-
-    return eachDayOfInterval({ start, end });
-  }, [course, focusDate]);
+    return [];
+  }, [course]);
 
   const events = useMemo(() => {
-    return sessions.map((session, index) => ({
-      id: session.id ?? String(index + 1),
-      title: session.comment || `Pass ${index + 1}`,
-      type: "session",
-      start: new Date(session.timeStart),
-      end: new Date(session.timeEnd),
-    }));
+    return sessions
+      .filter((session) => session.timeStart && session.timeEnd)
+      .map((session, index) => ({
+        id: session.id ?? String(index + 1),
+        title: session.comment || session.title || `Pass ${index + 1}`,
+        type: "session",
+        start: new Date(session.timeStart),
+        end: new Date(session.timeEnd),
+      }));
   }, [sessions]);
 
   function handleOverlayClick(event) {
@@ -64,8 +56,8 @@ export default function CourseDetailsModal({ isOpen, onClose, course }) {
               {course.name || "Kursschema"}
             </h2>
             <p className="course-details-modal__meta">
-              {course.customer || "Okänd kund"} · {course.dateStart} –{" "}
-              {course.dateEnd}
+              {course.customer || "Okänd kund"} · {course.startDate} –{" "}
+              {course.endDate}
             </p>
           </div>
 
@@ -113,7 +105,9 @@ export default function CourseDetailsModal({ isOpen, onClose, course }) {
                       className="course-details-modal__session-item"
                     >
                       <div className="course-details-modal__session-title">
-                        {session.comment || `Pass ${index + 1}`}
+                        {session.comment ||
+                          session.title ||
+                          `Pass ${index + 1}`}
                       </div>
                       <div className="course-details-modal__session-time">
                         {formatSessionDateTime(session.timeStart)} –{" "}
