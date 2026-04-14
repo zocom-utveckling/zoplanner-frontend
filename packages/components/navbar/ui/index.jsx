@@ -61,7 +61,11 @@ function Navbar({ user, activePage, setActivePage }) {
       <nav className="navbar">
         <div className="navbar-left">
           <div className="logo">
-            <span className="logo-text">ZoPlanner</span>
+            <img
+              className="logo-image"
+              src="/zoplanner-logo-navbar.png"
+              alt="ZoPlanner"
+            />
           </div>
         </div>
 
