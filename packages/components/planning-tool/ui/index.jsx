@@ -4,6 +4,7 @@ import {
   PlanningDraftList,
   PlannerMonthView,
   CourseSummary,
+  SessionModal,
   loadPlanningDrafts,
   upsertPlanningDraft,
   toAssignmentPayload,
@@ -11,6 +12,7 @@ import {
 } from "@zoplanner/planning-tool";
 import { assignmentService, sessionService } from "@zoplanner/api";
 import {
+  format,
   startOfMonth,
   endOfMonth,
   startOfWeek,
@@ -70,6 +72,7 @@ export function PlannerWorkspace({
 
     return courseDraft.sessionsDraft.map((s, i) => ({
       id: String(i + 1),
+      sessionIndex: i,
       title: s.title,
       type: "session",
       start: new Date(s.timeStart),
@@ -77,6 +80,90 @@ export function PlannerWorkspace({
     }));
   }, [courseDraft]);
 
+  function handleSessionClick(sessionIndex) {
+    const session = courseDraft?.sessionsDraft?.[sessionIndex];
+    if (!session) return;
+
+    setSelectedSession(sessionIndex);
+    setFormData({
+      title: session.title ?? "",
+      date: session.dateStart ?? "",
+      startTime: session.timeStart?.split("T")[1]?.slice(0, 5) ?? "",
+      endTime: session.timeEnd?.split("T")[1]?.slice(0, 5) ?? "",
+      location: session.location ?? "ONSITE",
+    });
+    setIsModalOpen(true);
+  }
+
+  function handleSessionFormChange(event) {
+    const { name, value } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  function handleSessionSubmit(event) {
+    event.preventDefault();
+
+    if (selectedSession === null || !courseDraft) return;
+
+    const updatedSessions = [...(courseDraft.sessionsDraft ?? [])];
+    const currentSession = updatedSessions[selectedSession];
+
+    if (!currentSession) return;
+
+    updatedSessions[selectedSession] = {
+      ...currentSession,
+      title: formData.title,
+      dateStart: formData.date,
+      dateEnd: formData.date,
+      timeStart: `${formData.date}T${formData.startTime}:00`,
+      timeEnd: `${formData.date}T${formData.endTime}:00`,
+      location: formData.location,
+    };
+
+    setCourseDraft({
+      ...courseDraft,
+      sessionsDraft: updatedSessions,
+    });
+
+    setIsModalOpen(false);
+    setSelectedSession(null);
+    setFormData(null);
+  }
+
+  function handleSessionModalClose() {
+    setIsModalOpen(false);
+    setSelectedSession(null);
+    setFormData(null);
+  }
+  function handleEventDrop(sessionIndex, newDate) {
+    if (!courseDraft?.sessionsDraft?.[sessionIndex]) return;
+
+    const updatedSessions = [...courseDraft.sessionsDraft];
+    const session = updatedSessions[sessionIndex];
+
+    const newDateString = format(newDate, "yyyy-MM-dd");
+
+    const oldStartTime =
+      session.timeStart?.split("T")[1]?.slice(0, 8) ?? "09:00:00";
+    const oldEndTime =
+      session.timeEnd?.split("T")[1]?.slice(0, 8) ?? "12:00:00";
+
+    updatedSessions[sessionIndex] = {
+      ...session,
+      dateStart: newDateString,
+      dateEnd: newDateString,
+      timeStart: `${newDateString}T${oldStartTime}`,
+      timeEnd: `${newDateString}T${oldEndTime}`,
+    };
+
+    setCourseDraft({
+      ...courseDraft,
+      sessionsDraft: updatedSessions,
+    });
+  }
   async function handlePublishDraft() {
     if (!courseDraft) return;
 
@@ -196,6 +283,15 @@ export function PlannerWorkspace({
         monthGridDays={calendarGridDays}
         focusDate={focusDate}
         events={events}
+        onEventClick={(event) => handleSessionClick(event.sessionIndex)}
+        onEventDrop={handleEventDrop}
+      />
+      <SessionModal
+        isOpen={isModalOpen}
+        onClose={handleSessionModalClose}
+        formData={formData}
+        onChange={handleSessionFormChange}
+        onSubmit={handleSessionSubmit}
       />
     </div>
   );
