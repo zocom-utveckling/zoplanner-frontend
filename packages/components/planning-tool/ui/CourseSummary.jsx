@@ -1,31 +1,41 @@
+import "./index.css";
+
 export default function CourseSummary({ assignment }) {
   if (!assignment) return null;
 
   const sessions = assignment.sessions ?? [];
 
   return (
-    <div style={styles.card}>
+    <div className="course-summary">
       {/* Titel */}
-      <h3 style={styles.title}>{assignment.course?.name || "Kursschema"}</h3>
+      <h3 className="course-summary__title">
+        {assignment.course?.name || "Kursschema"}
+      </h3>
 
       {/* Period */}
-      <p style={styles.text}>
+      <p className="course-summary__meta">
         {assignment.dateStart} – {assignment.dateEnd}
       </p>
 
       {/* Antal tillfällen */}
-      <p style={styles.text}>{sessions.length} lektionstillfällen</p>
+      <p className="course-summary__meta">
+        {sessions.length} lektionstillfällen
+      </p>
 
       {/* Sessions lista */}
-      <ul style={styles.list}>
+      <ul className="course-summary__list">
         {sessions.map((session, index) => (
-          <li key={session.id ?? index} style={styles.listItem}>
-            <span>
+          <li key={session.id ?? index} className="course-summary__list-item">
+            <span className="course-summary__time">
               {formatDateTime(session.timeStart)} –{" "}
               {formatTime(session.timeEnd)}
             </span>
+
             {session.comment && (
-              <span style={styles.comment}> – {session.comment}</span>
+              <span className="course-summary__comment">
+                {" "}
+                – {session.comment}
+              </span>
             )}
           </li>
         ))}
@@ -58,31 +68,3 @@ function formatTime(dateTimeString) {
     minute: "2-digit",
   });
 }
-
-const styles = {
-  card: {
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    padding: "12px",
-    marginBottom: "12px",
-    backgroundColor: "#fff",
-  },
-  title: {
-    margin: "0 0 6px 0",
-  },
-  text: {
-    margin: "4px 0",
-    fontSize: "14px",
-  },
-  list: {
-    marginTop: "8px",
-    paddingLeft: "16px",
-  },
-  listItem: {
-    marginBottom: "4px",
-    fontSize: "14px",
-  },
-  comment: {
-    color: "#555",
-  },
-};
