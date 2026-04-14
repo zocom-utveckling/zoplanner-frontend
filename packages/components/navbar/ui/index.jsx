@@ -2,13 +2,7 @@ import { appRoutesConfig } from "../../../app-routes/appRoutes.config";
 
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
-import {
-  FaAngleDown,
-  FaAngleUp,
-  FaBell,
-  FaQuestion,
-  FaUser,
-} from "react-icons/fa";
+import { FaAngleDown, FaAngleUp, FaBell } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import { DarkModeButton } from "@zoplanner/dark-mode-button";
 import { ConfirmPopup } from "../../confirm-popup/ui";
@@ -48,6 +42,7 @@ function Navbar({ user, activePage, setActivePage }) {
     .filter(Boolean);
   const isManager =
     normalizedRoles.includes("manager") || normalizedRoles.includes("both");
+  const homeRoute = appRoutesConfig.home.replace(":id", String(user.id));
 
   return (
     <>
@@ -60,26 +55,41 @@ function Navbar({ user, activePage, setActivePage }) {
       )}
       <nav className="navbar">
         <div className="navbar-left">
-          <div className="logo">
-            <span className="logo-text">ZoPlanner</span>
-          </div>
+          <button className="logo" onClick={() => navigate(homeRoute)}>
+            <img
+              className="logo-image"
+              src="/zoplanner-logo-navbar.png"
+              alt="ZoPlanner"
+            />
+          </button>
         </div>
 
         <div className="navbar-right">
-          <div className="routes">
+          <div className="icon-group">
+            <div className="notification">
+              <FaBell />
+              {unreadnotification.length > 0 && (
+                <span className="badge">{unreadnotification.length}</span>
+              )}
+            </div>
+
             <DarkModeButton />
-            {isManager && (
-              <button
-              
-                className={activePage == "allSchedules" ? "active" : ""}
-              >
-                Alla scheman
-              </button>
-            )}
+
+            <div className="icon locale-chip">SV</div>
+          </div>
+
+          <div className="routes">
+            <button
+              onClick={() => {
+                navigate(`/dashboard/${user.id}`);
+              }}
+              className={activePage == "dashboard" ? "active" : ""}
+            >
+              Skrivbord
+            </button>
             {isManager && (
               <button
                 onClick={() => {
-                
                   navigate(`/admin-page/${user.id}`);
                 }}
                 className={activePage == "adminpanel" ? "active" : ""}
@@ -89,44 +99,21 @@ function Navbar({ user, activePage, setActivePage }) {
             )}
             <button
               onClick={() => {
-                
-                navigate(`/dashboard/${user.id}`);
-              }}
-              className={activePage == "dashboard" ? "active" : ""}
-            >
-              Skrivbord
-            </button>
-            <button
-              onClick={() => {
-                
-                navigate(`/assignment-page/${user.id}`);
-              }}
-              className={activePage == "assignments" ? "active" : ""}
-            >
-              Uppdrag
-            </button>
-            <button
-              onClick={() => {
-               
                 navigate(`/messages/${user.id}`);
               }}
               className={activePage == "messages" ? "active" : ""}
             >
               Meddelande
             </button>
-          </div>
 
-          <div className="icon-group">
-            <div className="notification">
-              <FaBell />
-              {unreadnotification.length > 0 && (
-                <span className="badge">{unreadnotification.length}</span>
-              )}
-            </div>
-
-            <div className="icon">
-              <FaQuestion />
-            </div>
+            <button
+              onClick={() => {
+                navigate(`/assignment-page/${user.id}`);
+              }}
+              className={activePage == "assignments" ? "active" : ""}
+            >
+              Uppdrag
+            </button>
           </div>
 
           <div className="profile" ref={dropdownRef}>
@@ -134,19 +121,13 @@ function Navbar({ user, activePage, setActivePage }) {
               className="profile-trigger"
               onClick={() => setShowDropdown((prev) => !prev)}
             >
-              <FaUser />
               <span>{user?.name || "Users Name"}</span>
               {showDropdown ? <FaAngleUp /> : <FaAngleDown />}
             </button>
 
             {showDropdown && (
               <div className="dropdown">
-                <Link
-                  to={`/profile/${user.id}`}
-                  
-                >
-                  Se profil
-                </Link>
+                <Link to={`/profile/${user.id}`}>Se profil</Link>
                 <Link to={"#"} onClick={() => setOpenConfirm(true)}>
                   Logga ut
                 </Link>

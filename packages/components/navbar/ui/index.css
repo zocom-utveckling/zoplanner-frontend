@@ -1,10 +1,13 @@
 .navbar {
   display: flex;
   align-items: center;
-  padding: 16px 20px;
-  background-color: var(--nav-bg);
+  min-height: 68px;
+  padding: 8px 22px;
+  background-color: #9b9999;
   color: var(--text-primary);
   font-family: "Poppins", sans-serif;
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
 }
 
 .navbar * {
@@ -19,54 +22,71 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 14px;
 }
 
 .logo {
-  font-weight: 600;
-  font-size: 38px;
-  margin-left: 10px;
+  margin-left: 4px;
+  width: 170px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
-.logo-text {
-  letter-spacing: -0.2px;
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .routes {
   display: flex;
-  gap: 18px;
+  align-items: center;
+  gap: 4px;
 }
 
 .routes button {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
   cursor: pointer;
   padding: 8px 12px;
-  border-radius: 2px;
-  transition: background-color 0.3s;
-  color: var(--text-primary);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  color: #ffffff;
+  white-space: nowrap;
 }
 .routes button:hover {
-  background-color: var(--hover-bg);
+  background-color: rgba(255, 255, 255, 0.12);
 }
 .routes button.active {
-  border-bottom: 2px solid var(--text-primary);
-  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .icon-group {
   display: flex;
-  gap: 12px;
+  gap: 6px;
 }
 
 .icon,
 .notification {
-  width: 32px;
-  height: 32px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background-color: var(--icon-bg);
-  color: var(--icon-fg);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -79,9 +99,21 @@
 
 .icon:hover,
 .notification:hover {
-  background-color: var(--accent);
-  color: var(--accent-fg);
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
   transform: translateY(-1px);
+}
+
+.notification svg,
+.icon svg {
+  width: 11px;
+  height: 11px;
+}
+
+.locale-chip {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .badge {
@@ -90,9 +122,15 @@
   right: -4px;
   background-color: red;
   color: white;
-  font-size: 10px;
-  padding: 3px 6px;
-  border-radius: 12px;
+  font-size: 8px;
+  line-height: 1;
+  min-width: 12px;
+  height: 12px;
+  padding: 2px;
+  border-radius: 999px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .profile {
@@ -102,23 +140,38 @@
 .profile-trigger {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 16px;
-  color: var(--text-primary);
-  padding: 6px 10px;
-  border-radius: 999px;
+  font-size: 11px;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 0;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
 }
 
+.profile-trigger span {
+  max-width: 145px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .profile-trigger:hover,
 .profile-trigger:focus-visible {
-  background-color: var(--hover-bg);
+  background-color: transparent;
   outline: none;
+}
+
+.profile-trigger svg {
+  width: 11px;
+  height: 11px;
 }
 
 .dropdown {
@@ -151,6 +204,94 @@
 .dropdown a:hover {
   background-color: var(--hover-bg);
 }
+
+.navbar .dark-mode-button {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  padding: 0;
+  font-size: 0;
+  gap: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.navbar .dark-mode-button span {
+  display: none;
+}
+
+.navbar .dark-mode-button svg {
+  width: 11px;
+  height: 11px;
+}
+
+@media (max-width: 1500px) {
+  .navbar {
+    padding: 8px 16px;
+  }
+
+  .logo {
+    width: 150px;
+    height: 36px;
+  }
+
+  .navbar-right {
+    gap: 10px;
+  }
+
+  .routes {
+    gap: 2px;
+  }
+
+  .routes button {
+    font-size: 11px;
+    padding: 7px 10px;
+  }
+
+  .profile-trigger {
+    font-size: 10px;
+    gap: 5px;
+  }
+
+  .profile-trigger span {
+    max-width: 115px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .logo {
+    width: 132px;
+    height: 32px;
+  }
+
+  .navbar-right {
+    gap: 8px;
+  }
+
+  .routes button {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+
+  .icon,
+  .notification {
+    width: 20px;
+    height: 20px;
+  }
+
+  .profile-trigger span {
+    max-width: 90px;
+  }
+
+  .navbar .dark-mode-button {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+  }
+}
+
 @keyframes dropdown {
   from {
     opacity: 0;
