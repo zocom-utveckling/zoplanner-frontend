@@ -42,6 +42,7 @@ function Navbar({ user, activePage, setActivePage }) {
     .filter(Boolean);
   const isManager =
     normalizedRoles.includes("manager") || normalizedRoles.includes("both");
+  const homeRoute = appRoutesConfig.home.replace(":id", String(user.id));
 
   return (
     <>
@@ -54,13 +55,13 @@ function Navbar({ user, activePage, setActivePage }) {
       )}
       <nav className="navbar">
         <div className="navbar-left">
-          <div className="logo">
+          <button className="logo" onClick={() => navigate(homeRoute)}>
             <img
               className="logo-image"
               src="/zoplanner-logo-navbar.png"
               alt="ZoPlanner"
             />
-          </div>
+          </button>
         </div>
 
         <div className="navbar-right">

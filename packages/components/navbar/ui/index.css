@@ -34,6 +34,9 @@
   justify-content: flex-start;
   border-radius: 0;
   padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
 .logo-image {
