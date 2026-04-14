@@ -34,6 +34,10 @@ export function PlannerWorkspace({
   }, []);
 
   useEffect(() => {
+    assignmentService.getAll().then(setAssignments).catch(console.error);
+  }, []);
+
+  useEffect(() => {
     if (!courseDraft) return;
     upsertPlanningDraft(courseDraft);
     setPlanningDrafts(loadPlanningDrafts());
@@ -123,6 +127,8 @@ export function PlannerWorkspace({
 
       // 🔹 Success
       alert("Kursschema sparat med lektionstillfällen");
+      const updated = await assignmentService.getAll();
+      setAssignments(updated);
     } finally {
       setIsSaving(false);
     }
