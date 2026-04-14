@@ -28,6 +28,9 @@ export function PlannerWorkspace({
   const [planningDrafts, setPlanningDrafts] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [assignments, setAssignments] = useState([]);
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState(null);
 
   useEffect(() => {
     setPlanningDrafts(loadPlanningDrafts());
