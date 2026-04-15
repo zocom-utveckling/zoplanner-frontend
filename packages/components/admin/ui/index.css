@@ -1,7 +1,7 @@
 .admin-sidebar {
   flex: 1;
   min-height: 100vh;
-  max-width: 260px;
+  max-width: 200px;
   background: var(--surface);
   border-right: 1px solid var(--border-color);
   padding: 16px;

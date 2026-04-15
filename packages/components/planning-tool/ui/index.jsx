@@ -268,69 +268,58 @@ export function PlannerWorkspace({
 
   return (
     <div className="planner-workspace">
-      <div className="planner-actions">
-        <button
-          className="planner-btn-primary"
-          onClick={handlePublishDraft}
-          disabled={!courseDraft || isSaving}
-        >
-          {isSaving ? "Sparar..." : "Spara kursschema"}
-        </button>
-      </div>
+      <div className="planner-workspace__header"></div>
 
-      {plannerPanel && (
-        <div className="planner-workspace__overlay">
-          <div className="planner-workspace__overlay-header">
-            <h3>
-              {plannerPanel === "drafts" ? "Påbörjade utkast" : "Ny planering"}
-            </h3>
-
+      <div className="planner-workspace__layout">
+        <aside className="planner-workspace__sidebar">
+          <section className="planner-workspace__panel planner-workspace__panel--form">
+            <h2>Ny planering</h2>
+            <CourseSetupForm
+              variant="compact"
+              onSave={(draft) => {
+                setActiveAssignment(null);
+                setCourseDraft(draft);
+              }}
+            />
             <button
-              className="planner-workspace__close"
-              onClick={onClosePlannerPanel}
+              className="planner-btn-primary"
+              onClick={handlePublishDraft}
+              disabled={!courseDraft || isSaving}
             >
-              ×
+              {isSaving ? "Sparar..." : "Spara kursschema"}
             </button>
-          </div>
+          </section>
 
-          <div className="planner-workspace__overlay-body">
-            {plannerPanel === "drafts" && (
-              <PlanningDraftList
-                drafts={planningDrafts}
-                onSelect={(draft) => {
-                  setActiveAssignment(null);
-                  setCourseDraft(draft);
-                  onClosePlannerPanel();
-                }}
-                selectedDraftId={courseDraft?.id}
-              />
-            )}
+          <section className="planner-workspace__panel">
+            <h2>Påbörjade utkast</h2>
+            <PlanningDraftList
+              drafts={planningDrafts}
+              onSelect={(draft) => {
+                setActiveAssignment(null);
+                setCourseDraft(draft);
+              }}
+              selectedDraftId={courseDraft?.id}
+            />
+          </section>
 
-            {plannerPanel === "new" && (
-              <CourseSetupForm
-                variant="compact"
-                onSave={(draft) => {
-                  setActiveAssignment(null);
-                  setCourseDraft(draft);
-                  onClosePlannerPanel();
-                }}
-              />
-            )}
-          </div>
-        </div>
-      )}
+          {summaryAssignment ? (
+            <section className="planner-workspace__panel">
+              <h2>Översikt</h2>
+              <CourseSummary assignment={summaryAssignment} />
+            </section>
+          ) : null}
+        </aside>
 
-      {summaryAssignment ? (
-        <CourseSummary assignment={summaryAssignment} />
-      ) : null}
-
-      <PlannerMonthView
-        monthGridDays={calendarGridDays}
-        focusDate={focusDate}
-        events={events}
-        onEventClick={(event) => handleSessionClick(event.sessionIndex)}
-        onEventDrop={handleEventDrop}
-      />
+        <main className="planner-workspace__main">
+          <PlannerMonthView
+            monthGridDays={calendarGridDays}
+            focusDate={focusDate}
+            events={events}
+            onEventClick={(event) => handleSessionClick(event.sessionIndex)}
+            onEventDrop={handleEventDrop}
+          />
+        </main>
+      </div>
 
       <SessionModal
         isOpen={isModalOpen}
