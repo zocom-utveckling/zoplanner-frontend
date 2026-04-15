@@ -1,4 +1,12 @@
-export default function EventBlock({ event, top, height, style, onClick }) {
+export default function EventBlock({
+  event,
+  top,
+  height,
+  style,
+  onClick,
+  draggable,
+  onDragStart,
+}) {
   return (
     <div
       className="event-block"
@@ -6,7 +14,10 @@ export default function EventBlock({ event, top, height, style, onClick }) {
         top,
         height,
         ...style,
+        cursor: draggable ? "grab" : undefined,
       }}
+      draggable={draggable}
+      onDragStart={onDragStart}
       onClick={() => onClick?.(event)}
     >
       <div className="event-title">{event.title}</div>
