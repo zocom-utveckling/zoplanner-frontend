@@ -91,7 +91,12 @@ function buildEventLayout(dayEvents) {
   return positionedEvents;
 }
 
-export default function TimeGridView({ days, events, onEventClick }) {
+export default function TimeGridView({
+  days,
+  events,
+  onEventClick,
+  onEventDrop,
+}) {
   const timeSlots = useMemo(() => {
     const slots = [];
     for (let h = HOURS_START; h <= HOURS_END; h++) {
@@ -170,6 +175,28 @@ export default function TimeGridView({ days, events, onEventClick }) {
                 key={day.toISOString()}
                 className="day-col"
                 style={{ height: dayColumnHeight }}
+                onDragOver={(evt) => {
+                  if (onEventDrop) evt.preventDefault();
+                }}
+                onDrop={(evt) => {
+                  evt.preventDefault();
+                  const raw = evt.dataTransfer.getData("application/json");
+                  if (!raw) return;
+                  const { eventId, startMs, endMs } = JSON.parse(raw);
+                  const durationMs = endMs - startMs;
+                  const rect = evt.currentTarget.getBoundingClientRect();
+                  const relativeY = Math.max(0, evt.clientY - rect.top);
+                  const rawSlotIndex = Math.floor(relativeY / gridRowHeight);
+                  const slotIndex = Math.max(
+                    0,
+                    Math.min(rawSlotIndex, timeSlots.length - 1),
+                  );
+                  const { h, m } = timeSlots[slotIndex];
+                  const newStart = new Date(day);
+                  newStart.setHours(h, m, 0, 0);
+                  const newEnd = new Date(newStart.getTime() + durationMs);
+                  onEventDrop?.(eventId, newStart, newEnd);
+                }}
               >
                 {/* slot backgrounds */}
                 {timeSlots.map(({ h, m }, idx) => (
@@ -225,6 +252,22 @@ export default function TimeGridView({ days, events, onEventClick }) {
                       height={height}
                       style={horizontalStyle}
                       onClick={onEventClick}
+                      draggable={e.source === "activity"}
+                      onDragStart={
+                        e.source === "activity"
+                          ? (evt) => {
+                              evt.stopPropagation();
+                              evt.dataTransfer.setData(
+                                "application/json",
+                                JSON.stringify({
+                                  eventId: e.id,
+                                  startMs: e.start.getTime(),
+                                  endMs: e.end.getTime(),
+                                }),
+                              );
+                            }
+                          : undefined
+                      }
                     />
                   );
                 })}

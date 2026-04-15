@@ -68,6 +68,12 @@ export function DashboardScheduler({ user }) {
     );
   }
 
+  function handleEventDrop(eventId, newStart, newEnd) {
+    const event = filteredEvents.find((e) => String(e.id) === String(eventId));
+    if (!event || event.source !== "activity") return;
+    updateEvent({ ...event, start: newStart, end: newEnd });
+  }
+
   function handleEventClick(eventItem) {
     if (isAddButtonActivity(eventItem)) {
       handleOpenActivityModalForEvent(eventItem);
@@ -107,6 +113,7 @@ export function DashboardScheduler({ user }) {
         loading={loading}
         onEventClick={handleEventClick}
         onDayClick={handleOpenActivityModal}
+        onEventDrop={handleEventDrop}
       />
 
       <ActivityModal

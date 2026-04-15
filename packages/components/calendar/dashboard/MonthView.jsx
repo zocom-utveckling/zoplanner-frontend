@@ -15,6 +15,7 @@ export default function MonthView({
   events,
   onDayClick,
   onEventClick,
+  onEventDrop,
   showBookedPerson = false,
   deduplicateConsultantsPerDay = false,
 }) {
@@ -96,6 +97,26 @@ export default function MonthView({
                 .filter(Boolean)
                 .join(" ")}
               onClick={() => onDayClick(d)}
+              onDragOver={(evt) => {
+                if (onEventDrop) evt.preventDefault();
+              }}
+              onDrop={(evt) => {
+                evt.preventDefault();
+                const raw = evt.dataTransfer.getData("application/json");
+                if (!raw) return;
+                const { eventId, startMs, endMs } = JSON.parse(raw);
+                const durationMs = endMs - startMs;
+                const origStart = new Date(startMs);
+                const newStart = new Date(d);
+                newStart.setHours(
+                  origStart.getHours(),
+                  origStart.getMinutes(),
+                  0,
+                  0,
+                );
+                const newEnd = new Date(newStart.getTime() + durationMs);
+                onEventDrop?.(eventId, newStart, newEnd);
+              }}
             >
               <div className="month-cell-header">{format(d, "d")}</div>
               <div className="month-events">
@@ -112,6 +133,22 @@ export default function MonthView({
                     <div
                       key={e.id}
                       className={pillClass}
+                      draggable={e.source === "activity"}
+                      onDragStart={
+                        e.source === "activity"
+                          ? (evt) => {
+                              evt.stopPropagation();
+                              evt.dataTransfer.setData(
+                                "application/json",
+                                JSON.stringify({
+                                  eventId: e.id,
+                                  startMs: e.start.getTime(),
+                                  endMs: e.end.getTime(),
+                                }),
+                              );
+                            }
+                          : undefined
+                      }
                       onClick={(event) => {
                         event.stopPropagation();
                         onEventClick?.(e);
