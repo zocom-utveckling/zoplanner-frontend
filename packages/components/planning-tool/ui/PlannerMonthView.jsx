@@ -18,6 +18,7 @@ export default function PlannerMonthView({
   events,
   onDayClick,
   onEventClick,
+  onEventDrop,
 }) {
   const weekdays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
   const visibleMonths = Array.from(
@@ -92,6 +93,19 @@ export default function PlannerMonthView({
                       .filter(Boolean)
                       .join(" ")}
                     onClick={() => onDayClick?.(d)}
+                    onDragOver={(event) => {
+                      event.preventDefault();
+                    }}
+                    onDrop={(event) => {
+                      event.preventDefault();
+
+                      const rawData =
+                        event.dataTransfer.getData("application/json");
+                      if (!rawData) return;
+
+                      const parsedData = JSON.parse(rawData);
+                      onEventDrop?.(parsedData.sessionIndex, d);
+                    }}
                   >
                     <div className="planner-month-cell-header">
                       {format(d, "d")}
@@ -124,6 +138,16 @@ export default function PlannerMonthView({
                           <div
                             key={e.id}
                             className={pillClass}
+                            draggable
+                            onDragStart={(dragEvent) => {
+                              dragEvent.stopPropagation();
+                              dragEvent.dataTransfer.setData(
+                                "application/json",
+                                JSON.stringify({
+                                  sessionIndex: e.sessionIndex,
+                                }),
+                              );
+                            }}
                             onClick={(event) => {
                               event.stopPropagation();
                               onEventClick?.(e);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./index.css";
-import { QuickDevRegisterEntry } from "@zoplanner/admin";
+import { dev } from "@zoplanner/admin";
 
 import { Button } from "@zoplanner/button";
 import { authService } from "@zoplanner/api";
@@ -145,7 +145,7 @@ function LoginPage() {
   return (
     <>
       <div className="login-root">
-        <QuickDevRegisterEntry managers={managers} />
+        <dev.QuickDevRegisterEntry managers={managers} />
         <div className="container">
           <h1>ZoPlanner</h1>
           <form onSubmit={handleSubmit}>
