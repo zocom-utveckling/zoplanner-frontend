@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { dev } from "@zoplanner/admin";
 import {
   CourseSetupForm,
-  PlanningDraftList,
   PlannerMonthView,
   CourseSummary,
   SessionModal,
@@ -45,6 +44,23 @@ export function PlannerWorkspace({
     upsertPlanningDraft(courseDraft);
     setPlanningDrafts(loadPlanningDrafts());
   }, [courseDraft]);
+
+  const hasUnsavedPlanning = Boolean(courseDraft) && !isSaving;
+
+  useEffect(() => {
+    function handleBeforeUnload(event) {
+      if (!hasUnsavedPlanning) return;
+
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [hasUnsavedPlanning]);
 
   const calendarSource = activeAssignment
     ? {
@@ -283,29 +299,35 @@ export function PlannerWorkspace({
             />
             <button
               className="planner-btn-primary"
-              onClick={handlePublishDraft}
-              disabled={!courseDraft || isSaving}
-            >
-              {isSaving ? "Sparar..." : "Spara kursschema"}
-            </button>
-          </section>
-
-          <section className="planner-workspace__panel">
-            <h2>Påbörjade utkast</h2>
-            <PlanningDraftList
-              drafts={planningDrafts}
-              onSelect={(draft) => {
-                setActiveAssignment(null);
-                setCourseDraft(draft);
+              onClick={() => {
+                if (!courseDraft) {
+                  // skapa planering
+                  document.querySelector("form")?.requestSubmit();
+                } else {
+                  // spara planering
+                  handlePublishDraft();
+                }
               }}
-              selectedDraftId={courseDraft?.id}
-            />
+              disabled={isSaving}
+            >
+              {isSaving
+                ? "Sparar..."
+                : courseDraft
+                  ? "Spara planering"
+                  : "Visa planering"}
+            </button>
           </section>
 
           {summaryAssignment ? (
             <section className="planner-workspace__panel">
               <h2>Översikt</h2>
-              <CourseSummary assignment={summaryAssignment} />
+              <CourseSummary
+                assignment={summaryAssignment}
+                onDelete={() => {
+                  setCourseDraft(null);
+                  setActiveAssignment(null);
+                }}
+              />
             </section>
           ) : null}
         </aside>

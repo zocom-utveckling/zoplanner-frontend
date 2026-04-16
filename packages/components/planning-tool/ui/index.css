@@ -252,6 +252,16 @@
   font-weight: 500;
   color: #374151;
 }
+.course-setup-required {
+  color: #dc2626;
+  font-weight: 600;
+}
+.course-setup-hint {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 6px;
+}
+
 .course-setup-field input,
 .course-setup-field select {
   padding: 6px 10px;
@@ -369,7 +379,25 @@
 .course-summary__comment {
   color: #6b7280;
 }
+.course-summary__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
 
+.course-summary__delete {
+  background: transparent;
+  border: none;
+  color: #dc2626;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.course-summary__delete:hover {
+  text-decoration: underline;
+}
 
 /* =========================================================
    🧩 6. SESSION MODAL (SessionModal.jsx)
@@ -422,6 +450,7 @@
    ========================================================= */
 
 .planner-btn-primary {
+  margin-top: 20px;
   padding: 10px 18px;
   border-radius: 10px;
   border: none;

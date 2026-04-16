@@ -45,32 +45,39 @@ export default function CourseSetupForm({ onSave }) {
           </div>
 
           <div className="course-setup-field">
-            <label htmlFor="courseName">Kursnamn</label>
+            <label htmlFor="courseName">
+              Kursnamn <span className="course-setup-required">*</span>
+            </label>
             <input
               id="courseName"
               name="courseName"
               type="text"
-              placeholder="Till exempel React grundkurs"
+              placeholder="Ange kursnamn"
               value={courseName}
               onChange={handleChange}
             />
           </div>
 
           <div className="course-setup-field">
-            <label htmlFor="totalHours">Totalt antal timmar</label>
+            <label htmlFor="totalHours">
+              Totalt antal undervisningstimmar{" "}
+              <span className="course-setup-required">*</span>
+            </label>
             <input
               id="totalHours"
               name="totalHours"
               type="number"
               min="1"
-              placeholder="Till exempel 6"
+              placeholder="Ange timmar"
               value={totalHours}
               onChange={handleChange}
             />
           </div>
 
           <div className="course-setup-field">
-            <label htmlFor="startDate">Startdatum</label>
+            <label htmlFor="startDate">
+              Startdatum <span className="course-setup-required">*</span>
+            </label>
             <input
               id="startDate"
               name="startDate"
@@ -81,7 +88,9 @@ export default function CourseSetupForm({ onSave }) {
           </div>
 
           <div className="course-setup-field">
-            <label htmlFor="endDate">Slutdatum</label>
+            <label htmlFor="endDate">
+              Slutdatum <span className="course-setup-required">*</span>
+            </label>
             <input
               id="endDate"
               name="endDate"
@@ -93,7 +102,9 @@ export default function CourseSetupForm({ onSave }) {
         </div>
 
         <div className="course-setup-days">
-          <span className="course-setup-days__title">Dag och tid</span>
+          <span className="course-setup-days__title">
+            Dag och tid <span className="course-setup-required">*</span>
+          </span>
 
           <div className="course-setup-days__list">
             <div className="course-setup-day-row">
@@ -201,10 +212,9 @@ export default function CourseSetupForm({ onSave }) {
                 />
               )}
             </div>
+            <div className="course-setup-hint">* Obligatoriska fält</div>
           </div>
         </div>
-
-        <button type="submit">Generera schemautkast</button>
       </form>
     </section>
   );

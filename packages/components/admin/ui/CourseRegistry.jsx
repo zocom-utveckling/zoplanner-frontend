@@ -4,6 +4,7 @@ import { useCurrentActor } from "@zoplanner/app-hooks";
 import { assignmentService } from "@zoplanner/api";
 import { dev } from "@zoplanner/admin";
 import CourseDetailsModal from "./CourseDetailsModal";
+import { loadPlanningDrafts } from "@zoplanner/planning-tool";
 
 export function CourseRegistry({ user }) {
   const { managerId, isLoadingActor } = useCurrentActor(user);
@@ -12,6 +13,7 @@ export function CourseRegistry({ user }) {
   const [loading, setLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
+  const drafts = loadPlanningDrafts();
 
   const [search, setSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -73,6 +75,18 @@ export function CourseRegistry({ user }) {
     }),
   }));
 
+  const draftRows = drafts.map((draft) => ({
+    id: `draft-${draft.id}`, // viktigt: unik key
+    isDraft: true,
+    name: draft.courseName || "Utkast",
+    customer: "Ej vald",
+    startDate: draft.startDate,
+    endDate: draft.endDate,
+    sessions: draft.sessionsDraft ?? [],
+    status: "draft",
+  }));
+
+  const allCourses = [...courseRows, ...draftRows];
   const toggleMultiFilter = (key, value) => {
     setFilters((prev) => {
       const exists = prev[key].includes(value);
