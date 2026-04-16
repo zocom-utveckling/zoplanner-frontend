@@ -7,94 +7,81 @@ import { Navbar } from "@zoplanner/navbar";
 import { useParams } from "react-router-dom";
 
 const PROFILE_PICTURE_UPDATED_EVENT = "zoplanner:profile-picture-updated";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5027";
+const FILES_BASE_URL =
+  import.meta.env.VITE_FILES_BASE_URL || "http://localhost:8080";
 
-/*
-  TODO (TA BORT SEN):
-  Denna funktion används endast temporärt för att spara profilbilder i localStorage.
-  
-  När backend är klar:
-  - Ta bort denna funktion helt
-  - Profilbild ska istället komma från backend (t.ex. user.profilePictureUrl)
-*/
-const getStoredProfilePicture = (userId) => {
-  if (!userId) return null;
+const normalizeProfilePictureUrl = (value) => {
+  if (typeof value !== "string") return null;
+  const url = value.trim();
+  if (!url) return null;
 
-  const saved = localStorage.getItem(`zoplanner.profilePicture.${userId}`);
+  if (/^(https?:|data:|blob:)/i.test(url)) return url;
 
-  // Blob-URL:er ska inte sparas långsiktigt
-  if (saved?.startsWith("blob:")) {
-    localStorage.removeItem(`zoplanner.profilePicture.${userId}`);
-    return null;
+  if (url.startsWith("/files/") || url.startsWith("files/")) {
+    const normalizedPath = url.startsWith("/") ? url : `/${url}`;
+    return `${FILES_BASE_URL}${normalizedPath}`;
   }
 
-  return saved;
+  if (url.startsWith("/")) {
+    return `${API_BASE_URL}${url}`;
+  }
+
+  return `${API_BASE_URL}/${url}`;
 };
 
 function Profile_Page({ user: initialUser }) {
   const [showEdit, setShowEdit] = useState(false);
   const [user, setUser] = useState(initialUser || null);
+  const [isLoadingUser, setIsLoadingUser] = useState(!initialUser);
+  const [userError, setUserError] = useState("");
+  const [isUploadingPicture, setIsUploadingPicture] = useState(false);
 
   const { id } = useParams();
   const userId = user?.id || initialUser?.id || id;
 
-  /*
-    TODO (UPPDATERA):
-    När backend är klar:
-    - Byt URL till production (env-variabel)
-    - Lägg till loading + error state
-    - Säkerställ att backend returnerar profilePictureUrl
-  */
   useEffect(() => {
-    if (initialUser || !id) return;
+    if (initialUser || !id) {
+      setIsLoadingUser(false);
+      return;
+    }
 
     const fetchUser = async () => {
+      setIsLoadingUser(true);
+      setUserError("");
+
       try {
-        const res = await fetch(`http://localhost:5027/api/User/${id}`);
-        if (!res.ok) return;
+        const res = await fetch(`${API_BASE_URL}/api/User/${id}`);
+        if (!res.ok) {
+          throw new Error("Kunde inte hämta användare");
+        }
 
         const data = await res.json();
 
-        /*
-          TODO:
-          Backend ska returnera t.ex:
-          {
-            id,
-            name,
-            email,
-            profilePictureUrl
-          }
-
-          Då bör du mappa:
-          profilePicture: data.profilePictureUrl
-        */
-        setUser(data);
+        setUser({
+          ...data,
+          profilePicture: normalizeProfilePictureUrl(
+            data.profilePicture || data.profilePictureUrl,
+          ),
+        });
       } catch (err) {
         console.error(err);
+        setUserError("Kunde inte ladda användaren. Försök igen.");
+      } finally {
+        setIsLoadingUser(false);
       }
     };
 
     fetchUser();
   }, [id, initialUser]);
 
-  /*
-    TODO (TA BORT localStorage fallback):
-    När backend är klar:
-    - Ta bort getStoredProfilePicture
-    - Använd ENDAST user.profilePictureUrl från backend
-  */
   const resolvedProfilePicture = useMemo(() => {
-    if (!userId) return null;
+    return normalizeProfilePictureUrl(
+      user?.profilePicture || user?.profilePictureUrl,
+    );
+  }, [user?.profilePicture, user?.profilePictureUrl]);
 
-    return getStoredProfilePicture(userId) || user?.profilePicture || null;
-  }, [userId, user?.profilePicture]);
-
-  /*
-    TODO:
-    Denna sync behövs bara pga localStorage.
-    När backend används:
-    - Ta bort denna useEffect helt
-    - user.profilePicture ska redan vara korrekt från API
-  */
   useEffect(() => {
     if (!user || !resolvedProfilePicture) return;
 
@@ -106,21 +93,6 @@ function Profile_Page({ user: initialUser }) {
     }));
   }, [resolvedProfilePicture]);
 
-  /*
-    TODO:
-    Event-systemet används nu för att synka mellan komponenter.
-
-    När backend är klar:
-    Alternativ 1 (enkelt):
-      - Behåll event (snabb UI-sync)
-
-    Alternativ 2 (bättre):
-      - Använd global state (React Context / Zustand)
-      - Eller refetch user efter upload
-
-    Om du kör refetch:
-      → denna useEffect kan tas bort
-  */
   useEffect(() => {
     if (!userId) return;
 
@@ -128,8 +100,7 @@ function Profile_Page({ user: initialUser }) {
       const eventUserId = event?.detail?.userId;
       if (eventUserId && String(eventUserId) !== String(userId)) return;
 
-      const updated =
-        event?.detail?.profilePicture || getStoredProfilePicture(userId);
+      const updated = normalizeProfilePictureUrl(event?.detail?.profilePicture);
 
       if (!updated) return;
 
@@ -149,68 +120,70 @@ function Profile_Page({ user: initialUser }) {
     };
   }, [userId]);
 
-  /*
-    TODO (VIKTIGASTE DELEN):
-    När backend är klar:
-
-    ERSÄTT HELA DENNA funktion med:
-
-    1. Skapa FormData:
-       const formData = new FormData();
-       formData.append("file", file);
-
-    2. Skicka till backend:
-       POST /api/User/{id}/profileImage
-
-    3. Backend returnerar:
-       { profilePictureUrl: "https://..." }
-
-    4. Spara i state:
-       setUser(prev => ({
-         ...prev,
-         profilePicture: response.profilePictureUrl
-       }))
-
-    5. TA BORT:
-       - FileReader
-       - localStorage
-       - CustomEvent
-  */
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!userId) {
+      alert("Kunde inte hitta användar-id.");
+      return;
+    }
 
     if (!file.type.startsWith("image/")) {
       alert("Endast bilder!");
       return;
     }
 
-    const reader = new FileReader();
+    try {
+      setIsUploadingPicture(true);
+      const formData = new FormData();
+      formData.append("file", file);
 
-    reader.onload = () => {
-      const preview = reader.result;
-      if (typeof preview !== "string") return;
+      const response = await fetch(
+        `${API_BASE_URL}/api/User/${userId}/profile-picture`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Uppladdning av profilbild misslyckades");
+      }
+
+      const body = await response.json();
+      const updatedProfilePicture = normalizeProfilePictureUrl(
+        body?.profilePicture || body?.profilePictureUrl,
+      );
+
+      if (typeof updatedProfilePicture !== "string" || !updatedProfilePicture) {
+        throw new Error("Ogiltigt svar från backend");
+      }
 
       setUser((prev) => ({
         ...prev,
-        profilePicture: preview,
+        profilePicture: updatedProfilePicture,
       }));
 
-      if (userId) {
-        localStorage.setItem(`zoplanner.profilePicture.${userId}`, preview);
-
-        window.dispatchEvent(
-          new CustomEvent(PROFILE_PICTURE_UPDATED_EVENT, {
-            detail: { userId, profilePicture: preview },
-          }),
-        );
-      }
-    };
-
-    reader.readAsDataURL(file);
+      window.dispatchEvent(
+        new CustomEvent(PROFILE_PICTURE_UPDATED_EVENT, {
+          detail: { userId, profilePicture: updatedProfilePicture },
+        }),
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Något gick fel vid uppladdning av profilbild.");
+    } finally {
+      setIsUploadingPicture(false);
+      e.target.value = "";
+    }
   };
 
-  if (!user) return <div>Laddar användare...</div>;
+  if (isLoadingUser) return <div>Laddar användare...</div>;
+
+  if (userError) return <div>{userError}</div>;
+
+  if (!user) return <div>Ingen användare hittades.</div>;
 
   return (
     <>
@@ -246,6 +219,8 @@ function Profile_Page({ user: initialUser }) {
 
               <button
                 className="profile-page-camera-btn"
+                type="button"
+                disabled={isUploadingPicture}
                 onClick={() =>
                   document.getElementById("profileFileInput").click()
                 }
