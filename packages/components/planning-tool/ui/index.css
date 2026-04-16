@@ -468,3 +468,134 @@
   background: #9ca3af;
   cursor: not-allowed;
 }
+/* =========================================================
+   CONSULTANT MATCH PANEL
+   Fil: ConsultantMatchPanel.jsx
+   ========================================================= */
+
+.consultant-match-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.consultant-match-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consultant-match-panel__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.consultant-match-panel__meta {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.consultant-match-panel__back {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.consultant-match-panel__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.consultant-match-panel__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.consultant-match-panel__field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.consultant-match-panel__field select {
+  padding: 8px 10px;
+  height: 36px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.consultant-match-panel__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.consultant-match-panel__results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.consultant-match-panel__empty {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.consultant-match-panel__card {
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.consultant-match-panel__card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consultant-match-panel__name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.consultant-match-panel__subject {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.consultant-match-panel__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.consultant-match-panel__select {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}

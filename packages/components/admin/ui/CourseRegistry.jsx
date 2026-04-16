@@ -6,13 +6,14 @@ import { dev } from "@zoplanner/admin";
 import CourseDetailsModal from "./CourseDetailsModal";
 import { loadPlanningDrafts } from "@zoplanner/planning-tool";
 
-export function CourseRegistry({ user }) {
+export function CourseRegistry({ user, onOpenConsultantMatching }) {
   const { managerId, isLoadingActor } = useCurrentActor(user);
 
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
+
   const drafts = loadPlanningDrafts();
 
   const [search, setSearch] = useState("");
@@ -42,6 +43,8 @@ export function CourseRegistry({ user }) {
   const today = new Date();
 
   const getStatus = (courseLike) => {
+    if (courseLike?.status === "draft") return "draft";
+
     const start = new Date(courseLike.startDate);
     const end = new Date(courseLike.endDate);
 
@@ -51,6 +54,7 @@ export function CourseRegistry({ user }) {
   };
 
   function getStatusLabel(status) {
+    if (status === "draft") return "Utkast";
     if (status === "ongoing") return "Pågående";
     if (status === "completed") return "Avslutad";
     return "Kommande";
@@ -59,6 +63,7 @@ export function CourseRegistry({ user }) {
   const courseRows = assignments.map((assignment) => ({
     id: assignment.id,
     assignment,
+    isDraft: false,
     name: dev.getCourseNameForAssignment(assignment),
     customer:
       assignment.course?.className ||
@@ -76,17 +81,20 @@ export function CourseRegistry({ user }) {
   }));
 
   const draftRows = drafts.map((draft) => ({
-    id: `draft-${draft.id}`, // viktigt: unik key
+    id: `draft-${draft.id}`,
+    draftId: draft.id,
     isDraft: true,
     name: draft.courseName || "Utkast",
     customer: "Ej vald",
     startDate: draft.startDate,
     endDate: draft.endDate,
     sessions: draft.sessionsDraft ?? [],
+    managerId: null,
     status: "draft",
   }));
 
   const allCourses = [...courseRows, ...draftRows];
+
   const toggleMultiFilter = (key, value) => {
     setFilters((prev) => {
       const exists = prev[key].includes(value);
@@ -114,7 +122,7 @@ export function CourseRegistry({ user }) {
     });
   };
 
-  const filteredCourses = courseRows
+  const filteredCourses = allCourses
     .filter((c) => {
       const searchValue = search.trim().toLowerCase();
 
@@ -190,6 +198,14 @@ export function CourseRegistry({ user }) {
 
           <button
             type="button"
+            onClick={() => toggleMultiFilter("statuses", "draft")}
+            className={filters.statuses.includes("draft") ? "active" : ""}
+          >
+            Utkast
+          </button>
+
+          <button
+            type="button"
             onClick={() => toggleMultiFilter("statuses", "upcoming")}
             className={filters.statuses.includes("upcoming") ? "active" : ""}
           >
@@ -232,45 +248,51 @@ export function CourseRegistry({ user }) {
         ))}
       </div>
 
-      <ul className="course-registry__list">
-        {filteredCourses.length === 0 ? (
-          <li className="course-registry__empty">
-            Inga kurser matchar din sökning eller filter.
-          </li>
-        ) : (
-          filteredCourses.map((c) => (
-            <li
-              key={c.id}
-              className="course-registry__item"
-              onClick={() => {
-                setSelectedCourse(c);
-                setIsCourseModalOpen(true);
-              }}
-            >
-              <div className="course-item__top">
-                <span className="course-item__name">{c.name}</span>
-                <span
-                  className={`course-item__status course-item__status--${c.status}`}
-                >
-                  {getStatusLabel(c.status)}
-                </span>
-              </div>
-
-              <div className="course-item__meta">
-                <span>
-                  {c.startDate} → {c.endDate}
-                </span>
-                <span>{c.customer}</span>
-              </div>
+      <div className="course-registry__list-container">
+        <ul className="course-registry__list">
+          {filteredCourses.length === 0 ? (
+            <li className="course-registry__empty">
+              Inga kurser matchar din sökning eller filter.
             </li>
-          ))
-        )}
-      </ul>
+          ) : (
+            filteredCourses.map((c) => (
+              <li
+                key={c.id}
+                className="course-registry__item"
+                onClick={() => {
+                  setSelectedCourse(c);
+                  setIsCourseModalOpen(true);
+                }}
+              >
+                <div className="course-item__top">
+                  <span className="course-item__name">{c.name}</span>
+                  <span
+                    className={`course-item__status course-item__status--${c.status}`}
+                  >
+                    {getStatusLabel(c.status)}
+                  </span>
+                </div>
+
+                <div className="course-item__meta">
+                  <span>
+                    {c.startDate} → {c.endDate}
+                  </span>
+                  <span>{c.customer}</span>
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
 
       <CourseDetailsModal
         isOpen={isCourseModalOpen}
         course={selectedCourse}
         onClose={handleCloseCourseModal}
+        onFindConsultant={(course) => {
+          handleCloseCourseModal();
+          onOpenConsultantMatching?.(course);
+        }}
       />
     </div>
   );

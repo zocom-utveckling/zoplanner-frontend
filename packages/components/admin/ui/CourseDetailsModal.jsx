@@ -3,7 +3,12 @@ import { format, startOfWeek, endOfWeek, eachDayOfInterval } from "date-fns";
 import { PlannerMonthView } from "@zoplanner/planning-tool";
 import "./index.css";
 
-export default function CourseDetailsModal({ isOpen, onClose, course }) {
+export default function CourseDetailsModal({
+  isOpen,
+  onClose,
+  course,
+  onFindConsultant,
+}) {
   if (!isOpen || !course) return null;
 
   const sessions = course.sessions ?? [];
@@ -123,7 +128,11 @@ export default function CourseDetailsModal({ isOpen, onClose, course }) {
             </div>
 
             <div className="course-details-modal__actions">
-              <button type="button" className="course-details-modal__secondary">
+              <button
+                type="button"
+                className="course-details-modal__secondary"
+                onClick={() => onFindConsultant?.(course)}
+              >
                 Hitta konsult
               </button>
             </div>

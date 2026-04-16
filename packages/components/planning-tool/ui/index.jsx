@@ -5,6 +5,7 @@ import {
   PlannerMonthView,
   CourseSummary,
   SessionModal,
+  ConsultantMatchPanel,
   loadPlanningDrafts,
   upsertPlanningDraft,
   removePlanningDraft,
@@ -25,6 +26,10 @@ export function PlannerWorkspace({
   managerId,
   plannerPanel,
   onClosePlannerPanel,
+  plannerMode,
+  setPlannerMode,
+  selectedAssignmentForMatching,
+  clearSelectedAssignmentForMatching,
 }) {
   const [focusDate, setFocusDate] = useState(new Date());
   const [courseDraft, setCourseDraft] = useState(null);
@@ -44,6 +49,22 @@ export function PlannerWorkspace({
     upsertPlanningDraft(courseDraft);
     setPlanningDrafts(loadPlanningDrafts());
   }, [courseDraft]);
+
+  useEffect(() => {
+    if (!selectedAssignmentForMatching) return;
+
+    setActiveAssignment({
+      ...selectedAssignmentForMatching,
+      dateStart: selectedAssignmentForMatching.startDate,
+      dateEnd: selectedAssignmentForMatching.endDate,
+      course: {
+        name: selectedAssignmentForMatching.name || "Kursschema",
+      },
+      sessions: selectedAssignmentForMatching.sessions ?? [],
+    });
+
+    setCourseDraft(null);
+  }, [selectedAssignmentForMatching]);
 
   const hasUnsavedPlanning = Boolean(courseDraft) && !isSaving;
 
@@ -101,6 +122,22 @@ export function PlannerWorkspace({
       end: new Date(s.timeEnd),
     }));
   }, [calendarSource]);
+
+  const summaryAssignment = activeAssignment
+    ? activeAssignment
+    : courseDraft
+      ? {
+          dateStart: courseDraft.startDate,
+          dateEnd: courseDraft.endDate,
+          course: {
+            name: courseDraft.courseName || "Kursschema",
+          },
+          sessions: courseDraft.sessionsDraft ?? [],
+        }
+      : null;
+
+  const sidebarTitle =
+    activeAssignment?.course?.name || courseDraft?.courseName || "Ny planering";
 
   function handleSessionClick(sessionIndex) {
     if (!courseDraft?.sessionsDraft?.[sessionIndex]) return;
@@ -259,28 +296,14 @@ export function PlannerWorkspace({
       });
 
       alert("Kursschema sparat med lektionstillfällen");
-
+      setPlannerMode("matching");
       removePlanningDraft(courseDraft.id);
       setPlanningDrafts(loadPlanningDrafts());
       setCourseDraft(null);
-      onClosePlannerPanel?.();
     } finally {
       setIsSaving(false);
     }
   }
-
-  const summaryAssignment = activeAssignment
-    ? activeAssignment
-    : courseDraft
-      ? {
-          dateStart: courseDraft.startDate,
-          dateEnd: courseDraft.endDate,
-          course: {
-            name: courseDraft.courseName || "Kursschema",
-          },
-          sessions: courseDraft.sessionsDraft ?? [],
-        }
-      : null;
 
   return (
     <div className="planner-workspace">
@@ -289,33 +312,64 @@ export function PlannerWorkspace({
       <div className="planner-workspace__layout">
         <aside className="planner-workspace__sidebar">
           <section className="planner-workspace__panel planner-workspace__panel--form">
-            <h2>Ny planering</h2>
-            <CourseSetupForm
-              variant="compact"
-              onSave={(draft) => {
-                setActiveAssignment(null);
-                setCourseDraft(draft);
-              }}
-            />
-            <button
-              className="planner-btn-primary"
-              onClick={() => {
-                if (!courseDraft) {
-                  // skapa planering
-                  document.querySelector("form")?.requestSubmit();
-                } else {
-                  // spara planering
-                  handlePublishDraft();
-                }
-              }}
-              disabled={isSaving}
-            >
-              {isSaving
-                ? "Sparar..."
-                : courseDraft
-                  ? "Spara planering"
-                  : "Visa planering"}
-            </button>
+            <h2>{sidebarTitle}</h2>
+
+            {plannerMode === "planning" ? (
+              <>
+                {!activeAssignment && (
+                  <CourseSetupForm
+                    variant="compact"
+                    onSave={(draft) => {
+                      setActiveAssignment(null);
+                      setCourseDraft(draft);
+                    }}
+                  />
+                )}
+
+                {!activeAssignment && (
+                  <button
+                    className="planner-btn-primary"
+                    onClick={() => {
+                      if (!courseDraft) {
+                        document.querySelector("form")?.requestSubmit();
+                      } else {
+                        handlePublishDraft();
+                      }
+                    }}
+                    disabled={isSaving}
+                  >
+                    {isSaving
+                      ? "Sparar..."
+                      : courseDraft
+                        ? "Spara planering"
+                        : "Visa planering"}
+                  </button>
+                )}
+
+                {activeAssignment && (
+                  <button
+                    className="planner-btn-primary"
+                    onClick={() => setPlannerMode("matching")}
+                  >
+                    Hitta konsult
+                  </button>
+                )}
+              </>
+            ) : (
+              <ConsultantMatchPanel
+                assignment={activeAssignment}
+                consultants={[]}
+                onSelectConsultant={(consultant) => {
+                  console.log("Vald konsult:", consultant);
+                }}
+                onBack={() => {
+                  setPlannerMode("planning");
+                  setCourseDraft(null);
+                  setActiveAssignment(null);
+                  clearSelectedAssignmentForMatching?.();
+                }}
+              />
+            )}
           </section>
 
           {summaryAssignment ? (
@@ -326,6 +380,8 @@ export function PlannerWorkspace({
                 onDelete={() => {
                   setCourseDraft(null);
                   setActiveAssignment(null);
+                  setPlannerMode("planning");
+                  clearSelectedAssignmentForMatching?.();
                 }}
               />
             </section>
