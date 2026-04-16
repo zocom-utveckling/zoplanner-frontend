@@ -20,9 +20,9 @@ function Edit_Profile({ user, onClose, setUser }) {
     role: user.role,
     password: user.password,
     availability: user.availability,
+    profilePicture: user.profilePicture,
   });
-const hasChanges =
-  JSON.stringify(newUserinfo) !== JSON.stringify(user);
+  const hasChanges = JSON.stringify(newUserinfo) !== JSON.stringify(user);
   const updateUser = async () => {
     setLoading(true);
 
@@ -33,15 +33,17 @@ const hasChanges =
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newUserinfo),
-        }
+        },
       );
 
       if (!res.ok) {
         throw new Error("Redigering misslyckades");
       }
 
-      
-      setUser(newUserinfo);
+      setUser((prev) => ({
+        ...prev,
+        ...newUserinfo,
+      }));
 
       setOpenConfirm(false);
       onClose();
@@ -53,21 +55,19 @@ const hasChanges =
     }
   };
 
-  
   const handleOpenSubmitConfirm = () => {
-    if(!hasChanges){
-        onClose();
-        return;
+    if (!hasChanges) {
+      onClose();
+      return;
     }
     setAction("submit");
     setOpenConfirm(true);
   };
 
-  
   const handleOpenCancelConfirm = () => {
-     if(!hasChanges){
-        onClose();
-        return;
+    if (!hasChanges) {
+      onClose();
+      return;
     }
     setAction("cancel");
     setOpenConfirm(true);
@@ -78,24 +78,15 @@ const hasChanges =
       {openConfirm && (
         <ConfirmPopup
           text={
-            action === "submit"
-              ? "Spara ändringarna?"
-              : "Ångra ändringarna?"
+            action === "submit" ? "Spara ändringarna?" : "Ångra ändringarna?"
           }
           onCancel={() => setOpenConfirm(false)}
-          onConfirm={
-            action === "submit"
-              ? updateUser
-              : onClose
-          }
+          onConfirm={action === "submit" ? updateUser : onClose}
         />
       )}
 
       <div className="edit-overlay" onClick={onClose}>
-        <div
-          className="edit-modal"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
           <header className="edit-profile-header">
             <h2>Redigera profil</h2>
           </header>
@@ -191,9 +182,19 @@ const hasChanges =
             </section>
 
             <footer className="edit-profile-footer">
-                <Button type={"button"} onClick={handleOpenCancelConfirm} style={"delete-btn"} text={"Avbryt"}/>
-                <Button type={"button"} onClick={handleOpenSubmitConfirm} style={"reply-btn"} text={loading ? "Sparar..." : "Spara ändringar"} disabled={loading}/>
-             
+              <Button
+                type={"button"}
+                onClick={handleOpenCancelConfirm}
+                style={"delete-btn"}
+                text={"Avbryt"}
+              />
+              <Button
+                type={"button"}
+                onClick={handleOpenSubmitConfirm}
+                style={"reply-btn"}
+                text={loading ? "Sparar..." : "Spara ändringar"}
+                disabled={loading}
+              />
             </footer>
           </div>
         </div>
