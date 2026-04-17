@@ -7,6 +7,7 @@ export default function ConsultantMatchPanel({
   consultants = [],
   onSelectConsultant,
   onBack,
+  selectedConsultantId,
 }) {
   const [subjectFilter, setSubjectFilter] = useState("");
   const [includeConflicts, setIncludeConflicts] = useState(false);
@@ -102,7 +103,17 @@ export default function ConsultantMatchPanel({
           </p>
         ) : (
           consultantRows.map((consultant) => (
-            <div key={consultant.id} className="consultant-match-panel__card">
+            <div
+              key={consultant.id}
+              className={[
+                "consultant-match-panel__card",
+                selectedConsultantId === consultant.id
+                  ? "consultant-match-panel__card--selected"
+                  : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
               <div className="consultant-match-panel__card-top">
                 <div>
                   <h3 className="consultant-match-panel__name">
@@ -118,12 +129,17 @@ export default function ConsultantMatchPanel({
                   className="consultant-match-panel__select"
                   onClick={() => onSelectConsultant?.(consultant)}
                 >
-                  Välj
+                  Visa i kalender
                 </button>
               </div>
 
               <div className="consultant-match-panel__stats">
                 <span>Krockar: {consultant.conflictCount}</span>
+                {selectedConsultantId === consultant.id && (
+                  <span className="consultant-match-panel__preview-tag">
+                    Forhandsvisas
+                  </span>
+                )}
               </div>
             </div>
           ))
