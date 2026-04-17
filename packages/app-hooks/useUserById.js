@@ -1,49 +1,42 @@
 import { useEffect, useState } from "react";
 import { userService } from "@zoplanner/api";
 
-function useUserById(id) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+function useUserById(id, initialUser = null) {
+  const [user, setUser] = useState(initialUser || null);
+  const [loading, setLoading] = useState(!initialUser && !!id);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     let isActive = true;
 
-    if (!id) {
-  setUser(null);
-  setLoading(false);
-  return;
-}
+    if (!id || initialUser) {
+      setLoading(false);
+      return;
+    }
 
     const fetchUser = async () => {
       try {
         setLoading(true);
         const data = await userService.getById(id);
-        if (isActive){
-setUser(data);
-        setError(null);
-        }
-        
-      } catch (err) {
         if (isActive) {
-        setError(err);
-      }
+          setUser(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (isActive) setError(err);
       } finally {
-       if (isActive) {
-        setLoading(false);
-      }
+        if (isActive) setLoading(false);
       }
     };
 
     fetchUser();
 
-
     return () => {
       isActive = false;
- };
-  }, [id]);
+    };
+  }, [id, initialUser]);
 
-  return { user, loading, error };
+  return { user, setUser, loading, error };
 }
 
 export { useUserById };

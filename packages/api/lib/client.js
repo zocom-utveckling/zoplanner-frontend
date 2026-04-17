@@ -1,9 +1,11 @@
 export function createApiClient({ baseUrl, getToken }) {
   async function request(path, options = {}) {
     const token = getToken?.();
+    const isFormData =
+      typeof FormData !== "undefined" && options.body instanceof FormData;
     const res = await fetch(`${baseUrl}${path}`, {
       headers: {
-        "Content-Type": "application/json",
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(options.headers || {}),
       },
@@ -22,6 +24,11 @@ export function createApiClient({ baseUrl, getToken }) {
       request(path, {
         method: "POST",
         body: JSON.stringify(body),
+      }),
+    postForm: (path, formData) =>
+      request(path, {
+        method: "POST",
+        body: formData,
       }),
     put: (path, body) =>
       request(path, {

@@ -2,69 +2,45 @@ import { useEffect, useState, useMemo } from "react";
 import "./index.css";
 
 const PROFILE_PICTURE_UPDATED_EVENT = "zoplanner:profile-picture-updated";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5027";
+const FILES_BASE_URL =
+  import.meta.env.VITE_FILES_BASE_URL || "http://localhost:8080";
 
-/*
-  TODO (TA BORT SEN):
-  localStorage används temporärt för att simulera sparad profilbild.
+const normalizeProfilePictureUrl = (value) => {
+  if (typeof value !== "string") return null;
+  const url = value.trim();
+  if (!url) return null;
 
-  När backend är klar:
-  - Ta bort denna funktion helt
-  - Använd istället user.profilePictureUrl från API
-*/
-const getStoredProfilePicture = (userId) =>
-  userId ? localStorage.getItem(`zoplanner.profilePicture.${userId}`) : null;
+  if (/^(https?:|data:|blob:)/i.test(url)) return url;
+
+  if (url.startsWith("/files/") || url.startsWith("files/")) {
+    const normalizedPath = url.startsWith("/") ? url : `/${url}`;
+    return `${FILES_BASE_URL}${normalizedPath}`;
+  }
+
+  if (url.startsWith("/")) {
+    return `${API_BASE_URL}${url}`;
+  }
+
+  return `${API_BASE_URL}/${url}`;
+};
 
 function UserProfile({ user, variant = "default" }) {
   const [profilePicture, setProfilePicture] = useState(null);
 
-  /*
-    TODO:
-    När backend är klar:
-    - Ta bort getStoredProfilePicture
-    - Ta bort user.avatar fallback (om ni standardiserar backend)
-    - Använd ENDAST:
-        user.profilePictureUrl
-
-    Ex:
-      return user.profilePictureUrl || null;
-  */
   const resolvedProfilePicture = useMemo(() => {
     if (!user?.id) return null;
 
-    return (
-      getStoredProfilePicture(user.id) ||
-      user.avatar ||
-      user.profilePicture ||
-      null
+    return normalizeProfilePictureUrl(
+      user.profilePicture || user.profilePictureUrl,
     );
-  }, [user?.id, user?.avatar, user?.profilePicture]);
+  }, [user?.id, user?.profilePicture, user?.profilePictureUrl]);
 
-  /*
-    TODO:
-    Denna sync behövs bara för localStorage fallback.
-
-    När backend är klar:
-    - Ta bort hela denna useEffect
-    - Sätt istället direkt:
-        const profilePicture = user.profilePictureUrl
-  */
   useEffect(() => {
     setProfilePicture(resolvedProfilePicture);
   }, [resolvedProfilePicture]);
 
-  /*
-    TODO:
-    Event + storage används nu för att synca profilbild mellan komponenter.
-
-    När backend är klar har du 3 val:
-
-    1. Behåll event (enkelt)
-    2. Refetch user efter upload (rekommenderat)
-    3. Använd global state (bäst i längden, t.ex. Zustand)
-
-    Om du kör refetch/global state:
-    - Ta bort HELA denna useEffect
-  */
   useEffect(() => {
     if (!user?.id) return;
 
@@ -73,31 +49,23 @@ function UserProfile({ user, variant = "default" }) {
       if (eventUserId && String(eventUserId) !== String(user.id)) return;
 
       setProfilePicture(
-        event?.detail?.profilePicture ||
-          getStoredProfilePicture(user.id) ||
-          user.avatar ||
-          user.profilePicture ||
-          null,
+        normalizeProfilePictureUrl(
+          event?.detail?.profilePicture ||
+            user.profilePicture ||
+            user.profilePictureUrl,
+        ),
       );
     };
 
-    const handleStorage = (event) => {
-      if (event.key === `zoplanner.profilePicture.${user.id}`) {
-        syncProfilePicture();
-      }
-    };
-
     window.addEventListener(PROFILE_PICTURE_UPDATED_EVENT, syncProfilePicture);
-    window.addEventListener("storage", handleStorage);
 
     return () => {
       window.removeEventListener(
         PROFILE_PICTURE_UPDATED_EVENT,
         syncProfilePicture,
       );
-      window.removeEventListener("storage", handleStorage);
     };
-  }, [user?.id, user?.avatar, user?.profilePicture]);
+  }, [user?.id, user?.profilePicture, user?.profilePictureUrl]);
 
   if (!user) return null;
 

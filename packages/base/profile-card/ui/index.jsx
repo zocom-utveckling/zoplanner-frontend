@@ -2,20 +2,35 @@ import { useEffect, useState } from "react";
 import "./index.css";
 
 const PROFILE_PICTURE_UPDATED_EVENT = "zoplanner:profile-picture-updated";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5027";
+const FILES_BASE_URL =
+  import.meta.env.VITE_FILES_BASE_URL || "http://localhost:8080";
 
-const getStoredProfilePicture = (userId) =>
-  userId ? localStorage.getItem(`zoplanner.profilePicture.${userId}`) : null;
+const normalizeProfilePictureUrl = (value) => {
+  if (typeof value !== "string") return null;
+  const url = value.trim();
+  if (!url) return null;
 
-// En enda källa för fallback-logik
+  if (/^(https?:|data:|blob:)/i.test(url)) return url;
+
+  if (url.startsWith("/files/") || url.startsWith("files/")) {
+    const normalizedPath = url.startsWith("/") ? url : `/${url}`;
+    return `${FILES_BASE_URL}${normalizedPath}`;
+  }
+
+  if (url.startsWith("/")) {
+    return `${API_BASE_URL}${url}`;
+  }
+
+  return `${API_BASE_URL}/${url}`;
+};
+
 const resolveProfilePicture = (user, override) => {
   if (!user?.id) return null;
 
-  return (
-    override ||
-    getStoredProfilePicture(user.id) ||
-    user.avatar ||
-    user.profilePicture ||
-    null
+  return normalizeProfilePictureUrl(
+    override || user.profilePicture || user.profilePictureUrl,
   );
 };
 
@@ -43,21 +58,13 @@ function ProfileCard({ user, logoSrc = null }) {
       );
     };
 
-    const handleStorage = (event) => {
-      if (event.key === `zoplanner.profilePicture.${user.id}`) {
-        setProfilePicture(resolveProfilePicture(user));
-      }
-    };
-
     window.addEventListener(PROFILE_PICTURE_UPDATED_EVENT, syncProfilePicture);
-    window.addEventListener("storage", handleStorage);
 
     return () => {
       window.removeEventListener(
         PROFILE_PICTURE_UPDATED_EVENT,
         syncProfilePicture,
       );
-      window.removeEventListener("storage", handleStorage);
     };
   }, [user]);
 
