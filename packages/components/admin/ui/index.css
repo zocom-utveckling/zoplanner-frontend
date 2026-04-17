@@ -1,197 +1,64 @@
-.admin-sidebar {
-  flex: 1;
-  min-height: 100vh;
-  max-width: 260px;
-  background: var(--surface);
-  border-right: 1px solid var(--border-color);
-  padding: 16px;
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-}
+/* =========================================================
+   ADMIN TABS
+   Fil: AdminSidebar.jsx
+   ========================================================= */
 
-.admin-sidebar__section-title {
-  font-weight: 700;
-  margin: 8px 0 12px;
-  color: var(--text-primary);
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.admin-sidebar__nav {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.admin-sidebar__item {
+.admin-tabs {
+  margin-top: 40px;
   width: 100%;
-  text-align: left;
-  padding: 10px 12px;
-  border-radius: 8px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--surface);
+  padding: 0 24px;
+}
+
+.admin-tabs__nav {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-tabs__item {
+  position: relative;
+  padding: 12px 16px;
   border: none;
+  border-radius: 10px 10px 0 0;
   background: transparent;
   color: var(--text-primary);
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
 }
 
-.admin-sidebar__item:hover {
+.admin-tabs__item:hover {
   background: var(--surface-muted);
 }
 
-.admin-sidebar__item.active {
+.admin-tabs__item.active {
   background: var(--surface-alt);
   font-weight: 600;
 }
 
-.admin-sidebar__divider {
-  height: 1px;
-  background: var(--border-color);
-  margin: 12px 0;
-}
-.planner-sidebar-form {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.planner-sidebar-form h3 {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-/* Inputs */
-.planner-sidebar-form label {
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
-  color: var(--text-muted);
-  gap: 4px;
-}
-
-.planner-sidebar-form input[type="text"],
-.planner-sidebar-form input[type="date"] {
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  background: var(--surface);
-  font-size: 13px;
-  color: var(--text-primary);
-}
-
-.planner-sidebar-form input:focus {
-  outline: none;
-  border-color: #4f7cff;
-}
-
-/* Weekdays */
-.planner-sidebar-form .weekday-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--text-primary);
-}
-
-.planner-sidebar-form .weekday-group label {
-  flex-direction: row;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--text-primary);
-}
-
-/* Button */
-.planner-sidebar-form button {
-  margin-top: 6px;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
+.admin-tabs__item.active::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -1px;
+  height: 2px;
   background: #4f7cff;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
+  border-radius: 999px;
 }
 
-.planner-sidebar-form button:hover {
-  background: #3c63d8;
-}
 
-.consultant-registry__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.consultant-registry__header h1 {
-  margin: 0;
-}
-
-.consultant-registry__add-button {
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: none;
-  background: #4f7cff;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.consultant-registry__add-button:hover {
-  background: #3c63d8;
-}
-.admin-sidebar {
-  position: relative;
-}
-
-.admin-sidebar__planner-actions {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.admin-sidebar__primary-button,
-.admin-sidebar__secondary-button {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.admin-sidebar__primary-button {
-  border: none;
-  background: #4f7cff;
-  color: white;
-}
-
-.admin-sidebar__primary-button:hover {
-  background: #3c63d8;
-}
-
-.admin-sidebar__secondary-button {
-  border: 1px solid var(--border-color);
-  background: var(--surface);
-  color: var(--text-primary);
-}
-
-.admin-sidebar__secondary-button:hover {
-  background: var(--surface-muted);
-}
+/* =========================================================
+   ADMIN SIDEBAR OVERLAY / OLD SIDEBAR FORM
+   Fil: AdminSidebar.jsx
+   Behåll bara om de faktiskt fortfarande används
+   ========================================================= */
 
 .admin-sidebar__overlay {
   position: absolute;
@@ -235,9 +102,19 @@
 }
 
 .planner-sidebar-form {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.planner-sidebar-form h3 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .planner-sidebar-form label {
@@ -251,8 +128,8 @@
 .planner-sidebar-form input[type="text"],
 .planner-sidebar-form input[type="date"] {
   padding: 8px 10px;
-  border-radius: 8px;
   border: 1px solid var(--border-color);
+  border-radius: 8px;
   background: var(--surface);
   font-size: 13px;
   color: var(--text-primary);
@@ -275,6 +152,7 @@
 }
 
 .weekday-group label {
+  display: flex;
   flex-direction: row;
   align-items: center;
   gap: 6px;
@@ -284,10 +162,10 @@
 .planner-sidebar-form button {
   margin-top: 6px;
   padding: 10px;
-  border-radius: 10px;
   border: none;
+  border-radius: 10px;
   background: #4f7cff;
-  color: white;
+  color: #fff;
   font-weight: 600;
   cursor: pointer;
 }
@@ -301,6 +179,61 @@
   flex-direction: column;
   max-width: fit-content;
 }
+/* =========================================================
+   ADMIN LAYOUT
+   Fil: AdminLayout.jsx
+   ========================================================= */
+
+.admin-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 72px);
+  background: #ffffff;
+}
+
+.admin-layout__content {
+  flex: 1;
+  padding: 24px;
+  min-width: 0;
+  background: #f8fafc;
+}
+
+/* =========================================================
+   CONSULTANT REGISTRY
+   Fil: ConsultantRegistry.jsx
+   ========================================================= */
+
+.consultant-registry__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consultant-registry__header h1 {
+  margin: 0;
+}
+
+.consultant-registry__add-button {
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: #4f7cff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.consultant-registry__add-button:hover {
+  background: #3c63d8;
+}
+
+
+/* =========================================================
+   CUSTOMER REGISTRY
+   Fil: CustomerRegistry.jsx
+   ========================================================= */
+
 .customer-registry {
   padding: 24px;
   max-width: 800px;
@@ -314,67 +247,12 @@
   margin-bottom: 16px;
 }
 
-.customer-registry__list {
-  list-style: none;
-  padding: 0;
-  margin-top: 16px;
-}
-
-.customer-registry__item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  padding: 12px 16px;
-  margin-bottom: 8px;
-
-  border: 1px solid #ddd;
-  border-radius: 8px;
-
-  background: white;
-  transition: 0.2s;
-  cursor: pointer;
-}
-
-.customer-registry__item:hover {
-  background: #f5f5f5;
-}
-
-.customer-registry__actions {
-  display: flex;
-  gap: 8px;
-}
-
-.customer-registry__detail {
-  margin-top: 24px;
-  padding: 16px;
-
-  border: 1px solid #ddd;
-  border-radius: 12px;
-
-  background: #fafafa;
-}
-
-.customer-registry__section {
-  margin-top: 16px;
-}
-
 .customer-registry__form {
   display: flex;
   gap: 8px;
   margin-top: 12px;
 }
-.customer-registry__list-container {
-  margin-top: 16px;
-  max-height: 300px;
-  overflow-y: auto;
 
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 8px;
-
-  background: #fff;
-}
 .customer-registry__filters {
   display: flex;
   gap: 8px;
@@ -391,8 +269,9 @@
 
 .customer-registry__filters span.active {
   background: #333;
-  color: white;
+  color: #fff;
 }
+
 .customer-registry__active-filters {
   display: flex;
   gap: 8px;
@@ -400,22 +279,14 @@
   flex-wrap: wrap;
 }
 
-.chip {
-  padding: 6px 10px;
-  border-radius: 16px;
-  background: #333;
-  color: white;
-  cursor: pointer;
-  font-size: 12px;
-}
 .customer-registry__dropdown {
   position: absolute;
-  background: white;
-  border: 1px solid #ddd;
+  z-index: 10;
   max-height: 200px;
   overflow-y: auto;
   padding: 8px;
-  z-index: 10;
+  background: #fff;
+  border: 1px solid #ddd;
 }
 
 .customer-registry__dropdown div {
@@ -425,36 +296,108 @@
 
 .customer-registry__dropdown .active {
   background: #333;
-  color: white;
+  color: #fff;
 }
-/* Modal overlay */
+
+.customer-registry__list-container {
+  margin-top: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.customer-registry__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.customer-registry__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.customer-registry__item:hover {
+  background: #f5f5f5;
+}
+
+.customer-registry__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.customer-registry__detail {
+  margin-top: 24px;
+  padding: 16px;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+}
+
+.customer-registry__section {
+  margin-top: 16px;
+}
+
+
+/* =========================================================
+   SHARED CHIP
+   Fil: CustomerRegistry.jsx / CourseRegistry.jsx
+   ========================================================= */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   GENERIC MODAL
+   Fil: ConsultantInviteModal.jsx (eller annan enkel modal)
+   ========================================================= */
+
 .modal {
   position: fixed;
   inset: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   background: rgba(0, 0, 0, 0.25);
-  z-index: 1000;
 }
 
-/* Modal card */
 .modal__content {
+  width: 100%;
+  min-width: 360px;
+  max-width: 480px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  min-width: 360px;
-  max-width: 480px;
-  width: 100%;
   padding: 20px;
+  background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: 14px;
-  background: var(--surface);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
-/* Heading */
 .modal__title {
   margin: 0;
   font-size: 22px;
@@ -462,20 +405,18 @@
   color: var(--text-primary);
 }
 
-/* Body */
 .modal__body {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Input */
 .modal__input {
   padding: 10px 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-size: 14px;
   background: var(--surface);
+  font-size: 14px;
   outline: none;
 }
 
@@ -483,23 +424,21 @@
   color: var(--text-subtle);
 }
 
-/* Actions */
 .modal__actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
 
-/* Buttons */
 .modal__btn {
   padding: 8px 14px;
   border: none;
   border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
   background: var(--surface);
   color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: all 0.2s;
 }
@@ -509,7 +448,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
-/* Primary action */
 .modal__btn--primary {
   background: var(--active-bg);
   color: var(--active-fg);
@@ -518,137 +456,140 @@
 .modal__btn--primary:hover {
   opacity: 0.9;
 }
+
+
+/* =========================================================
+   QUICK DEV REGISTER
+   Fil: QuickDevRegisterEntry.jsx
+   ========================================================= */
+
 .quick-dev-register__button {
-  background: #d32f2f;
-  color: white;
-  border: none;
   padding: 8px 14px;
+  border: none;
   border-radius: 6px;
-  cursor: pointer;
+  background: #d32f2f;
+  color: #fff;
   font-size: 14px;
+  cursor: pointer;
 }
+
 .quick-dev-register__overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
-  background: rgba(0, 0, 0, 0.4); /* mörk bakgrund */
+  inset: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  z-index: 1000;
+  background: rgba(0, 0, 0, 0.4);
 }
+
 .quick-dev-register__modal {
-   position: relative;
+  position: relative;
   overflow: visible;
-  background: white;
-  padding: 32px;
-  border-radius: 12px;
-
   width: 90%;
-  max-width: 500px;   /* 🔥 större */
-  min-height: 200px;  /* 🔥 ger tyngd */
-
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  max-width: 500px;
+  min-height: 200px;
+  padding: 32px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
+
 .quick-dev-register__empty {
   padding: 16px 0;
   text-align: center;
   color: #444;
 }
+
 .quick-dev-register__list {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* spacing mellan */
+  gap: 10px;
   margin: 16px 0;
 }
+
 .quick-dev-register__list button {
   width: 100%;
   padding: 10px;
   text-align: left;
-
   border: 1px solid #ddd;
-  background: #f9f9f9;
   border-radius: 6px;
+  background: #f9f9f9;
   cursor: pointer;
-}
-.quick-dev-register__list button.selected {
-  background: #dbeafe;       /* ljus blå */
-  border-color: #3b82f6;     /* blå kant */
-  color: #1e3a8a;            /* mörkare text */
-  font-weight: 500;
 }
 
 .quick-dev-register__list button:hover {
   background: #eee;
-  cursor: pointer;
+}
+
+.quick-dev-register__list button.selected {
+  background: #dbeafe;
+  border-color: #3b82f6;
+  color: #1e3a8a;
+  font-weight: 500;
 }
 
 .quick-dev-register__list button.selected:hover {
-  background: #c7ddff; /* lite mörkare blå vid hover */
+  background: #c7ddff;
 }
+
 .quick-dev-register__list button:active {
   transform: scale(0.98);
 }
+
 .quick-dev-register__close {
   margin-top: 16px;
   padding: 10px 16px;
-  font-size: 14px;
-
   border: none;
   border-radius: 6px;
   background: #ddd;
+  font-size: 14px;
   cursor: pointer;
 }
+
 .quick-dev-register__close:hover {
- background: #8d8b8b;
-  cursor: pointer;
+  background: #8d8b8b;
 }
+
 .quick-dev-register__x {
   position: absolute;
   top: -12px;
   right: -12px;
-
   width: 28px;
   height: 28px;
   border: none;
   border-radius: 50%;
-  background: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-
+  background: #fff;
+  font-size: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: 1.2rem;
   cursor: pointer;
   opacity: 0.8;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .quick-dev-register__x:hover {
   opacity: 1;
 }
+
 .quick-dev-register__input {
   width: 100%;
-  padding: 10px;
   margin-top: 12px;
-
+  padding: 10px;
   border: 1px solid #ddd;
   border-radius: 6px;
   background: #fff;
 }
+
 .quick-dev-register__continue {
+  width: 100%;
   margin-top: 12px;
   padding: 10px;
-  width: 100%;
-
   border: none;
   border-radius: 6px;
-  background: #4caf50; /* grön = action */
-  color: white;
+  background: #4caf50;
+  color: #fff;
   cursor: pointer;
 }
 
@@ -660,26 +601,33 @@
   background: #ccc;
   cursor: not-allowed;
 }
+
+
+/* =========================================================
+   COURSE DETAILS MODAL
+   Fil: CourseDetailsModal.jsx
+   ========================================================= */
+
 .course-details-modal__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.34);
-  backdrop-filter: blur(2px);
+  z-index: 1300;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1300;
+  background: rgba(17, 24, 39, 0.34);
+  backdrop-filter: blur(2px);
 }
 
 .course-details-modal__content {
   width: min(1200px, calc(100vw - 32px));
   max-height: 90vh;
   overflow-y: auto;
+  padding: 20px;
   background: #fff;
   border: 1px solid #d7dce5;
   border-radius: 16px;
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.18);
-  padding: 20px;
 }
 
 .course-details-modal__header {
@@ -708,8 +656,8 @@
   background: transparent;
   font-size: 28px;
   line-height: 1;
-  cursor: pointer;
   color: #6b7280;
+  cursor: pointer;
 }
 
 .course-details-modal__body {
@@ -730,10 +678,10 @@
 }
 
 .course-details-modal__section {
+  padding: 16px;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 16px;
 }
 
 .course-details-modal__section h3 {
@@ -756,15 +704,15 @@
 }
 
 .course-details-modal__session-item {
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
   padding: 10px 12px;
   background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
 }
 
 .course-details-modal__session-title {
-  font-weight: 600;
   font-size: 14px;
+  font-weight: 600;
   color: #111827;
 }
 
@@ -787,8 +735,8 @@
 
 .course-details-modal__secondary {
   padding: 10px 16px;
-  border-radius: 8px;
   border: 1px solid #d1d5db;
+  border-radius: 8px;
   background: #fff;
   color: #374151;
   font-weight: 600;
@@ -806,83 +754,13 @@
     grid-template-columns: 1fr;
   }
 }
-.course-registry__item {
-  cursor: pointer;
-  transition: background 0.18s ease, transform 0.14s ease;
-}
 
-.course-registry__item:hover {
-  background: #f9fafb;
-  transform: translateY(-1px);
-}
 
-.course-registry__list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+/* =========================================================
+   COURSE REGISTRY
+   Fil: CourseRegistry.jsx
+   ========================================================= */
 
-.course-registry__item {
-  padding: 12px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-bottom: 8px;
-  background: #fff;
-
-  border: 1px solid #e5e7eb;
-
-  transition: all 0.18s ease;
-}
-
-.course-registry__item:hover {
-  background: #f9fafb;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
-}
-
-/* TOP ROW */
-.course-item__top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.course-item__name {
-  font-weight: 600;
-  font-size: 14px;
-}
-
-/* STATUS BADGE */
-.course-item__status {
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-weight: 600;
-}
-
-.course-item__status--upcoming {
-  background: #eff6ff;
-  color: #1d4ed8;
-}
-
-.course-item__status--ongoing {
-  background: #ecfdf3;
-  color: #027a48;
-}
-
-.course-item__status--completed {
-  background: #f3f4f6;
-  color: #374151;
-}
-
-/* META */
-.course-item__meta {
-  display: flex;
-  gap: 12px;
-  margin-top: 4px;
-  font-size: 13px;
-  color: #6b7280;
-}
 .course-registry {
   display: flex;
   flex-direction: column;
@@ -901,16 +779,16 @@
 
 .course-registry__toolbar {
   display: flex;
-  gap: 12px;
   align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .course-registry__filter-toggle {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  border-radius: 8px;
   padding: 9px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
   font-size: 14px;
   cursor: pointer;
   transition: background 0.18s ease, border-color 0.18s ease;
@@ -921,14 +799,14 @@
 }
 
 .course-registry__search {
+  width: 100%;
   min-width: 280px;
   max-width: 420px;
-  width: 100%;
   padding: 10px 12px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  font-size: 14px;
   background: #fff;
+  font-size: 14px;
 }
 
 .course-registry__search:focus {
@@ -939,17 +817,17 @@
 
 .course-registry__filters {
   display: flex;
-  gap: 10px;
   align-items: center;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .course-registry__filters span,
 .course-registry__filters button {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  border-radius: 999px;
   padding: 7px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  background: #fff;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.18s ease;
@@ -968,16 +846,12 @@
   flex-wrap: wrap;
 }
 
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #f3f4f6;
-  color: #374151;
-  font-size: 12px;
-  cursor: pointer;
+.course-registry__list-container {
+  max-height: 420px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
 }
 
 .course-registry__list {
@@ -988,11 +862,11 @@
 
 .course-registry__item {
   padding: 14px 16px;
-  border-radius: 12px;
-  cursor: pointer;
   margin-bottom: 10px;
   background: #fff;
   border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
   transition: all 0.18s ease;
 }
 
@@ -1004,22 +878,22 @@
 
 .course-registry__empty {
   padding: 16px;
-  color: #6b7280;
+  background: #fff;
   border: 1px dashed #d1d5db;
   border-radius: 12px;
-  background: #fff;
+  color: #6b7280;
 }
 
 .course-item__top {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
 }
 
 .course-item__name {
-  font-weight: 600;
   font-size: 15px;
+  font-weight: 600;
   color: #111827;
 }
 
@@ -1033,11 +907,16 @@
 }
 
 .course-item__status {
-  font-size: 12px;
   padding: 4px 8px;
   border-radius: 999px;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
+}
+
+.course-item__status--draft {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .course-item__status--upcoming {

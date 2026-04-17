@@ -1,16 +1,32 @@
 import "./index.css";
 
-export default function CourseSummary({ assignment }) {
+export default function CourseSummary({ assignment, onDelete }) {
   if (!assignment) return null;
 
   const sessions = assignment.sessions ?? [];
 
   return (
     <div className="course-summary">
-      {/* Titel */}
-      <h3 className="course-summary__title">
-        {assignment.course?.name || "Kursschema"}
-      </h3>
+      {/* Header med titel + delete */}
+      <div className="course-summary__header">
+        <h3 className="course-summary__title">
+          {assignment.course?.name || "Kursschema"}
+        </h3>
+
+        {onDelete && (
+          <button
+            className="course-summary__delete"
+            onClick={() => {
+              const confirmed = window.confirm("Vill du radera planeringen?");
+              if (confirmed) {
+                onDelete();
+              }
+            }}
+          >
+            Radera
+          </button>
+        )}
+      </div>
 
       {/* Period */}
       <p className="course-summary__meta">

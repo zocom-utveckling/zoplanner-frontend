@@ -2,10 +2,10 @@ import { useState, useEffect, useMemo } from "react";
 import { dev } from "@zoplanner/admin";
 import {
   CourseSetupForm,
-  PlanningDraftList,
   PlannerMonthView,
   CourseSummary,
   SessionModal,
+  ConsultantMatchPanel,
   loadPlanningDrafts,
   upsertPlanningDraft,
   removePlanningDraft,
@@ -26,6 +26,10 @@ export function PlannerWorkspace({
   managerId,
   plannerPanel,
   onClosePlannerPanel,
+  plannerMode,
+  setPlannerMode,
+  selectedAssignmentForMatching,
+  clearSelectedAssignmentForMatching,
 }) {
   const [focusDate, setFocusDate] = useState(new Date());
   const [courseDraft, setCourseDraft] = useState(null);
@@ -45,6 +49,39 @@ export function PlannerWorkspace({
     upsertPlanningDraft(courseDraft);
     setPlanningDrafts(loadPlanningDrafts());
   }, [courseDraft]);
+
+  useEffect(() => {
+    if (!selectedAssignmentForMatching) return;
+
+    setActiveAssignment({
+      ...selectedAssignmentForMatching,
+      dateStart: selectedAssignmentForMatching.startDate,
+      dateEnd: selectedAssignmentForMatching.endDate,
+      course: {
+        name: selectedAssignmentForMatching.name || "Kursschema",
+      },
+      sessions: selectedAssignmentForMatching.sessions ?? [],
+    });
+
+    setCourseDraft(null);
+  }, [selectedAssignmentForMatching]);
+
+  const hasUnsavedPlanning = Boolean(courseDraft) && !isSaving;
+
+  useEffect(() => {
+    function handleBeforeUnload(event) {
+      if (!hasUnsavedPlanning) return;
+
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [hasUnsavedPlanning]);
 
   const calendarSource = activeAssignment
     ? {
@@ -85,6 +122,22 @@ export function PlannerWorkspace({
       end: new Date(s.timeEnd),
     }));
   }, [calendarSource]);
+
+  const summaryAssignment = activeAssignment
+    ? activeAssignment
+    : courseDraft
+      ? {
+          dateStart: courseDraft.startDate,
+          dateEnd: courseDraft.endDate,
+          course: {
+            name: courseDraft.courseName || "Kursschema",
+          },
+          sessions: courseDraft.sessionsDraft ?? [],
+        }
+      : null;
+
+  const sidebarTitle =
+    activeAssignment?.course?.name || courseDraft?.courseName || "Ny planering";
 
   function handleSessionClick(sessionIndex) {
     if (!courseDraft?.sessionsDraft?.[sessionIndex]) return;
@@ -243,94 +296,108 @@ export function PlannerWorkspace({
       });
 
       alert("Kursschema sparat med lektionstillfällen");
-
+      setPlannerMode("matching");
       removePlanningDraft(courseDraft.id);
       setPlanningDrafts(loadPlanningDrafts());
       setCourseDraft(null);
-      onClosePlannerPanel?.();
     } finally {
       setIsSaving(false);
     }
   }
 
-  const summaryAssignment = activeAssignment
-    ? activeAssignment
-    : courseDraft
-      ? {
-          dateStart: courseDraft.startDate,
-          dateEnd: courseDraft.endDate,
-          course: {
-            name: courseDraft.courseName || "Kursschema",
-          },
-          sessions: courseDraft.sessionsDraft ?? [],
-        }
-      : null;
-
   return (
     <div className="planner-workspace">
-      <div className="planner-actions">
-        <button
-          className="planner-btn-primary"
-          onClick={handlePublishDraft}
-          disabled={!courseDraft || isSaving}
-        >
-          {isSaving ? "Sparar..." : "Spara kursschema"}
-        </button>
+      <div className="planner-workspace__header"></div>
+
+      <div className="planner-workspace__layout">
+        <aside className="planner-workspace__sidebar">
+          <section className="planner-workspace__panel planner-workspace__panel--form">
+            <h2>{sidebarTitle}</h2>
+
+            {plannerMode === "planning" ? (
+              <>
+                {!activeAssignment && (
+                  <CourseSetupForm
+                    variant="compact"
+                    onSave={(draft) => {
+                      setActiveAssignment(null);
+                      setCourseDraft(draft);
+                    }}
+                  />
+                )}
+
+                {!activeAssignment && (
+                  <button
+                    className="planner-btn-primary"
+                    onClick={() => {
+                      if (!courseDraft) {
+                        document.querySelector("form")?.requestSubmit();
+                      } else {
+                        handlePublishDraft();
+                      }
+                    }}
+                    disabled={isSaving}
+                  >
+                    {isSaving
+                      ? "Sparar..."
+                      : courseDraft
+                        ? "Spara planering"
+                        : "Visa planering"}
+                  </button>
+                )}
+
+                {activeAssignment && (
+                  <button
+                    className="planner-btn-primary"
+                    onClick={() => setPlannerMode("matching")}
+                  >
+                    Hitta konsult
+                  </button>
+                )}
+              </>
+            ) : (
+              <ConsultantMatchPanel
+                assignment={activeAssignment}
+                consultants={[]}
+                onSelectConsultant={(consultant) => {
+                  console.log("Vald konsult:", consultant);
+                }}
+                onBack={() => {
+                  setPlannerMode("planning");
+                  setCourseDraft(null);
+                  setActiveAssignment(null);
+                  clearSelectedAssignmentForMatching?.();
+                }}
+              />
+            )}
+          </section>
+
+          {summaryAssignment ? (
+            <section className="planner-workspace__panel">
+              <h2>Översikt</h2>
+              <CourseSummary
+                assignment={summaryAssignment}
+                onDelete={() => {
+                  setCourseDraft(null);
+                  setActiveAssignment(null);
+                  setPlannerMode("planning");
+                  clearSelectedAssignmentForMatching?.();
+                }}
+              />
+            </section>
+          ) : null}
+        </aside>
+
+        <main className="planner-workspace__main">
+          <PlannerMonthView
+            monthGridDays={calendarGridDays}
+            focusDate={focusDate}
+            events={events}
+            onEventClick={(event) => handleSessionClick(event.sessionIndex)}
+            onEventDrop={handleEventDrop}
+          />
+        </main>
       </div>
-
-      {plannerPanel && (
-        <div className="planner-workspace__overlay">
-          <div className="planner-workspace__overlay-header">
-            <h3>
-              {plannerPanel === "drafts" ? "Påbörjade utkast" : "Ny planering"}
-            </h3>
-
-            <button
-              className="planner-workspace__close"
-              onClick={onClosePlannerPanel}
-            >
-              ×
-            </button>
-          </div>
-
-          <div className="planner-workspace__overlay-body">
-            {plannerPanel === "drafts" && (
-              <PlanningDraftList
-                drafts={planningDrafts}
-                onSelect={(draft) => {
-                  setActiveAssignment(null);
-                  setCourseDraft(draft);
-                  onClosePlannerPanel();
-                }}
-                selectedDraftId={courseDraft?.id}
-              />
-            )}
-
-            {plannerPanel === "new" && (
-              <CourseSetupForm
-                variant="compact"
-                onSave={(draft) => {
-                  setActiveAssignment(null);
-                  setCourseDraft(draft);
-                  onClosePlannerPanel();
-                }}
-              />
-            )}
-          </div>
-        </div>
-      )}
-
-      {summaryAssignment ? (
-        <CourseSummary assignment={summaryAssignment} />
-      ) : null}
-
-      <PlannerMonthView
-        monthGridDays={calendarGridDays}
-        focusDate={focusDate}
-        events={events}
-        onEventClick={(event) => handleSessionClick(event.sessionIndex)}
-        onEventDrop={handleEventDrop}
-      />
 
       <SessionModal
         isOpen={isModalOpen}

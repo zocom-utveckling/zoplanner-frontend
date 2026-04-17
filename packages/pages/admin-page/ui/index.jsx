@@ -22,6 +22,10 @@ function AdminPage() {
   const [adminView, setAdminView] = useState("planner");
   const [plannerPanel, setPlannerPanel] = useState(null);
 
+  const [plannerMode, setPlannerMode] = useState("planning");
+  const [selectedAssignmentForMatching, setSelectedAssignmentForMatching] =
+    useState(null);
+
   if (loading) return <div>Laddar användare...</div>;
   if (isLoadingActor) return <main className="main">Laddar...</main>;
 
@@ -39,11 +43,7 @@ function AdminPage() {
         setActivePage={setActivePage}
       />
 
-      <AdminLayout
-        setView={setAdminView}
-        activeView={adminView}
-        onOpenPlannerPanel={setPlannerPanel}
-      >
+      <AdminLayout setView={setAdminView} activeView={adminView}>
         {adminView === "overview" && (
           <div>
             <AdminOverview />
@@ -52,13 +52,29 @@ function AdminPage() {
 
         {adminView === "customers" && <CustomerRegistry user={user} />}
         {adminView === "consultants" && <ConsultantRegistry user={user} />}
-        {adminView === "courses" && <CourseRegistry user={user} />}
+
+        {adminView === "courses" && (
+          <CourseRegistry
+            user={user}
+            onOpenConsultantMatching={(course) => {
+              setSelectedAssignmentForMatching(course);
+              setPlannerMode("matching");
+              setAdminView("planner");
+            }}
+          />
+        )}
 
         {adminView === "planner" && (
           <PlannerWorkspace
             managerId={managerId}
             plannerPanel={plannerPanel}
             onClosePlannerPanel={() => setPlannerPanel(null)}
+            plannerMode={plannerMode}
+            setPlannerMode={setPlannerMode}
+            selectedAssignmentForMatching={selectedAssignmentForMatching}
+            clearSelectedAssignmentForMatching={() =>
+              setSelectedAssignmentForMatching(null)
+            }
           />
         )}
       </AdminLayout>

@@ -1,21 +1,12 @@
 import "./index.css";
 import { AdminSidebar } from "./AdminSidebar";
 
-export function AdminLayout({
-  children,
-  setView,
-  activeView,
-  onOpenPlannerPanel,
-}) {
+export function AdminLayout({ children, setView, activeView }) {
   return (
-    <div className="admin-container">
-      <AdminSidebar
-        setView={setView}
-        activeView={activeView}
-        onOpenPlannerPanel={onOpenPlannerPanel}
-      />
+    <div className="admin-layout">
+      <AdminSidebar setView={setView} activeView={activeView} />
 
-      <div className="admin-content">{children}</div>
+      <main className="admin-layout__content">{children}</main>
     </div>
   );
 }

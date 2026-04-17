@@ -1,13 +1,11 @@
 import "./index.css";
 
-export function AdminSidebar({ setView, activeView, onOpenPlannerPanel }) {
+export function AdminSidebar({ setView, activeView }) {
   return (
-    <aside className="admin-sidebar">
-      <div className="admin-sidebar__section-title">Admin</div>
-
-      <nav className="admin-sidebar__nav">
+    <div className="admin-tabs">
+      <nav className="admin-tabs__nav">
         <button
-          className={`admin-sidebar__item ${
+          className={`admin-tabs__item ${
             activeView === "overview" ? "active" : ""
           }`}
           onClick={() => setView("overview")}
@@ -16,7 +14,7 @@ export function AdminSidebar({ setView, activeView, onOpenPlannerPanel }) {
         </button>
 
         <button
-          className={`admin-sidebar__item ${
+          className={`admin-tabs__item ${
             activeView === "customers" ? "active" : ""
           }`}
           onClick={() => setView("customers")}
@@ -25,7 +23,7 @@ export function AdminSidebar({ setView, activeView, onOpenPlannerPanel }) {
         </button>
 
         <button
-          className={`admin-sidebar__item ${
+          className={`admin-tabs__item ${
             activeView === "consultants" ? "active" : ""
           }`}
           onClick={() => setView("consultants")}
@@ -34,7 +32,7 @@ export function AdminSidebar({ setView, activeView, onOpenPlannerPanel }) {
         </button>
 
         <button
-          className={`admin-sidebar__item ${
+          className={`admin-tabs__item ${
             activeView === "courses" ? "active" : ""
           }`}
           onClick={() => setView("courses")}
@@ -42,35 +40,15 @@ export function AdminSidebar({ setView, activeView, onOpenPlannerPanel }) {
           Kurser
         </button>
 
-        <div className="admin-sidebar__divider" />
-
         <button
-          className={`admin-sidebar__item ${
+          className={`admin-tabs__item ${
             activeView === "planner" ? "active" : ""
           }`}
           onClick={() => setView("planner")}
         >
-          Scheman
+          Planera
         </button>
       </nav>
-
-      {activeView === "planner" && (
-        <div className="admin-sidebar__planner-actions">
-          <button
-            className="admin-sidebar__secondary-button"
-            onClick={() => onOpenPlannerPanel?.("drafts")}
-          >
-            Påbörjade utkast
-          </button>
-
-          <button
-            className="admin-sidebar__primary-button"
-            onClick={() => onOpenPlannerPanel?.("new")}
-          >
-            + Ny planering
-          </button>
-        </div>
-      )}
-    </aside>
+    </div>
   );
 }
