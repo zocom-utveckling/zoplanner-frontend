@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
+import { API_BASE_URL, FILES_BASE_URL, userService } from "@zoplanner/api";
 
 const PROFILE_PICTURE_UPDATED_EVENT = "zoplanner:profile-picture-updated";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5027";
-
-const FILES_BASE_URL =
-  import.meta.env.VITE_FILES_BASE_URL || "http://localhost:8080";
 
 function normalizeProfilePictureUrl(value) {
   if (typeof value !== "string") return null;
@@ -80,23 +75,7 @@ function useProfilePicture(userId, initialPictureValue) {
 
     try {
       setIsUploadingPicture(true);
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch(
-        `${API_BASE_URL}/api/User/${userId}/profile-picture`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Uppladdning av profilbild misslyckades");
-      }
-
-      const body = await response.json();
+      const body = await userService.uploadProfilePicture(userId, file);
 
       const updated = normalizeProfilePictureUrl(
         body?.profilePicture || body?.profilePictureUrl,
