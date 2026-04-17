@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { dev } from "@zoplanner/admin";
+import { useConsultantMatching } from "../hooks/useConsultantMatching";
 import {
   CourseSetupForm,
   PlannerMonthView,
@@ -39,6 +40,7 @@ export function PlannerWorkspace({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState(null);
   const [activeAssignment, setActiveAssignment] = useState(null);
+  const { consultants, loading: consultantsLoading } = useConsultantMatching();
 
   useEffect(() => {
     setPlanningDrafts(loadPlanningDrafts());
@@ -355,10 +357,12 @@ export function PlannerWorkspace({
                   </button>
                 )}
               </>
+            ) : consultantsLoading ? (
+              <p>Laddar konsulter...</p>
             ) : (
               <ConsultantMatchPanel
                 assignment={activeAssignment}
-                consultants={[]}
+                consultants={consultants}
                 onSelectConsultant={(consultant) => {
                   console.log("Vald konsult:", consultant);
                 }}
