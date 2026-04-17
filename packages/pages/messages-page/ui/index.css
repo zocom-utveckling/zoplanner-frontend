@@ -1,10 +1,23 @@
 .messages-container {
-  padding: 40px 32px;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
+  height: calc(100vh - 70px);
   background-color: var(--app-bg);
+}
+
+.messaging-dashboard {
+  display: grid;
+  grid-template-columns: 290px 1fr 280px;
+  background-color: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+}
+
+.messaging-dashboard > * {
+  min-height: 0;
 }
 .messages-container h2 {
   font-size: 24px;
