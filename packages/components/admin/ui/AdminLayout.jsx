@@ -6,7 +6,9 @@ export function AdminLayout({ children, setView, activeView }) {
     <div className="admin-layout">
       <AdminSidebar setView={setView} activeView={activeView} />
 
-      <main className="admin-layout__content">{children}</main>
+      <main className="admin-layout__content">
+        <div className="admin-workspace">{children}</div>
+      </main>
     </div>
   );
 }
