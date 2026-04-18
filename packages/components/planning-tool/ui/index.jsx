@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { dev } from "@zoplanner/admin";
+import { useConsultantMatching } from "../hooks/useConsultantMatching";
 import {
   CourseSetupForm,
   PlannerMonthView,
@@ -22,6 +23,27 @@ import {
   eachDayOfInterval,
 } from "date-fns";
 
+function toArray(value) {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  return [];
+}
+
+function toDateTime(value) {
+  if (!value) return null;
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function toActivityDateTime(dateValue, timeValue) {
+  if (!dateValue || !timeValue) return null;
+
+  const normalizedTime =
+    String(timeValue).length === 5 ? `${timeValue}:00` : String(timeValue);
+  return toDateTime(`${dateValue}T${normalizedTime}`);
+}
+
 export function PlannerWorkspace({
   managerId,
   plannerPanel,
@@ -39,6 +61,14 @@ export function PlannerWorkspace({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState(null);
   const [activeAssignment, setActiveAssignment] = useState(null);
+  const [selectedConsultant, setSelectedConsultant] = useState(null);
+  const [consultantAssignmentEvents, setConsultantAssignmentEvents] = useState(
+    [],
+  );
+  const [isLoadingConsultantSchedule, setIsLoadingConsultantSchedule] =
+    useState(false);
+  const [isAssigningConsultant, setIsAssigningConsultant] = useState(false);
+  const { consultants, loading: consultantsLoading } = useConsultantMatching();
 
   useEffect(() => {
     setPlanningDrafts(loadPlanningDrafts());
@@ -53,6 +83,8 @@ export function PlannerWorkspace({
   useEffect(() => {
     if (!selectedAssignmentForMatching) return;
 
+    setSelectedConsultant(null);
+    setConsultantAssignmentEvents([]);
     setActiveAssignment({
       ...selectedAssignmentForMatching,
       dateStart: selectedAssignmentForMatching.startDate,
@@ -83,6 +115,64 @@ export function PlannerWorkspace({
     };
   }, [hasUnsavedPlanning]);
 
+  useEffect(() => {
+    if (!selectedConsultant?.id) {
+      setConsultantAssignmentEvents([]);
+      setIsLoadingConsultantSchedule(false);
+      return;
+    }
+
+    let isCancelled = false;
+
+    async function loadConsultantAssignments() {
+      setIsLoadingConsultantSchedule(true);
+
+      try {
+        const assignmentResponse = await assignmentService.getByConsultantId(
+          selectedConsultant.id,
+        );
+        const assignments = toArray(assignmentResponse);
+        const scheduleEvents = assignments.flatMap(
+          (assignment, assignmentIndex) =>
+            toArray(assignment?.sessions)
+              .filter((session) => session?.timeStart && session?.timeEnd)
+              .map((session, sessionIndex) => ({
+                id: `consultant-session-${selectedConsultant.id}-${assignment?.id ?? assignmentIndex}-${session?.id ?? sessionIndex}`,
+                title:
+                  session.comment ||
+                  session.title ||
+                  assignment?.course?.name ||
+                  "Bokad session",
+                type: "consultant-session",
+                start: new Date(session.timeStart),
+                end: new Date(session.timeEnd),
+                draggable: false,
+              })),
+        );
+
+        if (!isCancelled) {
+          setConsultantAssignmentEvents(scheduleEvents);
+        }
+      } catch (error) {
+        console.error("Failed to load consultant assignments:", error);
+
+        if (!isCancelled) {
+          setConsultantAssignmentEvents([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingConsultantSchedule(false);
+        }
+      }
+    }
+
+    loadConsultantAssignments();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [selectedConsultant]);
+
   const calendarSource = activeAssignment
     ? {
         startDate: activeAssignment.dateStart,
@@ -110,18 +200,60 @@ export function PlannerWorkspace({
     return eachDayOfInterval({ start, end });
   }, [focusDate, calendarSource]);
 
-  const events = useMemo(() => {
+  const assignmentEvents = useMemo(() => {
     if (!calendarSource?.sessionsDraft?.length) return [];
 
     return calendarSource.sessionsDraft.map((s, i) => ({
-      id: String(i + 1),
+      id: `assignment-${i + 1}`,
       sessionIndex: i,
       title: s.title || s.comment || `Pass ${i + 1}`,
-      type: "session",
+      type: "assignment-session",
       start: new Date(s.timeStart),
       end: new Date(s.timeEnd),
+      draggable: true,
     }));
   }, [calendarSource]);
+
+  const consultantActivityEvents = useMemo(() => {
+    if (!selectedConsultant?.activities?.length) return [];
+
+    return selectedConsultant.activities
+      .map((activity, index) => {
+        const start =
+          toDateTime(activity?.timeStart) ||
+          toActivityDateTime(activity?.date, activity?.startTime);
+        const end =
+          toDateTime(activity?.timeEnd) ||
+          toActivityDateTime(activity?.date, activity?.endTime);
+
+        if (!start || !end || end <= start) {
+          return null;
+        }
+
+        return {
+          id: `activity-${selectedConsultant.id}-${activity.id ?? index}`,
+          title:
+            activity.title ||
+            activity.name ||
+            activity.description ||
+            "Aktivitet",
+          type: "consultant-activity",
+          start,
+          end,
+          draggable: false,
+        };
+      })
+      .filter(Boolean);
+  }, [selectedConsultant]);
+
+  const events = useMemo(
+    () => [
+      ...assignmentEvents,
+      ...consultantActivityEvents,
+      ...consultantAssignmentEvents,
+    ],
+    [assignmentEvents, consultantActivityEvents, consultantAssignmentEvents],
+  );
 
   const summaryAssignment = activeAssignment
     ? activeAssignment
@@ -138,6 +270,40 @@ export function PlannerWorkspace({
 
   const sidebarTitle =
     activeAssignment?.course?.name || courseDraft?.courseName || "Ny planering";
+
+  async function handleAssignConsultant() {
+    if (!activeAssignment?.id || !selectedConsultant?.id) return;
+
+    setIsAssigningConsultant(true);
+
+    try {
+      const updatedAssignment = await assignmentService.update(
+        activeAssignment.id,
+        {
+          consultantId: selectedConsultant.id,
+          managerId: activeAssignment.managerId ?? managerId ?? null,
+          dateStart: activeAssignment.dateStart,
+          dateEnd: activeAssignment.dateEnd,
+        },
+      );
+
+      setActiveAssignment((previous) => ({
+        ...previous,
+        ...updatedAssignment,
+        consultantId: selectedConsultant.id,
+        consultant: selectedConsultant,
+        course: previous?.course ?? updatedAssignment?.course,
+        sessions: previous?.sessions ?? updatedAssignment?.sessions ?? [],
+      }));
+
+      alert(`Konsult ${selectedConsultant.name} har tilldelats uppdraget.`);
+    } catch (error) {
+      console.error("Failed to assign consultant:", error);
+      alert("Kunde inte tilldela konsult till uppdraget.");
+    } finally {
+      setIsAssigningConsultant(false);
+    }
+  }
 
   function handleSessionClick(sessionIndex) {
     if (!courseDraft?.sessionsDraft?.[sessionIndex]) return;
@@ -321,6 +487,7 @@ export function PlannerWorkspace({
                     variant="compact"
                     onSave={(draft) => {
                       setActiveAssignment(null);
+                      setSelectedConsultant(null);
                       setCourseDraft(draft);
                     }}
                   />
@@ -355,20 +522,50 @@ export function PlannerWorkspace({
                   </button>
                 )}
               </>
+            ) : consultantsLoading ? (
+              <p>Laddar konsulter...</p>
             ) : (
-              <ConsultantMatchPanel
-                assignment={activeAssignment}
-                consultants={[]}
-                onSelectConsultant={(consultant) => {
-                  console.log("Vald konsult:", consultant);
-                }}
-                onBack={() => {
-                  setPlannerMode("planning");
-                  setCourseDraft(null);
-                  setActiveAssignment(null);
-                  clearSelectedAssignmentForMatching?.();
-                }}
-              />
+              <>
+                <div className="planner-match-actions">
+                  <p className="planner-match-actions__status">
+                    {isLoadingConsultantSchedule
+                      ? "Laddar konsultens befintliga schema..."
+                      : selectedConsultant
+                        ? `Visar schema for ${selectedConsultant.name}.`
+                        : "Valj en konsult for att forhandsvisa schemat."}
+                  </p>
+
+                  <button
+                    type="button"
+                    className="planner-btn-primary"
+                    onClick={handleAssignConsultant}
+                    disabled={!selectedConsultant || isAssigningConsultant}
+                  >
+                    {isAssigningConsultant
+                      ? "Tilldelar..."
+                      : selectedConsultant
+                        ? `Tilldela ${selectedConsultant.name}`
+                        : "Tilldela vald konsult"}
+                  </button>
+                </div>
+
+                <ConsultantMatchPanel
+                  assignment={activeAssignment}
+                  consultants={consultants}
+                  selectedConsultantId={selectedConsultant?.id}
+                  onSelectConsultant={(consultant) => {
+                    setSelectedConsultant(consultant);
+                  }}
+                  onBack={() => {
+                    setPlannerMode("planning");
+                    setCourseDraft(null);
+                    setActiveAssignment(null);
+                    setSelectedConsultant(null);
+                    setConsultantAssignmentEvents([]);
+                    clearSelectedAssignmentForMatching?.();
+                  }}
+                />
+              </>
             )}
           </section>
 
@@ -380,6 +577,8 @@ export function PlannerWorkspace({
                 onDelete={() => {
                   setCourseDraft(null);
                   setActiveAssignment(null);
+                  setSelectedConsultant(null);
+                  setConsultantAssignmentEvents([]);
                   setPlannerMode("planning");
                   clearSelectedAssignmentForMatching?.();
                 }}
@@ -393,7 +592,10 @@ export function PlannerWorkspace({
             monthGridDays={calendarGridDays}
             focusDate={focusDate}
             events={events}
-            onEventClick={(event) => handleSessionClick(event.sessionIndex)}
+            onEventClick={(event) => {
+              if (event.type !== "assignment-session") return;
+              handleSessionClick(event.sessionIndex);
+            }}
             onEventDrop={handleEventDrop}
           />
         </main>

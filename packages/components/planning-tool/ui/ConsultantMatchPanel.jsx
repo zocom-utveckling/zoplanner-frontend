@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { toBusySlots, countConflicts } from "../utils/consultantMatching";
 import "./index.css";
 
 export default function ConsultantMatchPanel({
@@ -6,6 +7,7 @@ export default function ConsultantMatchPanel({
   consultants = [],
   onSelectConsultant,
   onBack,
+  selectedConsultantId,
 }) {
   const [subjectFilter, setSubjectFilter] = useState("");
   const [includeConflicts, setIncludeConflicts] = useState(false);
@@ -19,16 +21,16 @@ export default function ConsultantMatchPanel({
   const consultantRows = useMemo(() => {
     return consultants
       .map((consultant) => {
-        const schedule = consultant.schedule ?? [];
+        const busySlots = toBusySlots({
+          activities: consultant.activities ?? [],
+          sessions: consultant.sessions ?? [],
+        });
 
-        const conflictCount = countScheduleConflicts(courseSessions, schedule);
-        const availableHours = calculateAvailableHours(schedule);
+        const conflictCount = countConflicts(courseSessions, busySlots);
 
         return {
           ...consultant,
           conflictCount,
-          availableHours,
-          isAvailableInWindow: availableHours > 0,
         };
       })
       .filter((consultant) => {
@@ -40,15 +42,9 @@ export default function ConsultantMatchPanel({
           return false;
         }
 
-        return consultant.isAvailableInWindow;
+        return true;
       })
-      .sort((a, b) => {
-        if (a.conflictCount !== b.conflictCount) {
-          return a.conflictCount - b.conflictCount;
-        }
-
-        return b.availableHours - a.availableHours;
-      });
+      .sort((a, b) => a.conflictCount - b.conflictCount);
   }, [consultants, courseSessions, subjectFilter, includeConflicts]);
 
   return (
@@ -68,7 +64,7 @@ export default function ConsultantMatchPanel({
             className="consultant-match-panel__back"
             onClick={onBack}
           >
-            Avbyt
+            Avbryt
           </button>
         )}
       </div>
@@ -107,7 +103,17 @@ export default function ConsultantMatchPanel({
           </p>
         ) : (
           consultantRows.map((consultant) => (
-            <div key={consultant.id} className="consultant-match-panel__card">
+            <div
+              key={consultant.id}
+              className={[
+                "consultant-match-panel__card",
+                selectedConsultantId === consultant.id
+                  ? "consultant-match-panel__card--selected"
+                  : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
               <div className="consultant-match-panel__card-top">
                 <div>
                   <h3 className="consultant-match-panel__name">
@@ -123,13 +129,17 @@ export default function ConsultantMatchPanel({
                   className="consultant-match-panel__select"
                   onClick={() => onSelectConsultant?.(consultant)}
                 >
-                  Välj
+                  Visa i kalender
                 </button>
               </div>
 
               <div className="consultant-match-panel__stats">
                 <span>Krockar: {consultant.conflictCount}</span>
-                <span>Ledig tid 08–19: {consultant.availableHours} h</span>
+                {selectedConsultantId === consultant.id && (
+                  <span className="consultant-match-panel__preview-tag">
+                    Forhandsvisas
+                  </span>
+                )}
               </div>
             </div>
           ))
@@ -137,44 +147,4 @@ export default function ConsultantMatchPanel({
       </div>
     </section>
   );
-}
-
-function countScheduleConflicts(courseSessions, consultantSchedule) {
-  return courseSessions.reduce((count, session) => {
-    const hasConflict = consultantSchedule.some((bookedItem) =>
-      rangesOverlap(
-        session.timeStart,
-        session.timeEnd,
-        bookedItem.timeStart,
-        bookedItem.timeEnd,
-      ),
-    );
-
-    return hasConflict ? count + 1 : count;
-  }, 0);
-}
-
-function calculateAvailableHours(schedule) {
-  const workdayStart = 8;
-  const workdayEnd = 19;
-  const totalWindowHours = workdayEnd - workdayStart;
-
-  const bookedHours = schedule.reduce((sum, item) => {
-    const start = new Date(item.timeStart);
-    const end = new Date(item.timeEnd);
-
-    const hours = (end - start) / (1000 * 60 * 60);
-    return sum + Math.max(0, hours);
-  }, 0);
-
-  return Math.max(0, Math.round((totalWindowHours - bookedHours) * 10) / 10);
-}
-
-function rangesOverlap(startA, endA, startB, endB) {
-  const aStart = new Date(startA).getTime();
-  const aEnd = new Date(endA).getTime();
-  const bStart = new Date(startB).getTime();
-  const bEnd = new Date(endB).getTime();
-
-  return aStart < bEnd && bStart < aEnd;
 }

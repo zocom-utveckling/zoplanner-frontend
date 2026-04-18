@@ -77,7 +77,8 @@ export default function PlannerMonthView({
                       end: endOfDay(e.end),
                     });
                   })
-                  .slice(0, 2);
+                  .sort((a, b) => a.start.getTime() - b.start.getTime())
+                  .slice(0, 4);
 
                 return (
                   <div
@@ -123,9 +124,14 @@ export default function PlannerMonthView({
                           e.end && !isSameDay(e.start, e.end),
                         );
                         const eventFallsOnHoliday = isHoliday;
+                        const isDraggable = e.draggable !== false;
 
                         const pillClass = [
                           "planner-month-event-pill",
+                          e.type ? `planner-month-event-pill--${e.type}` : "",
+                          !isDraggable
+                            ? "planner-month-event-pill--readonly"
+                            : "",
                           isMultiDay
                             ? "planner-month-event-pill--start"
                             : "planner-month-event-pill--single",
@@ -138,8 +144,13 @@ export default function PlannerMonthView({
                           <div
                             key={e.id}
                             className={pillClass}
-                            draggable
+                            draggable={isDraggable}
                             onDragStart={(dragEvent) => {
+                              if (!isDraggable) {
+                                dragEvent.preventDefault();
+                                return;
+                              }
+
                               dragEvent.stopPropagation();
                               dragEvent.dataTransfer.setData(
                                 "application/json",
@@ -153,12 +164,14 @@ export default function PlannerMonthView({
                               onEventClick?.(e);
                             }}
                           >
-                            <span className="planner-month-event-time">
-                              {format(e.start, "HH:mm")}
-                            </span>{" "}
-                            <span className="planner-month-event-title">
-                              {e.title.split("\n")[0]}
-                            </span>
+                            <div className="planner-month-event-content">
+                              <span className="planner-month-event-time">
+                                {format(e.start, "HH:mm")}
+                              </span>
+                              <span className="planner-month-event-title">
+                                {e.title.split("\n")[0]}
+                              </span>
+                            </div>
                           </div>
                         );
                       })}

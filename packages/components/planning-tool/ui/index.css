@@ -108,6 +108,7 @@
 /* Dagruta */
 .planner-month-cell {
   min-height: 72px;
+  min-width: 0;
   padding: 4px 6px;
   border: 1px solid #eee;
   position: relative;
@@ -139,24 +140,50 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 /* Event pill */
 .planner-month-event-pill {
   background: #dbeafe;
-  border-radius: 8px;
-  padding: 1px 5px;
+  border-left: 3px solid #2563eb;
+  border-radius: 0;
+  width: 100%;
+  min-width: 0;
+  padding: 3px 5px;
   font-size: 11px;
   line-height: 1.2;
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
   margin-top: 2px;
   cursor: pointer;
+  box-sizing: border-box;
   transition:
     transform 0.14s ease,
     box-shadow 0.18s ease,
     background 0.18s ease;
+}
+
+.planner-month-event-content {
+  display: -webkit-box;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.planner-month-event-time,
+.planner-month-event-title {
+  display: inline;
+}
+
+.planner-month-event-time {
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.planner-month-event-title {
+  overflow-wrap: anywhere;
 }
 
 .planner-month-event-pill:hover {
@@ -168,6 +195,47 @@
 .planner-month-event-pill:active {
   transform: translateY(0);
   cursor: grabbing;
+}
+
+.planner-month-event-pill--assignment-session {
+  background: #dbeafe;
+  border-left-color: #2563eb;
+  color: #1d4ed8;
+}
+
+.planner-month-event-pill--assignment-session:hover {
+  background: #cfe3ff;
+}
+
+.planner-month-event-pill--consultant-activity {
+  background: #ecfdf3;
+  border-left-color: #16a34a;
+  color: #166534;
+}
+
+.planner-month-event-pill--consultant-activity:hover {
+  background: #dcfce7;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.14);
+}
+
+.planner-month-event-pill--consultant-session {
+  background: #fff4e5;
+  border-left-color: #ea580c;
+  color: #9a3412;
+}
+
+.planner-month-event-pill--consultant-session:hover {
+  background: #ffedd5;
+  box-shadow: 0 4px 10px rgba(234, 88, 12, 0.14);
+}
+
+.planner-month-event-pill--readonly {
+  cursor: default;
+  opacity: 0.92;
+}
+
+.planner-month-event-pill--readonly:active {
+  cursor: default;
 }
 
 /* Helgdag */
@@ -193,7 +261,6 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 6px 10px;
-  border-bottom: 1px solid #ddd;
   background: #fafafa;
 }
 
@@ -479,6 +546,20 @@
   gap: 16px;
 }
 
+.planner-match-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 88px;
+}
+
+.planner-match-actions__status {
+  margin: 0;
+  min-height: 20px;
+  font-size: 14px;
+  color: #374151;
+}
+
 .consultant-match-panel__header {
   display: flex;
   align-items: flex-start;
@@ -561,6 +642,11 @@
   background: #fff;
 }
 
+.consultant-match-panel__card--selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.18);
+}
+
 .consultant-match-panel__card-top {
   display: flex;
   align-items: flex-start;
@@ -590,6 +676,11 @@
   color: #374151;
 }
 
+.consultant-match-panel__preview-tag {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
 .consultant-match-panel__select {
   padding: 8px 12px;
   border: none;
@@ -598,4 +689,8 @@
   color: #fff;
   font-weight: 600;
   cursor: pointer;
+}
+
+.consultant-match-panel__card--selected .consultant-match-panel__select {
+  background: #1d4ed8;
 }
