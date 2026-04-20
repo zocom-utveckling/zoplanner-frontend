@@ -2,6 +2,7 @@ import "./index.css";
 import "../../../components/calendar/core/index.css";
 import { useMemo, useState } from "react";
 import { FaCamera } from "react-icons/fa";
+import { FiLogOut } from "react-icons/fi";
 import { Navbar } from "@zoplanner/navbar";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -400,16 +401,20 @@ function Profile_Page({ user: initialUser }) {
                   <p className="profile-page-empty">Inga uppdrag hittades.</p>
                 )}
               </section>
-
-              <button
-                className="profile-page-logout-btn"
-                type="button"
-                onClick={() => setShowLogoutConfirm(true)}
-              >
-                Logga ut
-              </button>
             </aside>
           </section>
+
+          <div className="profile-page-footer-actions">
+            <button
+              className="profile-page-logout-btn"
+              type="button"
+              onClick={() => setShowLogoutConfirm(true)}
+              aria-label="Logga ut"
+              title="Logga ut"
+            >
+              <FiLogOut size={22} />
+            </button>
+          </div>
         </main>
       </div>
 

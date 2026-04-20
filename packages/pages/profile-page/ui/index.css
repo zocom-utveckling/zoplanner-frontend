@@ -20,6 +20,9 @@
 .profile-content {
   border-top: 1px solid var(--border-color);
   padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .profile-page-layout {
@@ -335,22 +338,33 @@
   font-size: 14px;
 }
 
+.profile-page-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .profile-page-logout-btn {
-  margin-top: auto;
-  align-self: center;
-  width: min(220px, 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
   border: none;
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-size: 30px;
-  font-weight: 700;
+  border-radius: 999px;
   color: #fff;
   background: #e12d2d;
   cursor: pointer;
+  box-shadow: 0 12px 24px rgba(225, 45, 45, 0.24);
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .profile-page-logout-btn:hover {
   background: #c91f1f;
+  transform: translateY(-1px);
+  box-shadow: 0 16px 28px rgba(201, 31, 31, 0.28);
 }
 
 @media (max-width: 1240px) {
@@ -416,8 +430,12 @@
     font-size: 24px;
   }
 
-  .profile-page-action-btn,
-  .profile-page-logout-btn {
+  .profile-page-action-btn {
     font-size: 16px;
+  }
+
+  .profile-page-logout-btn {
+    width: 48px;
+    height: 48px;
   }
 }
