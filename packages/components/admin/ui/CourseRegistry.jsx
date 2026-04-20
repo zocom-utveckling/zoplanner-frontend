@@ -6,7 +6,11 @@ import { dev } from "@zoplanner/admin";
 import CourseDetailsModal from "./CourseDetailsModal";
 import { loadPlanningDrafts } from "@zoplanner/planning-tool";
 
-export function CourseRegistry({ user, onOpenConsultantMatching }) {
+export function CourseRegistry({
+  user,
+  selectedIncompleteItem,
+  onOpenConsultantMatching,
+}) {
   const { managerId, isLoadingActor } = useCurrentActor(user);
 
   const [assignments, setAssignments] = useState([]);
@@ -122,7 +126,14 @@ export function CourseRegistry({ user, onOpenConsultantMatching }) {
     });
   };
 
-  const filteredCourses = allCourses
+  const incompleteFilteredCourses = selectedIncompleteItem?.assignmentId
+    ? allCourses.filter(
+        (course) =>
+          !course.isDraft && course.id === selectedIncompleteItem.assignmentId,
+      )
+    : allCourses;
+
+  const filteredCourses = incompleteFilteredCourses
     .filter((c) => {
       const searchValue = search.trim().toLowerCase();
 

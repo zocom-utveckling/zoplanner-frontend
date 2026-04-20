@@ -8,7 +8,11 @@ import {
   CourseRegistry,
   AdminOverview,
 } from "@zoplanner/admin";
-import { useUserById, useCurrentActor } from "@zoplanner/app-hooks";
+import {
+  useUserById,
+  useCurrentActor,
+  useAdminOverview,
+} from "@zoplanner/app-hooks";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -17,14 +21,22 @@ function AdminPage() {
   const { user, loading } = useUserById(id);
   const { canAccess, access, isLoadingActor, managerId } =
     useCurrentActor(user);
+  const { planningItems, incompleteItems, isLoading, error } =
+    useAdminOverview(user);
 
   const [activePage, setActivePage] = useState("adminpanel");
   const [adminView, setAdminView] = useState("overview");
   const [plannerPanel, setPlannerPanel] = useState(null);
+  const [selectedIncompleteItem, setSelectedIncompleteItem] = useState(null);
 
   const [plannerMode, setPlannerMode] = useState("planning");
   const [selectedAssignmentForMatching, setSelectedAssignmentForMatching] =
     useState(null);
+  function handleIncompleteItemClick(item) {
+    setSelectedAssignmentForMatching(item.assignment);
+    setPlannerMode("matching");
+    setAdminView("planner");
+  }
 
   if (loading) return <div>Laddar användare...</div>;
   if (isLoadingActor) return <main className="main">Laddar...</main>;
@@ -46,7 +58,13 @@ function AdminPage() {
       <AdminLayout setView={setAdminView} activeView={adminView}>
         {adminView === "overview" && (
           <div>
-            <AdminOverview />
+            <AdminOverview
+              planningItems={planningItems}
+              incompleteItems={incompleteItems}
+              isLoading={isLoading}
+              error={error}
+              onIncompleteItemClick={handleIncompleteItemClick}
+            />
           </div>
         )}
 
@@ -56,6 +74,8 @@ function AdminPage() {
         {adminView === "courses" && (
           <CourseRegistry
             user={user}
+            selectedIncompleteItem={selectedIncompleteItem}
+            incompleteItems={incompleteItems}
             onOpenConsultantMatching={(course) => {
               setSelectedAssignmentForMatching(course);
               setPlannerMode("matching");
