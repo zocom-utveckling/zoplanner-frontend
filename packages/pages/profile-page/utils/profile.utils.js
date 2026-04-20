@@ -31,8 +31,63 @@ function formatActivityTime(activity) {
   return "Tid saknas";
 }
 
+const COMPETENCIES_STORAGE_KEY_PREFIX = "zoplanner.profileCompetencies";
+
+function normalizeCompetencies(values) {
+  if (!Array.isArray(values)) return [];
+
+  return Array.from(
+    new Set(values.map((value) => String(value || "").trim()).filter(Boolean)),
+  );
+}
+
+function getCompetenciesStorageKey(userId) {
+  if (!userId) return null;
+  return `${COMPETENCIES_STORAGE_KEY_PREFIX}.${userId}`;
+}
+
+function getStoredCompetencies(userId) {
+  const storageKey = getCompetenciesStorageKey(userId);
+
+  if (!storageKey || typeof window === "undefined") return [];
+
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    return normalizeCompetencies(parsed);
+  } catch (_error) {
+    return [];
+  }
+}
+
+function saveStoredCompetencies(userId, competencies) {
+  const storageKey = getCompetenciesStorageKey(userId);
+
+  if (!storageKey || typeof window === "undefined") return;
+
+  const normalized = normalizeCompetencies(competencies);
+
+  try {
+    if (!normalized.length) {
+      window.localStorage.removeItem(storageKey);
+      return;
+    }
+
+    window.localStorage.setItem(storageKey, JSON.stringify(normalized));
+  } catch (_error) {
+    // localStorage can fail in private mode or if storage quota is exceeded.
+  }
+}
+
 function normalizeSkills(user) {
   const skills = [];
+
+  const storedSkills = getStoredCompetencies(user?.id);
+  if (storedSkills.length) {
+    return storedSkills;
+  }
 
   if (Array.isArray(user?.competencies)) {
     skills.push(
@@ -48,9 +103,7 @@ function normalizeSkills(user) {
     );
   }
 
-  if (!skills.length && user?.role) skills.push(String(user.role));
-
-  return skills;
+  return normalizeCompetencies(skills);
 }
 
 function createEditDraft(user) {
@@ -65,6 +118,8 @@ export {
   formatDate,
   formatDateRange,
   formatActivityTime,
+  getStoredCompetencies,
+  saveStoredCompetencies,
   normalizeSkills,
   createEditDraft,
 };

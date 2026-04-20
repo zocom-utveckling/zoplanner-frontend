@@ -201,6 +201,13 @@
   cursor: pointer;
 }
 
+.profile-page-competency-note {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: right;
+}
+
 .profile-page-about-actions {
   display: flex;
   justify-content: center;

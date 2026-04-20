@@ -32,7 +32,7 @@ const COMPETENCY_GROUPS = [
     ],
   },
   {
-    title: "Databaser",
+    title: "Verktyg & API",
     options: ["Git", "Docker", "REST API", "GraphQL"],
   },
   {
@@ -172,9 +172,9 @@ function Profile_Page({ user: initialUser }) {
                     <div className="profile-page-about-competency-section">
                       {isEditing ? (
                         <div className="profile-page-competency-groups">
-                          {COMPETENCY_GROUPS.map((group) => (
+                          {COMPETENCY_GROUPS.map((group, index) => (
                             <section
-                              key={group.title}
+                              key={`${group.title}-${index}`}
                               className="profile-page-competency-group"
                             >
                               <h4 className="profile-page-competency-title">
@@ -205,22 +205,27 @@ function Profile_Page({ user: initialUser }) {
                           ))}
                         </div>
                       ) : (
-                        <div className="profile-page-skills">
-                          {activeSkills.length ? (
-                            activeSkills.map((skill) => (
-                              <span
-                                key={skill}
-                                className="profile-page-skill-pill"
-                              >
-                                {skill}
+                        <>
+                          <div className="profile-page-skills">
+                            {activeSkills.length ? (
+                              activeSkills.map((skill) => (
+                                <span
+                                  key={skill}
+                                  className="profile-page-skill-pill"
+                                >
+                                  {skill}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="profile-page-empty">
+                                Saknar kompetenser
                               </span>
-                            ))
-                          ) : (
-                            <span className="profile-page-empty">
-                              Saknar kompetenser
-                            </span>
-                          )}
-                        </div>
+                            )}
+                          </div>
+                          <p className="profile-page-competency-note">
+                            Demo: Kompetenser sparas lokalt i webblasaren.
+                          </p>
+                        </>
                       )}
                     </div>
                   </div>

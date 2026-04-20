@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { userService } from "@zoplanner/api";
-import { normalizeSkills } from "../utils/profile.utils";
+import {
+  normalizeSkills,
+  saveStoredCompetencies,
+} from "../utils/profile.utils";
 
 function useProfileEdit(user, _initialUser, setUser) {
   const [isEditing, setIsEditing] = useState(false);
@@ -36,24 +39,28 @@ function useProfileEdit(user, _initialUser, setUser) {
 
     setIsSavingProfile(true);
 
+    const nextCompetencies = [...selectedCompetencies];
+    saveStoredCompetencies(user.id, nextCompetencies);
+
+    setUser((prev) => ({
+      ...prev,
+      competencies: nextCompetencies,
+    }));
+
     try {
       const payload = {
         ...user,
-        competencies: selectedCompetencies,
+        competencies: nextCompetencies,
       };
 
       await userService.update(user.id, payload);
-
-      setUser((prev) => ({
-        ...prev,
-        competencies: selectedCompetencies,
-      }));
-
-      setIsEditing(false);
     } catch (error) {
-      console.error(error);
-      alert("Kunde inte spara profilen.");
+      console.warn(
+        "Kunde inte spara kompetenser i backend, använder localStorage som fallback.",
+        error,
+      );
     } finally {
+      setIsEditing(false);
       setIsSavingProfile(false);
     }
   }
