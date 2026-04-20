@@ -202,10 +202,38 @@
 }
 
 .profile-page-competency-note {
-  margin: 2px 0 0;
+  position: relative;
+  align-self: flex-end;
+  margin: 8px 0 0;
+  max-width: 320px;
+  padding: 8px 12px;
+  border: 1px solid #b9d8ff;
+  border-radius: 10px;
+  background: #eef6ff;
   font-size: 12px;
-  color: var(--text-muted);
-  text-align: right;
+  line-height: 1.35;
+  color: #1f4d84;
+  text-align: left;
+}
+
+.profile-page-competency-note::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: 26px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #b9d8ff;
+}
+
+.profile-page-competency-note::after {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: 26px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #eef6ff;
 }
 
 .profile-page-about-actions {
@@ -359,6 +387,17 @@
   .profile-page-skills {
     text-align: left;
     justify-content: flex-start;
+  }
+
+  .profile-page-competency-note {
+    align-self: flex-start;
+    margin-top: 10px;
+  }
+
+  .profile-page-competency-note::before,
+  .profile-page-competency-note::after {
+    right: auto;
+    left: 26px;
   }
 
   .profile-page-competency-groups {
