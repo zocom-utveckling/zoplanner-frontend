@@ -72,10 +72,8 @@ function Profile_Page({ user: initialUser }) {
 
   const {
     isEditing,
-    editDraft,
     selectedCompetencies,
     isSavingProfile,
-    handleEditFieldChange,
     handleToggleCompetency,
     handleStartEdit,
     handleCancelEdit,
@@ -146,55 +144,25 @@ function Profile_Page({ user: initialUser }) {
                 <div className="profile-page-about-grid">
                   <div className="profile-page-about-row">
                     <span className="profile-page-about-label">Email</span>
-                    {isEditing ? (
-                      <input
-                        className="profile-page-input"
-                        type="email"
-                        name="email"
-                        value={editDraft.email}
-                        onChange={handleEditFieldChange}
-                      />
-                    ) : (
-                      <span className="profile-page-about-value">
-                        {user.email}
-                      </span>
-                    )}
+                    <span className="profile-page-about-value">
+                      {user.email}
+                    </span>
                   </div>
 
                   <div className="profile-page-about-row">
                     <span className="profile-page-about-label">
                       Användarnamn
                     </span>
-                    {isEditing ? (
-                      <input
-                        className="profile-page-input"
-                        type="text"
-                        name="username"
-                        value={editDraft.username}
-                        onChange={handleEditFieldChange}
-                      />
-                    ) : (
-                      <span className="profile-page-about-value">
-                        {user.username}
-                      </span>
-                    )}
+                    <span className="profile-page-about-value">
+                      {user.username}
+                    </span>
                   </div>
 
                   <div className="profile-page-about-row">
                     <span className="profile-page-about-label">Stad</span>
-                    {isEditing ? (
-                      <input
-                        className="profile-page-input"
-                        type="text"
-                        name="city"
-                        value={editDraft.city}
-                        onChange={handleEditFieldChange}
-                      />
-                    ) : (
-                      <span className="profile-page-about-value">
-                        {user.city || "-"}
-                      </span>
-                    )}
+                    <span className="profile-page-about-value">
+                      {user.city || "-"}
+                    </span>
                   </div>
 
                   <div className="profile-page-about-row profile-page-about-row--skills">
