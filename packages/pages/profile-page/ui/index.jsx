@@ -153,8 +153,6 @@ function Profile_Page({ user: initialUser }) {
 
       <Navbar user={user} activePage={"profile"} />
       <div className="profile-page-container">
-        <header className="profile-page-header"></header>
-
         <main className="profile-content">
           <section className="profile-page-layout">
             <aside className="profile-picture-wrapper">
