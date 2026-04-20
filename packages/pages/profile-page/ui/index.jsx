@@ -9,7 +9,7 @@ import {
   useProfilePicture,
   useUserById,
 } from "@zoplanner/app-hooks";
-import { ActivityModal } from "@zoplanner/calendar";
+import { ActivityModal, EventDetailsModal } from "@zoplanner/calendar";
 import { ConfirmPopup } from "../../../components/confirm-popup/ui";
 import { ProfileCard } from "@zoplanner/profile-card";
 import {
@@ -50,6 +50,38 @@ const COMPETENCY_GROUPS = [
 
 function Profile_Page({ user: initialUser }) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [selectedAssignmentEvent, setSelectedAssignmentEvent] = useState(null);
+
+  function assignmentToEvent(assignment) {
+    const start = assignment?.dateStart
+      ? new Date(assignment.dateStart)
+      : assignment?.course?.dateStart
+        ? new Date(assignment.course.dateStart)
+        : null;
+    const end = assignment?.dateEnd
+      ? new Date(assignment.dateEnd)
+      : assignment?.course?.dateEnd
+        ? new Date(assignment.course.dateEnd)
+        : null;
+    return {
+      id: assignment?.id,
+      title: assignment?.course?.name || assignment?.title || "Uppdrag",
+      start,
+      end,
+      description: assignment?.description || assignment?.comment || null,
+      locationType: assignment?.locationType || assignment?.location || null,
+      context: {
+        className:
+          assignment?.className ||
+          assignment?.class?.name ||
+          assignment?.schoolClass?.name ||
+          null,
+        customer:
+          assignment?.customer?.name || assignment?.customerName || null,
+        room: assignment?.room || null,
+      },
+    };
+  }
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -350,7 +382,15 @@ function Profile_Page({ user: initialUser }) {
                           </p>
                         </div>
 
-                        <button className="profile-page-list-btn" type="button">
+                        <button
+                          className="profile-page-list-btn"
+                          type="button"
+                          onClick={() =>
+                            setSelectedAssignmentEvent(
+                              assignmentToEvent(assignment),
+                            )
+                          }
+                        >
                           Mer info
                         </button>
                       </article>
@@ -382,6 +422,12 @@ function Profile_Page({ user: initialUser }) {
         mode={activityModalMode}
         onStartEdit={handleStartEditingActivity}
         onDelete={handleDeleteActivity}
+      />
+
+      <EventDetailsModal
+        event={selectedAssignmentEvent}
+        onClose={() => setSelectedAssignmentEvent(null)}
+        userRole={user?.role}
       />
     </>
   );
