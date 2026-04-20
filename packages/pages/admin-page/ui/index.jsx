@@ -19,7 +19,7 @@ function AdminPage() {
     useCurrentActor(user);
 
   const [activePage, setActivePage] = useState("adminpanel");
-  const [adminView, setAdminView] = useState("planner");
+  const [adminView, setAdminView] = useState("overview");
   const [plannerPanel, setPlannerPanel] = useState(null);
 
   const [plannerMode, setPlannerMode] = useState("planning");
