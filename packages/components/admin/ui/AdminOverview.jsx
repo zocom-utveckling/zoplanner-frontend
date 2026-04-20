@@ -1,61 +1,96 @@
-export function AdminOverview({ ongoingItems, upcomingItems }) {
-  //  mockdata
-  const mockOngoing = [
-    { id: "1", title: "Frontendutbildning – Granskning av kodprojekt" },
-    { id: "2", title: "Förbereda lektion" },
-    { id: "3", title: "Möte med kursledare" },
-    { id: "4", title: "Sätta betyg på inlämning" },
-  ];
+import "./index.css";
 
-  const mockUpcoming = [
-    {
-      id: "1",
-      title: "Granskning av kodprojekt",
-      dateLabel: "26 apr",
-    },
-    {
-      id: "2",
-      title: "Förbereda lektion",
-      dateLabel: "27 apr",
-    },
-    {
-      id: "3",
-      title: "Möte med kursledare",
-      dateLabel: "28 apr",
-    },
-  ];
-
-  // använd props om de finns, annars mock
-  const ongoing = ongoingItems?.length ? ongoingItems : mockOngoing;
-  const upcoming = upcomingItems?.length ? upcomingItems : mockUpcoming;
+export function AdminOverview({
+  planningItems = [],
+  incompleteItems = [],
+  isLoading = false,
+  error = "",
+  onIncompleteItemClick,
+}) {
+  const todayLabel = new Date()
+    .toLocaleDateString("sv-SE", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    })
+    .replace(/^./, (char) => char.toUpperCase());
 
   return (
-    <div>
-      <h1>Översikt</h1>
+    <div className="admin-overview">
+      <h3>{todayLabel}</h3>
 
       <div className="overview-grid">
-        <div className="overview-card">
-          <h2>Pågående</h2>
+        <section className="overview-card">
+          <h3>Dagens planering</h3>
 
-          <ul>
-            {ongoing.map((item) => (
-              <li key={item.id}>{item.title}</li>
-            ))}
-          </ul>
-        </div>
+          {isLoading ? (
+            <p>Laddar dagens planering...</p>
+          ) : error ? (
+            <p>{error}</p>
+          ) : planningItems.length === 0 ? (
+            <p>Inget planerat idag.</p>
+          ) : (
+            <ul className="overview-list">
+              {planningItems.map((item) => (
+                <li key={item.id} className="overview-list-item">
+                  <div className="overview-list-item__time">
+                    {item.startTime}–{item.endTime}
+                  </div>
 
-        <div className="overview-card">
-          <h2>Kommande uppgifter</h2>
+                  <div className="overview-list-item__content">
+                    <div className="overview-list-item__title">
+                      {item.title}
+                    </div>
 
-          <ul>
-            {upcoming.map((item) => (
-              <li key={item.id}>
-                {item.dateLabel ? `${item.dateLabel} – ` : ""}
-                {item.title}
-              </li>
-            ))}
-          </ul>
-        </div>
+                    <div className="overview-list-item__meta">
+                      <span>{item.type}</span>
+                      {item.location ? <span> • {item.location}</span> : null}
+                    </div>
+
+                    {item.note ? (
+                      <div className="overview-list-item__note">
+                        {item.note}
+                      </div>
+                    ) : null}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="overview-card">
+          <h2>Behöver åtgärdas</h2>
+
+          {isLoading ? (
+            <p>Laddar...</p>
+          ) : error ? (
+            <p>{error}</p>
+          ) : incompleteItems.length === 0 ? (
+            <p>Allt ser klart ut 🎉</p>
+          ) : (
+            <ul className="overview-list">
+              {incompleteItems.map((item) => (
+                <li
+                  key={item.id}
+                  className="overview-list-item overview-list-item--clickable"
+                  onClick={() => onIncompleteItemClick?.(item)}
+                >
+                  <div className="overview-list-item__content">
+                    <div className="overview-list-item__title">
+                      {item.title}
+                    </div>
+                    <div className="overview-list-item__note">{item.issue}</div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+        <section className="overview-card">
+          <h3>Mailbevakning</h3>
+          <p>Ingen mailbevakning inkopplad ännu.</p>
+        </section>
       </div>
     </div>
   );
