@@ -1,5 +1,5 @@
 import "./index.css";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { FaCamera } from "react-icons/fa";
 import { Navbar } from "@zoplanner/navbar";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,13 +8,15 @@ import {
   useProfilePicture,
   useUserById,
 } from "@zoplanner/app-hooks";
-import {
-  activityService,
-  assignmentService,
-  userService,
-} from "@zoplanner/api";
 import { ConfirmPopup } from "../../../components/confirm-popup/ui";
 import { ProfileCard } from "@zoplanner/profile-card";
+import {
+  formatDateRange,
+  formatActivityTime,
+  normalizeSkills,
+} from "../utils/profile.utils";
+import { useProfileData } from "../hooks/useProfileData";
+import { useProfileEdit } from "../hooks/useProfileEdit";
 
 const COMPETENCY_GROUPS = [
   {
@@ -43,78 +45,8 @@ const COMPETENCY_GROUPS = [
   },
 ];
 
-function formatDate(value) {
-  if (!value) return "";
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return "";
-  return parsed.toLocaleDateString("sv-SE", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function formatDateRange(startValue, endValue) {
-  const start = formatDate(startValue);
-  const end = formatDate(endValue || startValue);
-
-  if (!start && !end) return "Datum saknas";
-  if (!end || start === end) return start;
-  return `${start} - ${end}`;
-}
-
-function formatActivityTime(activity) {
-  const dateLabel = formatDate(activity?.date);
-  const startTime = activity?.startTime || activity?.timeStart || "";
-  const endTime = activity?.endTime || activity?.timeEnd || "";
-
-  if (dateLabel && startTime && endTime) {
-    return `${dateLabel} kl. ${startTime}-${endTime}`;
-  }
-
-  if (dateLabel) return dateLabel;
-  return "Tid saknas";
-}
-
-function normalizeSkills(user) {
-  const skills = [];
-
-  if (Array.isArray(user?.competencies)) {
-    skills.push(
-      ...user.competencies
-        .map((value) => String(value || "").trim())
-        .filter(Boolean),
-    );
-  }
-
-  if (Array.isArray(user?.skills)) {
-    skills.push(
-      ...user.skills.map((value) => String(value || "").trim()).filter(Boolean),
-    );
-  }
-
-  if (!skills.length && user?.role) skills.push(String(user.role));
-
-  return skills;
-}
-
-function createEditDraft(user) {
-  return {
-    email: user?.email || "",
-    username: user?.username || "",
-    city: user?.city || "",
-  };
-}
-
 function Profile_Page({ user: initialUser }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editDraft, setEditDraft] = useState(createEditDraft(initialUser));
-  const [selectedCompetencies, setSelectedCompetencies] = useState([]);
-  const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [assignments, setAssignments] = useState([]);
-  const [activities, setActivities] = useState([]);
-  const [isLoadingSidebarData, setIsLoadingSidebarData] = useState(false);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -133,126 +65,26 @@ function Profile_Page({ user: initialUser }) {
     user?.profilePicture || user?.profilePictureUrl,
   );
 
-  useEffect(() => {
-    if (!user) return;
-    setEditDraft(createEditDraft(user));
-    setSelectedCompetencies(normalizeSkills(user));
-  }, [user]);
+  const { assignments, activities, isLoadingSidebarData } = useProfileData(
+    user,
+    consultantId,
+  );
 
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadProfileLists() {
-      if (!user?.id) {
-        setActivities([]);
-        setAssignments([]);
-        return;
-      }
-
-      setIsLoadingSidebarData(true);
-
-      try {
-        const activitiesPromise = activityService.getAll();
-        const assignmentsPromise = consultantId
-          ? assignmentService.getByConsultantId(consultantId)
-          : Promise.resolve([]);
-
-        const [allActivities, consultantAssignments] = await Promise.all([
-          activitiesPromise,
-          assignmentsPromise,
-        ]);
-
-        if (isCancelled) return;
-
-        const filteredActivities = Array.isArray(allActivities)
-          ? allActivities.filter((activity) => activity?.userId === user.id)
-          : [];
-
-        const normalizedAssignments = Array.isArray(consultantAssignments)
-          ? consultantAssignments
-          : [];
-
-        setActivities(filteredActivities);
-        setAssignments(normalizedAssignments);
-      } catch {
-        if (isCancelled) return;
-        setActivities([]);
-        setAssignments([]);
-      } finally {
-        if (!isCancelled) {
-          setIsLoadingSidebarData(false);
-        }
-      }
-    }
-
-    loadProfileLists();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [user?.id, consultantId]);
+  const {
+    isEditing,
+    editDraft,
+    selectedCompetencies,
+    isSavingProfile,
+    handleEditFieldChange,
+    handleToggleCompetency,
+    handleStartEdit,
+    handleCancelEdit,
+    handleSaveProfile,
+  } = useProfileEdit(user, initialUser, setUser);
 
   const aboutSkills = useMemo(() => normalizeSkills(user), [user]);
 
   const activeSkills = isEditing ? selectedCompetencies : aboutSkills;
-
-  function handleEditFieldChange(event) {
-    const { name, value } = event.target;
-    setEditDraft((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
-
-  function handleToggleCompetency(option) {
-    setSelectedCompetencies((prev) => {
-      if (prev.includes(option)) {
-        return prev.filter((value) => value !== option);
-      }
-      return [...prev, option];
-    });
-  }
-
-  function handleStartEdit() {
-    setEditDraft(createEditDraft(user));
-    setSelectedCompetencies(normalizeSkills(user));
-    setIsEditing(true);
-  }
-
-  function handleCancelEdit() {
-    setEditDraft(createEditDraft(user));
-    setSelectedCompetencies(normalizeSkills(user));
-    setIsEditing(false);
-  }
-
-  async function handleSaveProfile() {
-    if (!user?.id) return;
-
-    setIsSavingProfile(true);
-
-    try {
-      const payload = {
-        ...user,
-        ...editDraft,
-        competencies: selectedCompetencies,
-      };
-
-      await userService.update(user.id, payload);
-
-      setUser((prev) => ({
-        ...prev,
-        ...editDraft,
-        competencies: selectedCompetencies,
-      }));
-
-      setIsEditing(false);
-    } catch (error) {
-      console.error(error);
-      alert("Kunde inte spara profilen.");
-    } finally {
-      setIsSavingProfile(false);
-    }
-  }
 
   if (isLoadingUser) return <div>Laddar användare...</div>;
 
