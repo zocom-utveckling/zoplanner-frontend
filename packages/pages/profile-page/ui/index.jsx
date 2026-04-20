@@ -1,16 +1,123 @@
-import { FaUser, FaCamera } from "react-icons/fa";
 import "./index.css";
-import { Button } from "@zoplanner/button";
-import { useState } from "react";
-import { Edit_Profile } from "../edit-profile/ui";
+import { useEffect, useMemo, useState } from "react";
+import { FaCamera } from "react-icons/fa";
 import { Navbar } from "@zoplanner/navbar";
-import { useParams } from "react-router-dom";
-import { useProfilePicture, useUserById } from "@zoplanner/app-hooks";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  useCurrentActor,
+  useProfilePicture,
+  useUserById,
+} from "@zoplanner/app-hooks";
+import {
+  activityService,
+  assignmentService,
+  userService,
+} from "@zoplanner/api";
+import { ConfirmPopup } from "../../../components/confirm-popup/ui";
+import { ProfileCard } from "@zoplanner/profile-card";
+
+const COMPETENCY_GROUPS = [
+  {
+    title: "Frontend",
+    options: [
+      "CSS",
+      "HTML",
+      "React",
+      "Angular",
+      "TypeScript",
+      "Vue",
+      "Javascript",
+    ],
+  },
+  {
+    title: "Databaser",
+    options: ["Git", "Docker", "REST API", "GraphQL"],
+  },
+  {
+    title: "Backend",
+    options: [".NET", "Java", "Node.js", "Python"],
+  },
+  {
+    title: "Databaser",
+    options: ["PostgreSQL", "MySQL", "MongoDB"],
+  },
+];
+
+function formatDate(value) {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toLocaleDateString("sv-SE", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function formatDateRange(startValue, endValue) {
+  const start = formatDate(startValue);
+  const end = formatDate(endValue || startValue);
+
+  if (!start && !end) return "Datum saknas";
+  if (!end || start === end) return start;
+  return `${start} - ${end}`;
+}
+
+function formatActivityTime(activity) {
+  const dateLabel = formatDate(activity?.date);
+  const startTime = activity?.startTime || activity?.timeStart || "";
+  const endTime = activity?.endTime || activity?.timeEnd || "";
+
+  if (dateLabel && startTime && endTime) {
+    return `${dateLabel} kl. ${startTime}-${endTime}`;
+  }
+
+  if (dateLabel) return dateLabel;
+  return "Tid saknas";
+}
+
+function normalizeSkills(user) {
+  const skills = [];
+
+  if (Array.isArray(user?.competencies)) {
+    skills.push(
+      ...user.competencies
+        .map((value) => String(value || "").trim())
+        .filter(Boolean),
+    );
+  }
+
+  if (Array.isArray(user?.skills)) {
+    skills.push(
+      ...user.skills.map((value) => String(value || "").trim()).filter(Boolean),
+    );
+  }
+
+  if (!skills.length && user?.role) skills.push(String(user.role));
+
+  return skills;
+}
+
+function createEditDraft(user) {
+  return {
+    email: user?.email || "",
+    username: user?.username || "",
+    city: user?.city || "",
+  };
+}
 
 function Profile_Page({ user: initialUser }) {
-  const [showEdit, setShowEdit] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editDraft, setEditDraft] = useState(createEditDraft(initialUser));
+  const [selectedCompetencies, setSelectedCompetencies] = useState([]);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [assignments, setAssignments] = useState([]);
+  const [activities, setActivities] = useState([]);
+  const [isLoadingSidebarData, setIsLoadingSidebarData] = useState(false);
 
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const {
     user,
@@ -20,8 +127,132 @@ function Profile_Page({ user: initialUser }) {
   } = useUserById(id, initialUser);
 
   const userId = user?.id || initialUser?.id || id;
-  const { profilePicture, isUploadingPicture, handleImageChange } =
-    useProfilePicture(userId, user?.profilePicture || user?.profilePictureUrl);
+  const { consultantId } = useCurrentActor(user);
+  const { isUploadingPicture, handleImageChange } = useProfilePicture(
+    userId,
+    user?.profilePicture || user?.profilePictureUrl,
+  );
+
+  useEffect(() => {
+    if (!user) return;
+    setEditDraft(createEditDraft(user));
+    setSelectedCompetencies(normalizeSkills(user));
+  }, [user]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadProfileLists() {
+      if (!user?.id) {
+        setActivities([]);
+        setAssignments([]);
+        return;
+      }
+
+      setIsLoadingSidebarData(true);
+
+      try {
+        const activitiesPromise = activityService.getAll();
+        const assignmentsPromise = consultantId
+          ? assignmentService.getByConsultantId(consultantId)
+          : Promise.resolve([]);
+
+        const [allActivities, consultantAssignments] = await Promise.all([
+          activitiesPromise,
+          assignmentsPromise,
+        ]);
+
+        if (isCancelled) return;
+
+        const filteredActivities = Array.isArray(allActivities)
+          ? allActivities.filter((activity) => activity?.userId === user.id)
+          : [];
+
+        const normalizedAssignments = Array.isArray(consultantAssignments)
+          ? consultantAssignments
+          : [];
+
+        setActivities(filteredActivities);
+        setAssignments(normalizedAssignments);
+      } catch {
+        if (isCancelled) return;
+        setActivities([]);
+        setAssignments([]);
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingSidebarData(false);
+        }
+      }
+    }
+
+    loadProfileLists();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [user?.id, consultantId]);
+
+  const aboutSkills = useMemo(() => normalizeSkills(user), [user]);
+
+  const activeSkills = isEditing ? selectedCompetencies : aboutSkills;
+
+  function handleEditFieldChange(event) {
+    const { name, value } = event.target;
+    setEditDraft((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  function handleToggleCompetency(option) {
+    setSelectedCompetencies((prev) => {
+      if (prev.includes(option)) {
+        return prev.filter((value) => value !== option);
+      }
+      return [...prev, option];
+    });
+  }
+
+  function handleStartEdit() {
+    setEditDraft(createEditDraft(user));
+    setSelectedCompetencies(normalizeSkills(user));
+    setIsEditing(true);
+  }
+
+  function handleCancelEdit() {
+    setEditDraft(createEditDraft(user));
+    setSelectedCompetencies(normalizeSkills(user));
+    setIsEditing(false);
+  }
+
+  async function handleSaveProfile() {
+    if (!user?.id) return;
+
+    setIsSavingProfile(true);
+
+    try {
+      const payload = {
+        ...user,
+        ...editDraft,
+        competencies: selectedCompetencies,
+      };
+
+      await userService.update(user.id, payload);
+
+      setUser((prev) => ({
+        ...prev,
+        ...editDraft,
+        competencies: selectedCompetencies,
+      }));
+
+      setIsEditing(false);
+    } catch (error) {
+      console.error(error);
+      alert("Kunde inte spara profilen.");
+    } finally {
+      setIsSavingProfile(false);
+    }
+  }
 
   if (isLoadingUser) return <div>Laddar användare...</div>;
 
@@ -36,89 +267,282 @@ function Profile_Page({ user: initialUser }) {
 
   return (
     <>
-      <Navbar user={user} activePage={"profile"} />
-
-      {showEdit && (
-        <Edit_Profile
-          user={user}
-          onClose={() => setShowEdit(false)}
-          setUser={setUser}
+      {showLogoutConfirm && (
+        <ConfirmPopup
+          onCancel={() => setShowLogoutConfirm(false)}
+          onConfirm={() => navigate("/")}
+          text={"Logga ut?"}
         />
       )}
 
+      <Navbar user={user} activePage={"profile"} />
       <div className="profile-page-container">
-        <header className="profile-page-header">
-          <h2>Profil</h2>
-        </header>
+        <header className="profile-page-header"></header>
 
         <main className="profile-content">
-          <div className="profile-picture-wrapper">
-            <div className="profile-page-avatar-wrapper">
-              {profilePicture ? (
-                <img
-                  src={profilePicture}
-                  alt={user.name}
-                  className="profile-page-avatar"
+          <section className="profile-page-layout">
+            <aside className="profile-picture-wrapper">
+              <div className="profile-page-card-shell">
+                <ProfileCard user={user} />
+
+                <button
+                  className="profile-page-camera-btn"
+                  type="button"
+                  disabled={isUploadingPicture}
+                  onClick={() =>
+                    document.getElementById("profileFileInput").click()
+                  }
+                  aria-label="Byt profilbild"
+                >
+                  <FaCamera size={16} />
+                </button>
+
+                <input
+                  id="profileFileInput"
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleImageChange}
                 />
-              ) : (
-                <div className="profile-page-placeholder">
-                  <FaUser size={64} />
+              </div>
+            </aside>
+
+            <div className="profile-main-column">
+              <section className="profile-page-panel">
+                <h3 className="profile-page-panel-title">Om</h3>
+
+                <div className="profile-page-about-grid">
+                  <div className="profile-page-about-row">
+                    <span className="profile-page-about-label">Email</span>
+                    {isEditing ? (
+                      <input
+                        className="profile-page-input"
+                        type="email"
+                        name="email"
+                        value={editDraft.email}
+                        onChange={handleEditFieldChange}
+                      />
+                    ) : (
+                      <span className="profile-page-about-value">
+                        {user.email}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="profile-page-about-row">
+                    <span className="profile-page-about-label">
+                      Användarnamn
+                    </span>
+                    {isEditing ? (
+                      <input
+                        className="profile-page-input"
+                        type="text"
+                        name="username"
+                        value={editDraft.username}
+                        onChange={handleEditFieldChange}
+                      />
+                    ) : (
+                      <span className="profile-page-about-value">
+                        {user.username}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="profile-page-about-row">
+                    <span className="profile-page-about-label">Stad</span>
+                    {isEditing ? (
+                      <input
+                        className="profile-page-input"
+                        type="text"
+                        name="city"
+                        value={editDraft.city}
+                        onChange={handleEditFieldChange}
+                      />
+                    ) : (
+                      <span className="profile-page-about-value">
+                        {user.city || "-"}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="profile-page-about-row profile-page-about-row--skills">
+                    <span className="profile-page-about-label">
+                      Kompetenser
+                    </span>
+                    <div className="profile-page-about-competency-section">
+                      {isEditing ? (
+                        <div className="profile-page-competency-groups">
+                          {COMPETENCY_GROUPS.map((group) => (
+                            <section
+                              key={group.title}
+                              className="profile-page-competency-group"
+                            >
+                              <h4 className="profile-page-competency-title">
+                                {group.title}
+                              </h4>
+                              <div className="profile-page-competency-options">
+                                {group.options.map((option) => {
+                                  const isChecked =
+                                    selectedCompetencies.includes(option);
+                                  return (
+                                    <label
+                                      key={option}
+                                      className="profile-page-competency-option"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={() =>
+                                          handleToggleCompetency(option)
+                                        }
+                                      />
+                                      <span>{option}</span>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            </section>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="profile-page-skills">
+                          {activeSkills.length ? (
+                            activeSkills.map((skill) => (
+                              <span
+                                key={skill}
+                                className="profile-page-skill-pill"
+                              >
+                                {skill}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="profile-page-empty">
+                              Saknar kompetenser
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              )}
 
-              <button
-                className="profile-page-camera-btn"
-                type="button"
-                disabled={isUploadingPicture}
-                onClick={() =>
-                  document.getElementById("profileFileInput").click()
-                }
-              >
-                <FaCamera size={16} />
-              </button>
+                <div className="profile-page-about-actions">
+                  {isEditing ? (
+                    <>
+                      <button
+                        className="profile-page-action-btn profile-page-action-btn--ghost"
+                        type="button"
+                        onClick={handleCancelEdit}
+                        disabled={isSavingProfile}
+                      >
+                        Avbryt
+                      </button>
 
-              <input
-                id="profileFileInput"
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={handleImageChange}
-              />
+                      <button
+                        className="profile-page-action-btn profile-page-action-btn--primary"
+                        type="button"
+                        onClick={handleSaveProfile}
+                        disabled={isSavingProfile}
+                      >
+                        {isSavingProfile ? "Sparar..." : "Spara"}
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="profile-page-action-btn profile-page-action-btn--primary"
+                      type="button"
+                      onClick={handleStartEdit}
+                    >
+                      Redigera
+                    </button>
+                  )}
+                </div>
+              </section>
+
+              <section className="profile-page-panel">
+                <h3 className="profile-page-panel-title">Aktiviteter</h3>
+
+                {isLoadingSidebarData ? (
+                  <p className="profile-page-empty">Laddar aktiviteter...</p>
+                ) : activities.length ? (
+                  <div className="profile-page-list">
+                    {activities.slice(0, 5).map((activity) => (
+                      <article
+                        key={
+                          activity?.id || `${activity?.title}-${activity?.date}`
+                        }
+                        className="profile-page-list-item"
+                      >
+                        <div>
+                          <h4 className="profile-page-list-title">
+                            {activity?.title || "Aktivitet"}
+                          </h4>
+                          <p className="profile-page-list-subtitle">
+                            {formatActivityTime(activity)}
+                          </p>
+                        </div>
+
+                        <button className="profile-page-list-btn" type="button">
+                          Ändra
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="profile-page-empty">
+                    Inga aktiviteter hittades.
+                  </p>
+                )}
+              </section>
             </div>
 
-            <h2>{user.name}</h2>
-          </div>
+            <aside className="profile-side-column">
+              <section className="profile-page-panel">
+                <h3 className="profile-page-panel-title">Uppdrag</h3>
 
-          <div className="profile-info">
-            <section className="profile-card">
-              <label>Email</label>
-              <p>{user.email}</p>
-            </section>
+                {isLoadingSidebarData ? (
+                  <p className="profile-page-empty">Laddar uppdrag...</p>
+                ) : assignments.length ? (
+                  <div className="profile-page-list">
+                    {assignments.slice(0, 5).map((assignment) => (
+                      <article
+                        key={assignment?.id || assignment?.course?.id}
+                        className="profile-page-list-item"
+                      >
+                        <div>
+                          <h4 className="profile-page-list-title">
+                            {assignment?.course?.name || "Uppdrag"}
+                          </h4>
+                          <p className="profile-page-list-subtitle">
+                            {formatDateRange(
+                              assignment?.dateStart ||
+                                assignment?.course?.dateStart,
+                              assignment?.dateEnd ||
+                                assignment?.course?.dateEnd,
+                            )}
+                          </p>
+                        </div>
 
-            <section className="profile-card">
-              <label>Username</label>
-              <p>{user.username}</p>
-            </section>
+                        <button className="profile-page-list-btn" type="button">
+                          Mer info
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="profile-page-empty">Inga uppdrag hittades.</p>
+                )}
+              </section>
 
-            <section className="profile-card">
-              <label>City</label>
-              <p>{user.city}</p>
-            </section>
-
-            <section className="profile-card">
-              <label>Role</label>
-              <p>{user.role}</p>
-            </section>
-          </div>
-
-          <div className="profile-edit">
-            <Button
-              text="Redigera"
-              type="button"
-              style="reply-btn"
-              onClick={() => setShowEdit(true)}
-            />
-          </div>
+              <button
+                className="profile-page-logout-btn"
+                type="button"
+                onClick={() => setShowLogoutConfirm(true)}
+              >
+                Logga ut
+              </button>
+            </aside>
+          </section>
         </main>
       </div>
     </>
