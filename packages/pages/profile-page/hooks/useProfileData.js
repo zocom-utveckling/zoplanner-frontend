@@ -62,6 +62,7 @@ function useProfileData(user, consultantId) {
   return {
     assignments,
     activities,
+    setActivities,
     isLoadingSidebarData,
   };
 }

@@ -1,4 +1,5 @@
 import "./index.css";
+import "../../../components/calendar/core/index.css";
 import { useMemo, useState } from "react";
 import { FaCamera } from "react-icons/fa";
 import { Navbar } from "@zoplanner/navbar";
@@ -8,6 +9,7 @@ import {
   useProfilePicture,
   useUserById,
 } from "@zoplanner/app-hooks";
+import { ActivityModal } from "@zoplanner/calendar";
 import { ConfirmPopup } from "../../../components/confirm-popup/ui";
 import { ProfileCard } from "@zoplanner/profile-card";
 import {
@@ -17,6 +19,7 @@ import {
 } from "../utils/profile.utils";
 import { useProfileData } from "../hooks/useProfileData";
 import { useProfileEdit } from "../hooks/useProfileEdit";
+import { useProfileActivityModal } from "../hooks/useProfileActivityModal";
 
 const COMPETENCY_GROUPS = [
   {
@@ -65,10 +68,20 @@ function Profile_Page({ user: initialUser }) {
     user?.profilePicture || user?.profilePictureUrl,
   );
 
-  const { assignments, activities, isLoadingSidebarData } = useProfileData(
-    user,
-    consultantId,
-  );
+  const { assignments, activities, setActivities, isLoadingSidebarData } =
+    useProfileData(user, consultantId);
+
+  const {
+    isActivityModalOpen,
+    activityFormData,
+    activityModalMode,
+    handleCloseActivityModal,
+    handleStartEditingActivity,
+    handleDeleteActivity,
+    handleActivityChange,
+    handleActivitySubmit,
+    handleOpenActivityEdit,
+  } = useProfileActivityModal(setActivities);
 
   const {
     isEditing,
@@ -285,9 +298,18 @@ function Profile_Page({ user: initialUser }) {
                           <p className="profile-page-list-subtitle">
                             {formatActivityTime(activity)}
                           </p>
+                          {activity?.description && (
+                            <p className="profile-page-list-description">
+                              {activity.description}
+                            </p>
+                          )}
                         </div>
 
-                        <button className="profile-page-list-btn" type="button">
+                        <button
+                          className="profile-page-list-btn"
+                          type="button"
+                          onClick={() => handleOpenActivityEdit(activity)}
+                        >
                           Ändra
                         </button>
                       </article>
@@ -350,6 +372,17 @@ function Profile_Page({ user: initialUser }) {
           </section>
         </main>
       </div>
+
+      <ActivityModal
+        isOpen={isActivityModalOpen}
+        onClose={handleCloseActivityModal}
+        formData={activityFormData}
+        onChange={handleActivityChange}
+        onSubmit={handleActivitySubmit}
+        mode={activityModalMode}
+        onStartEdit={handleStartEditingActivity}
+        onDelete={handleDeleteActivity}
+      />
     </>
   );
 }
