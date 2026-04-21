@@ -1,7 +1,6 @@
 import { useCourseSetupForm } from "../hooks/useCourseSetupForm";
-import { useState } from "react";
 
-export default function CourseSetupForm({ onSave }) {
+export default function CourseSetupForm({ onSave, initialValues }) {
   const {
     courseName,
     startDate,
@@ -13,37 +12,12 @@ export default function CourseSetupForm({ onSave }) {
     handleSubmit,
     getStartTimeForDay,
     isSelected,
-  } = useCourseSetupForm(onSave);
-
-  const mockCustomers = [
-    { id: 1, name: "AcadeMedia" },
-    { id: 2, name: "NTI Gymnasiet" },
-    { id: 3, name: "Yrgo" },
-  ];
-
-  const [selectedCustomerId, setSelectedCustomerId] = useState("");
-  const customers = mockCustomers;
+  } = useCourseSetupForm(onSave, initialValues);
 
   return (
     <section className="course-setup">
       <form className="course-setup-form" onSubmit={handleSubmit}>
         <div className="course-setup-field-container">
-          <div className="course-setup-field">
-            <label htmlFor="customer">Kund</label>
-            <select
-              id="customer"
-              value={selectedCustomerId}
-              onChange={(e) => setSelectedCustomerId(e.target.value)}
-            >
-              <option value="">Välj kund</option>
-              {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <div className="course-setup-field">
             <label htmlFor="courseName">
               Kursnamn <span className="course-setup-required">*</span>
@@ -212,8 +186,9 @@ export default function CourseSetupForm({ onSave }) {
                 />
               )}
             </div>
-            <div className="course-setup-hint">* Obligatoriska fält</div>
           </div>
+
+          <div className="course-setup-hint">* Obligatoriska fält</div>
         </div>
       </form>
     </section>

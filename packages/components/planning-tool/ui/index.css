@@ -779,3 +779,33 @@
 .consultant-match-panel__card--selected .consultant-match-panel__select {
   background: #1d4ed8;
 }
+.consultant-match-panel__warning {
+  padding: 12px;
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+  background: #fffbeb;
+}
+
+.consultant-match-panel__warning-text {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.consultant-match-panel__warning-list {
+  margin: 0 0 12px 18px;
+  padding: 0;
+  color: #92400e;
+  font-size: 14px;
+}
+
+.consultant-match-panel__complete {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #f59e0b;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}

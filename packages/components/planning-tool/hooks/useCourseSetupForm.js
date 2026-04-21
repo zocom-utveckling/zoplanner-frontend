@@ -1,12 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { buildCourseDraft } from "../utils/courseDraft.helpers";
 
-export function useCourseSetupForm(onSave) {
+export function useCourseSetupForm(onSave, initialValues) {
   const [courseName, setCourseName] = useState("");
+  const [customerId, setCustomerId] = useState("");
+  const [customerName, setCustomerName] = useState("UTKAST – ange kund");
+
+  const [classId, setClassId] = useState("");
+  const [className, setClassName] = useState("UTKAST – ange klass");
+
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [totalHours, setTotalHours] = useState("");
   const [selectedWeekdays, setSelectedWeekdays] = useState([]);
+
+  // 🔥 Ladda in draft igen (fixar tomt formulär)
+  useEffect(() => {
+    if (!initialValues) return;
+
+    setCourseName(initialValues.courseName ?? "");
+    setCustomerId(initialValues.customerId ?? "");
+    setCustomerName(initialValues.customerName ?? "UTKAST – ange kund");
+
+    setClassId(initialValues.classId ?? "");
+    setClassName(initialValues.className ?? "UTKAST – ange klass");
+
+    setStartDate(initialValues.startDate ?? "");
+    setEndDate(initialValues.endDate ?? "");
+    setTotalHours(
+      initialValues.totalHours != null
+        ? String(initialValues.totalHours)
+        : ""
+    );
+    setSelectedWeekdays(initialValues.selectedWeekdays ?? []);
+  }, [initialValues]);
 
   function handleWeekdayToggle(day) {
     setSelectedWeekdays((prev) => {
@@ -25,8 +52,8 @@ export function useCourseSetupForm(onSave) {
 
     setSelectedWeekdays((prev) =>
       prev.map((item) =>
-        item.day === day ? { ...item, startTime: value } : item,
-      ),
+        item.day === day ? { ...item, startTime: value } : item
+      )
     );
   }
 
@@ -45,15 +72,35 @@ export function useCourseSetupForm(onSave) {
       case "courseName":
         setCourseName(value);
         break;
+
+      case "customerId":
+        setCustomerId(value);
+        break;
+
+      case "customerName":
+        setCustomerName(value);
+        break;
+
+      case "classId":
+        setClassId(value);
+        break;
+
+      case "className":
+        setClassName(value);
+        break;
+
       case "startDate":
         setStartDate(value);
         break;
+
       case "endDate":
         setEndDate(value);
         break;
+
       case "totalHours":
         setTotalHours(value);
         break;
+
       default:
         break;
     }
@@ -62,10 +109,14 @@ export function useCourseSetupForm(onSave) {
   function handleSubmit(event) {
     event.preventDefault();
 
-    const safeCourseName = courseName.trim();
+    const safeCourseName = courseName.trim() || "UTKAST – ange kursnamn";
+    const safeCustomerName =
+      customerName.trim() || "UTKAST – ange kund";
+    const safeClassName = className.trim() || "UTKAST – ange klass";
+
     const parsedTotalHours = Number(totalHours);
 
-    if (!safeCourseName) {
+    if (!courseName.trim()) {
       alert("Ange kursnamn.");
       return;
     }
@@ -90,7 +141,9 @@ export function useCourseSetupForm(onSave) {
       return;
     }
 
-    const hasMissingTime = selectedWeekdays.some((item) => !item.startTime);
+    const hasMissingTime = selectedWeekdays.some(
+      (item) => !item.startTime
+    );
 
     if (hasMissingTime) {
       alert("Ange tid för alla valda dagar.");
@@ -99,6 +152,16 @@ export function useCourseSetupForm(onSave) {
 
     const courseDraft = buildCourseDraft({
       courseName: safeCourseName,
+      isDraftCourse: !courseName.trim(),
+
+      customerId: customerId || null,
+      customerName: safeCustomerName,
+      isDraftCustomer: !customerId,
+
+      classId: classId || null,
+      className: safeClassName,
+      isDraftClass: !classId,
+
       startDate,
       endDate,
       totalHours: parsedTotalHours,
@@ -106,7 +169,9 @@ export function useCourseSetupForm(onSave) {
     });
 
     if (!courseDraft.sessionsDraft.length) {
-      alert("Det gick inte att skapa en planering med de valda uppgifterna.");
+      alert(
+        "Det gick inte att skapa en planering med de valda uppgifterna."
+      );
       return;
     }
 
@@ -114,7 +179,12 @@ export function useCourseSetupForm(onSave) {
 
     onSave?.(courseDraft);
 
+    // reset (kan tas bort senare om du vill behålla state)
     setCourseName("");
+    setCustomerId("");
+    setCustomerName("UTKAST – ange kund");
+    setClassId("");
+    setClassName("UTKAST – ange klass");
     setStartDate("");
     setEndDate("");
     setTotalHours("");
@@ -123,6 +193,10 @@ export function useCourseSetupForm(onSave) {
 
   return {
     courseName,
+    customerId,
+    customerName,
+    classId,
+    className,
     startDate,
     endDate,
     totalHours,

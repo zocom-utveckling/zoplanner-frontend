@@ -18,6 +18,7 @@ import {
   assignmentService,
   sessionService,
   activityService,
+  courseService,
 } from "@zoplanner/api";
 import {
   format,
@@ -340,6 +341,14 @@ export function PlannerWorkspace({
     setIsAssigningConsultant(true);
 
     try {
+      console.log("ASSIGN PAYLOAD:", {
+        assignmentId: activeAssignment.id,
+        consultantId: selectedConsultant.id,
+        managerId: activeAssignment.managerId ?? managerId ?? null,
+        dateStart: activeAssignment.dateStart,
+        dateEnd: activeAssignment.dateEnd,
+      });
+
       const updatedAssignment = await assignmentService.update(
         activeAssignment.id,
         {
@@ -362,6 +371,8 @@ export function PlannerWorkspace({
       alert(`Konsult ${selectedConsultant.name} har tilldelats uppdraget.`);
     } catch (error) {
       console.error("Failed to assign consultant:", error);
+      console.error("ERROR RESPONSE:", error?.response);
+      console.error("ERROR DATA:", error?.response?.data);
       alert("Kunde inte tilldela konsult till uppdraget.");
     } finally {
       setIsAssigningConsultant(false);
@@ -484,9 +495,13 @@ export function PlannerWorkspace({
       sessionsDraft: updatedSessions,
     });
   }
-
   async function handlePublishDraft() {
     if (!courseDraft) return;
+
+    const hasDraftValues =
+      courseDraft.isDraftCourse ||
+      courseDraft.isDraftCustomer ||
+      courseDraft.isDraftClass;
 
     if (!managerId) {
       alert("Kunde inte identifiera användaren. Försök igen.");
@@ -496,7 +511,47 @@ export function PlannerWorkspace({
     setIsSaving(true);
 
     try {
-      const assignmentPayload = toAssignmentPayload(courseDraft, managerId);
+      let resolvedCourseId = courseDraft.courseId ?? null;
+
+      if (!resolvedCourseId) {
+        if (!courseDraft.classId) {
+          alert("Du måste ange en giltig klass innan du sparar.");
+          return;
+        }
+
+        try {
+          const createdCourse = await courseService.create({
+            classId: courseDraft.classId,
+            name: courseDraft.courseName,
+            dateStart: courseDraft.startDate,
+            dateEnd: courseDraft.endDate,
+          });
+
+          resolvedCourseId =
+            createdCourse?.id ?? createdCourse?.data?.id ?? null;
+
+          if (!resolvedCourseId) {
+            console.error("❌ Course created without id:", createdCourse);
+            alert("Kunde inte skapa kurs.");
+            return;
+          }
+
+          console.log("✅ Course created:", createdCourse);
+        } catch (error) {
+          console.error("❌ Failed to create course:", error);
+          alert("Kunde inte skapa kurs.");
+          return;
+        }
+      }
+
+      const assignmentPayload = toAssignmentPayload(
+        {
+          ...courseDraft,
+          courseId: resolvedCourseId,
+        },
+        managerId,
+      );
+
       const existingAssignmentId =
         courseDraft.assignmentId ??
         (Number.isFinite(Number(courseDraft.id))
@@ -604,6 +659,7 @@ export function PlannerWorkspace({
         dateStart: courseDraft.startDate,
         dateEnd: courseDraft.endDate,
         course: {
+          id: resolvedCourseId,
           name: courseDraft.courseName || "Kursschema",
         },
         sessions: courseDraft.sessionsDraft ?? [],
@@ -618,7 +674,11 @@ export function PlannerWorkspace({
       setIsSaving(false);
     }
   }
+  const missingFinalInfo = [];
 
+  if (courseDraft?.isDraftCustomer) missingFinalInfo.push("kund");
+  if (courseDraft?.isDraftClass) missingFinalInfo.push("klass");
+  if (courseDraft?.isDraftCourse) missingFinalInfo.push("kursnamn");
   return (
     <div className="planner-workspace">
       <div className="planner-workspace__header"></div>
@@ -630,24 +690,24 @@ export function PlannerWorkspace({
 
             {plannerMode === "planning" ? (
               <>
-                {!courseDraft && (
-                  <CourseSetupForm
-                    variant="compact"
-                    onSave={(draft) => {
-                      setActiveAssignment(null);
-                      setSelectedConsultant(null);
-                      setCourseDraft(draft);
-                    }}
-                  />
-                )}
+                <CourseSetupForm
+                  initialValues={courseDraft}
+                  onSave={(draft) => {
+                    setActiveAssignment(null);
+                    setSelectedConsultant(null);
+                    setCourseDraft(draft);
+                  }}
+                />
 
                 <button
                   className="planner-btn-primary"
                   onClick={() => {
                     if (!courseDraft) {
-                      document.querySelector("form")?.requestSubmit();
+                      document
+                        .querySelector(".course-setup-form")
+                        ?.requestSubmit();
                     } else {
-                      handlePublishDraft();
+                      setPlannerMode("matching");
                     }
                   }}
                   disabled={isSaving}
@@ -684,7 +744,17 @@ export function PlannerWorkspace({
                   <button
                     type="button"
                     className="planner-btn-primary"
-                    onClick={handleAssignConsultant}
+                    onClick={async () => {
+                      if (missingFinalInfo.length > 0) {
+                        alert(
+                          `Du måste ange ${missingFinalInfo.join(", ")} innan du kan slutföra.`,
+                        );
+                        setPlannerMode("planning");
+                        return;
+                      }
+                      await handlePublishDraft();
+                      await handleAssignConsultant();
+                    }}
                     disabled={!selectedConsultant || isAssigningConsultant}
                   >
                     {isAssigningConsultant
@@ -693,24 +763,33 @@ export function PlannerWorkspace({
                         ? `Tilldela ${selectedConsultant.name}`
                         : "Tilldela vald konsult"}
                   </button>
+                  {missingFinalInfo.length > 0 && (
+                    <div className="planner-warning">
+                      Du måste ange {missingFinalInfo.join(", ")} innan du kan
+                      slutföra.
+                      <button
+                        className="planner-btn-secondary"
+                        onClick={() => setPlannerMode("planning")}
+                      >
+                        Fyll i uppgifter
+                      </button>
+                    </div>
+                  )}
                 </div>
-
                 <ConsultantMatchPanel
                   assignment={activeAssignment}
                   consultants={consultants}
                   selectedConsultantId={selectedConsultant?.id}
+                  missingFinalInfo={missingFinalInfo}
+                  onCompleteMissingInfo={() => {
+                    setPlannerMode("planning");
+                  }}
                   onSelectConsultant={(consultant) => {
+                    console.log("SELECTED CONSULTANT:", consultant);
                     setSelectedConsultant(consultant);
                   }}
                   onBack={() => {
                     setPlannerMode("planning");
-                    setCourseDraft(
-                      selectedAssignmentForMatching
-                        ? toPlanningDraftFromAssignment(
-                            selectedAssignmentForMatching,
-                          )
-                        : null,
-                    );
                     setActiveAssignment(null);
                     setSelectedConsultant(null);
                     setConsultantAssignmentEvents([]);
