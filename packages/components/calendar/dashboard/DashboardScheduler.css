@@ -217,22 +217,34 @@
 /* Event cards */
 .event-block {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
   right: 8px;
   left: 8px;
   overflow: hidden;
   box-sizing: border-box;
   padding: 8px 10px;
-  border: 1px solid var(--event-border);
-  border-radius: 12px;
-  background: var(--event-bg);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid #949191;
+  border-radius: 8px;
+  background: var(--surface);
   cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
 }
 
 .event-title {
-  white-space: pre-line;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--event-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #233247;
 }
 
 .event-subtitle {
@@ -240,9 +252,79 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--text-muted);
+  color: #4f6278;
+}
+
+.event-inline-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-width: 0;
+  gap: 0;
+}
+
+.event-inline-row .event-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 72%;
+}
+
+.event-subtitle--inline {
+  margin-top: 0;
+  flex: 0 0 auto;
+  max-width: 28%;
+}
+
+.event-subtitle--inline::before {
+  content: "\00b7";
+  margin-right: 2px;
+  color: #6b7f96;
+}
+
+.event-block--compact {
+  padding: 5px 8px;
+}
+
+.event-block--medium {
+  padding: 6px 9px;
+  gap: 2px;
+}
+
+.event-block--medium .event-title {
+  font-size: 13px;
+}
+
+.event-block--medium .event-subtitle {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.event-block--roomy {
+  padding: 8px 10px;
+  gap: 2px;
+}
+
+.event-block--roomy .event-title {
+  font-size: 14px;
+}
+
+.event-block--roomy .event-subtitle {
+  font-size: 13px;
+}
+
+.event-block--short-duration {
+  align-items: stretch;
+}
+
+.event-block--short-duration .event-title {
+  margin: 0;
+}
+
+.event-block--short-duration .event-subtitle {
+  margin-top: 0;
 }
 
 /* Month view */
