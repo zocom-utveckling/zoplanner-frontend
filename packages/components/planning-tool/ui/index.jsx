@@ -11,6 +11,7 @@ import {
   upsertPlanningDraft,
   removePlanningDraft,
   toAssignmentPayload,
+  toPlanningDraftFromAssignment,
   toSessionPayloads,
 } from "@zoplanner/planning-tool";
 import { assignmentService, sessionService } from "@zoplanner/api";
@@ -83,19 +84,30 @@ export function PlannerWorkspace({
   useEffect(() => {
     if (!selectedAssignmentForMatching) return;
 
-    setSelectedConsultant(null);
-    setConsultantAssignmentEvents([]);
+    const normalizedStartDate =
+      selectedAssignmentForMatching.startDate ??
+      selectedAssignmentForMatching.dateStart;
+
+    const normalizedEndDate =
+      selectedAssignmentForMatching.endDate ??
+      selectedAssignmentForMatching.dateEnd;
+
+    setCourseDraft(
+      toPlanningDraftFromAssignment(selectedAssignmentForMatching),
+    );
+
     setActiveAssignment({
       ...selectedAssignmentForMatching,
-      dateStart: selectedAssignmentForMatching.startDate,
-      dateEnd: selectedAssignmentForMatching.endDate,
+      dateStart: normalizedStartDate,
+      dateEnd: normalizedEndDate,
       course: {
-        name: selectedAssignmentForMatching.name || "Kursschema",
+        name:
+          selectedAssignmentForMatching?.course?.name ||
+          selectedAssignmentForMatching.name ||
+          "Kursschema",
       },
       sessions: selectedAssignmentForMatching.sessions ?? [],
     });
-
-    setCourseDraft(null);
   }, [selectedAssignmentForMatching]);
 
   const hasUnsavedPlanning = Boolean(courseDraft) && !isSaving;
@@ -173,14 +185,15 @@ export function PlannerWorkspace({
     };
   }, [selectedConsultant]);
 
-  const calendarSource = activeAssignment
-    ? {
-        startDate: activeAssignment.dateStart,
-        endDate: activeAssignment.dateEnd,
-        sessionsDraft: activeAssignment.sessions ?? [],
-      }
-    : courseDraft;
-
+  const calendarSource =
+    courseDraft ??
+    (activeAssignment
+      ? {
+          startDate: activeAssignment.dateStart,
+          endDate: activeAssignment.dateEnd,
+          sessionsDraft: activeAssignment.sessions ?? [],
+        }
+      : null);
   const calendarGridDays = useMemo(() => {
     if (calendarSource?.startDate && calendarSource?.endDate) {
       const [sy, sm, sd] = calendarSource.startDate.split("-").map(Number);
@@ -255,18 +268,19 @@ export function PlannerWorkspace({
     [assignmentEvents, consultantActivityEvents, consultantAssignmentEvents],
   );
 
-  const summaryAssignment = activeAssignment
-    ? activeAssignment
-    : courseDraft
-      ? {
-          dateStart: courseDraft.startDate,
-          dateEnd: courseDraft.endDate,
-          course: {
-            name: courseDraft.courseName || "Kursschema",
-          },
-          sessions: courseDraft.sessionsDraft ?? [],
-        }
-      : null;
+  const summaryAssignment =
+    plannerMode === "planning"
+      ? courseDraft
+        ? {
+            dateStart: courseDraft.startDate,
+            dateEnd: courseDraft.endDate,
+            course: {
+              name: courseDraft.courseName || "Kursschema",
+            },
+            sessions: courseDraft.sessionsDraft ?? [],
+          }
+        : null
+      : activeAssignment;
 
   const sidebarTitle =
     activeAssignment?.course?.name || courseDraft?.courseName || "Ny planering";
@@ -405,46 +419,102 @@ export function PlannerWorkspace({
 
     try {
       const assignmentPayload = toAssignmentPayload(courseDraft, managerId);
+      const existingAssignmentId =
+        courseDraft.assignmentId ??
+        (Number.isFinite(Number(courseDraft.id))
+          ? Number(courseDraft.id)
+          : null);
 
-      let createdAssignment;
+      let savedAssignment;
 
-      try {
-        createdAssignment = await assignmentService.create(assignmentPayload);
-        console.log("✅ Assignment created:", createdAssignment);
-      } catch (error) {
-        console.error(
-          "❌ Failed to create assignment:",
-          error,
-          assignmentPayload,
-        );
-        alert("Kunde inte spara kursschema.");
-        return;
+      if (existingAssignmentId) {
+        try {
+          savedAssignment = await assignmentService.update(
+            existingAssignmentId,
+            assignmentPayload,
+          );
+          console.log("✅ Assignment updated:", savedAssignment);
+        } catch (error) {
+          console.error(
+            "❌ Failed to update assignment:",
+            error,
+            assignmentPayload,
+          );
+          alert("Kunde inte uppdatera kursschema.");
+          return;
+        }
+      } else {
+        try {
+          savedAssignment = await assignmentService.create(assignmentPayload);
+          console.log("✅ Assignment created:", savedAssignment);
+        } catch (error) {
+          console.error(
+            "❌ Failed to create assignment:",
+            error,
+            assignmentPayload,
+          );
+          alert("Kunde inte spara kursschema.");
+          return;
+        }
       }
 
-      if (!createdAssignment?.id) {
-        console.error("❌ Assignment created without id:", createdAssignment);
+      if (!savedAssignment?.id) {
+        console.error("❌ Assignment saved without id:", savedAssignment);
         alert("Kunde inte spara kursschema.");
         return;
       }
 
       try {
         dev.saveCourseNameForAssignment(
-          createdAssignment.id,
+          savedAssignment.id,
           courseDraft.courseName,
         );
       } catch (error) {
         console.error("❌ DEV mapping failed:", error);
       }
 
-      const sessionPayloads = toSessionPayloads(courseDraft);
-
       try {
-        for (const sessionPayload of sessionPayloads) {
-          await sessionService.create(createdAssignment.id, sessionPayload);
+        const assignmentId = savedAssignment.id;
+        const draftSessions = courseDraft.sessionsDraft ?? [];
+        const existingIds = courseDraft.existingSessionIds ?? [];
+
+        const existingSessions = draftSessions.filter(
+          (session) => typeof session.id === "number",
+        );
+
+        const newSessions = draftSessions.filter(
+          (session) => typeof session.id !== "number",
+        );
+
+        for (const session of existingSessions) {
+          await sessionService.update(session.id, {
+            timeStart: session.timeStart,
+            timeEnd: session.timeEnd,
+            location: session.location,
+            comment: session.title,
+          });
         }
-        console.log("✅ Sessions created:", sessionPayloads);
+
+        for (const session of newSessions) {
+          await sessionService.create(assignmentId, {
+            timeStart: session.timeStart,
+            timeEnd: session.timeEnd,
+            location: session.location,
+            comment: session.title,
+          });
+        }
+
+        const currentIds = existingSessions.map((session) => session.id);
+
+        const deletedIds = existingIds.filter((id) => !currentIds.includes(id));
+
+        for (const id of deletedIds) {
+          await sessionService.remove(id);
+        }
+
+        console.log("✅ Sessions synced");
       } catch (error) {
-        console.error("❌ Failed to create sessions:", error, sessionPayloads);
+        console.error("❌ Failed to sync sessions:", error);
         alert(
           "Kursschema sparades, men vissa lektionstillfällen kunde inte sparas.",
         );
@@ -452,7 +522,7 @@ export function PlannerWorkspace({
       }
 
       setActiveAssignment({
-        ...createdAssignment,
+        ...savedAssignment,
         dateStart: courseDraft.startDate,
         dateEnd: courseDraft.endDate,
         course: {
@@ -482,7 +552,7 @@ export function PlannerWorkspace({
 
             {plannerMode === "planning" ? (
               <>
-                {!activeAssignment && (
+                {!courseDraft && (
                   <CourseSetupForm
                     variant="compact"
                     onSave={(draft) => {
@@ -493,29 +563,27 @@ export function PlannerWorkspace({
                   />
                 )}
 
-                {!activeAssignment && (
-                  <button
-                    className="planner-btn-primary"
-                    onClick={() => {
-                      if (!courseDraft) {
-                        document.querySelector("form")?.requestSubmit();
-                      } else {
-                        handlePublishDraft();
-                      }
-                    }}
-                    disabled={isSaving}
-                  >
-                    {isSaving
-                      ? "Sparar..."
-                      : courseDraft
-                        ? "Spara planering"
-                        : "Visa planering"}
-                  </button>
-                )}
+                <button
+                  className="planner-btn-primary"
+                  onClick={() => {
+                    if (!courseDraft) {
+                      document.querySelector("form")?.requestSubmit();
+                    } else {
+                      handlePublishDraft();
+                    }
+                  }}
+                  disabled={isSaving}
+                >
+                  {isSaving
+                    ? "Sparar..."
+                    : courseDraft
+                      ? "Spara planering"
+                      : "Visa planering"}
+                </button>
 
-                {activeAssignment && (
+                {courseDraft && (
                   <button
-                    className="planner-btn-primary"
+                    className="planner-btn-secondary"
                     onClick={() => setPlannerMode("matching")}
                   >
                     Hitta konsult
@@ -531,8 +599,8 @@ export function PlannerWorkspace({
                     {isLoadingConsultantSchedule
                       ? "Laddar konsultens befintliga schema..."
                       : selectedConsultant
-                        ? `Visar schema for ${selectedConsultant.name}.`
-                        : "Valj en konsult for att forhandsvisa schemat."}
+                        ? `Visar schema för ${selectedConsultant.name}.`
+                        : "Välj en konsult för att förhandsvisa schemat."}
                   </p>
 
                   <button
@@ -558,11 +626,16 @@ export function PlannerWorkspace({
                   }}
                   onBack={() => {
                     setPlannerMode("planning");
-                    setCourseDraft(null);
+                    setCourseDraft(
+                      selectedAssignmentForMatching
+                        ? toPlanningDraftFromAssignment(
+                            selectedAssignmentForMatching,
+                          )
+                        : null,
+                    );
                     setActiveAssignment(null);
                     setSelectedConsultant(null);
                     setConsultantAssignmentEvents([]);
-                    clearSelectedAssignmentForMatching?.();
                   }}
                 />
               </>
