@@ -253,34 +253,53 @@ export function PlannerWorkspace({
   }, [calendarSource]);
 
   const consultantActivityEvents = useMemo(() => {
-    if (!consultantActivities?.length) return [];
-    console.log("CONSULTANT ACTIVITIES:", consultantActivities);
+    if (!consultantActivities?.length || !selectedConsultant?.id) return [];
+
     return consultantActivities
       .map((activity, index) => {
         const start =
           toDateTime(activity?.timeStart) ||
           toActivityDateTime(activity?.date, activity?.startTime);
+
         const end =
           toDateTime(activity?.timeEnd) ||
           toActivityDateTime(activity?.date, activity?.endTime);
 
-        if (!start || !end || end <= start) {
-          return null;
-        }
+        if (!start || !end || end <= start) return null;
+
+        const baseTitle =
+          activity.title ||
+          activity.name ||
+          activity.description ||
+          "Aktivitet";
+
+        const cleanTitle = baseTitle.replace(/^Godkänd: |^Avböjd: /, "");
+
+        const isAccepted = baseTitle.startsWith("Godkänd:");
+        const isDeclined = baseTitle.startsWith("Avböjd:");
+        const isRequest = cleanTitle === "Förfrågan om ändring";
 
         return {
-          id: `activity-${selectedConsultant.id}-${activity.id ?? index}`,
-          title:
-            activity.title === "Förfrågan om ändring"
-              ? `⚠️ ${activity.title}`
-              : activity.title ||
-                activity.name ||
-                activity.description ||
-                "Aktivitet",
-          type:
-            activity.title === "Förfrågan om ändring"
-              ? "consultant-request"
-              : "consultant-activity",
+          id: `activity-${selectedConsultant.id}-${activity.id}`,
+          activityId: activity.id,
+          isRequest,
+
+          title: isRequest
+            ? isAccepted
+              ? `✅ ${cleanTitle}`
+              : isDeclined
+                ? `❌ ${cleanTitle}`
+                : `⚠️ ${cleanTitle}`
+            : cleanTitle,
+
+          type: isRequest
+            ? isAccepted
+              ? "consultant-request-accepted"
+              : isDeclined
+                ? "consultant-request-declined"
+                : "consultant-request"
+            : "consultant-activity",
+
           start,
           end,
           draggable: false,
@@ -731,7 +750,40 @@ export function PlannerWorkspace({
               }
 
               if (event.type === "consultant-request") {
-                alert(`${event.title}\n\n${event.description || ""}`);
+                const accepted = window.confirm(
+                  `${event.title}\n\n${event.description || ""}\n\nOK = Godkänn\nAvbryt = Avböj`,
+                );
+
+                const activityId = event.activityId;
+
+                const original = consultantActivities.find(
+                  (a) => String(a.id) === String(activityId),
+                );
+
+                if (!original) return;
+
+                const cleanTitle = original.title.replace(
+                  /^Godkänd: |^Avböjd: /,
+                  "",
+                );
+
+                const newTitle = accepted
+                  ? `Godkänd: ${cleanTitle}`
+                  : `Avböjd: ${cleanTitle}`;
+
+                activityService
+                  .update(activityId, {
+                    title: newTitle,
+                  })
+                  .then(() => {
+                    setConsultantActivities((prev) =>
+                      prev.map((a) =>
+                        String(a.id) === String(activityId)
+                          ? { ...a, title: newTitle }
+                          : a,
+                      ),
+                    );
+                  });
               }
             }}
             onEventDrop={handleEventDrop}

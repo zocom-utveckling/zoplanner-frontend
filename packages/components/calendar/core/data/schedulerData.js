@@ -385,6 +385,12 @@ export async function fetchSchedulerEvents(user, options = {}) {
       const end = toActivityDateTime(activity?.date, activity?.endTime);
       if (!start || !end || end <= start) return;
 
+      const baseTitle = firstNonEmptyString(activity?.title) || "Aktivitet";
+      const cleanTitle = baseTitle.replace(/^Godkänd: |^Avböjd: /, "");
+      const isRequest =
+        typeof baseTitle === "string" &&
+        cleanTitle === "Förfrågan om ändring";
+
       nextEvents.push({
         id: activity?.id,
         title: firstNonEmptyString(activity?.title) || "Aktivitet",
@@ -394,6 +400,7 @@ export async function fetchSchedulerEvents(user, options = {}) {
         end,
         type: firstNonEmptyString(activity?.type) || "meeting",
         source: "activity",
+        isRequest,
         context: {
           consultant: firstNonEmptyString(
             userNameById.get(activity?.userId),
