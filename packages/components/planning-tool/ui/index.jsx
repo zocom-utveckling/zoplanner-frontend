@@ -14,7 +14,11 @@ import {
   toPlanningDraftFromAssignment,
   toSessionPayloads,
 } from "@zoplanner/planning-tool";
-import { assignmentService, sessionService } from "@zoplanner/api";
+import {
+  assignmentService,
+  sessionService,
+  activityService,
+} from "@zoplanner/api";
 import {
   format,
   startOfMonth,
@@ -66,6 +70,23 @@ export function PlannerWorkspace({
   const [consultantAssignmentEvents, setConsultantAssignmentEvents] = useState(
     [],
   );
+  const [consultantActivities, setConsultantActivities] = useState([]);
+  async function loadConsultantActivities(consultantUserId) {
+    try {
+      const response = await activityService.getAll();
+      const activities = Array.isArray(response)
+        ? response
+        : (response.data ?? []);
+
+      const filtered = activities.filter((a) => a.userId === consultantUserId);
+
+      setConsultantActivities(filtered);
+    } catch (error) {
+      console.error("Failed to load activities:", error);
+      setConsultantActivities([]);
+    }
+  }
+
   const [isLoadingConsultantSchedule, setIsLoadingConsultantSchedule] =
     useState(false);
   const [isAssigningConsultant, setIsAssigningConsultant] = useState(false);
@@ -128,8 +149,9 @@ export function PlannerWorkspace({
   }, [hasUnsavedPlanning]);
 
   useEffect(() => {
-    if (!selectedConsultant?.id) {
+    if (!selectedConsultant?.id || !selectedConsultant?.userId) {
       setConsultantAssignmentEvents([]);
+      setConsultantActivities([]);
       setIsLoadingConsultantSchedule(false);
       return;
     }
@@ -143,6 +165,8 @@ export function PlannerWorkspace({
         const assignmentResponse = await assignmentService.getByConsultantId(
           selectedConsultant.id,
         );
+        console.log("ASSIGNMENTS:", assignmentResponse);
+
         const assignments = toArray(assignmentResponse);
         const scheduleEvents = assignments.flatMap(
           (assignment, assignmentIndex) =>
@@ -178,12 +202,13 @@ export function PlannerWorkspace({
       }
     }
 
+    loadConsultantActivities(selectedConsultant.userId);
     loadConsultantAssignments();
 
     return () => {
       isCancelled = true;
     };
-  }, [selectedConsultant]);
+  }, [selectedConsultant?.id, selectedConsultant?.userId]);
 
   const calendarSource =
     courseDraft ??
@@ -228,9 +253,9 @@ export function PlannerWorkspace({
   }, [calendarSource]);
 
   const consultantActivityEvents = useMemo(() => {
-    if (!selectedConsultant?.activities?.length) return [];
-
-    return selectedConsultant.activities
+    if (!consultantActivities?.length) return [];
+    console.log("CONSULTANT ACTIVITIES:", consultantActivities);
+    return consultantActivities
       .map((activity, index) => {
         const start =
           toDateTime(activity?.timeStart) ||
@@ -246,18 +271,23 @@ export function PlannerWorkspace({
         return {
           id: `activity-${selectedConsultant.id}-${activity.id ?? index}`,
           title:
-            activity.title ||
-            activity.name ||
-            activity.description ||
-            "Aktivitet",
-          type: "consultant-activity",
+            activity.title === "Förfrågan om ändring"
+              ? `⚠️ ${activity.title}`
+              : activity.title ||
+                activity.name ||
+                activity.description ||
+                "Aktivitet",
+          type:
+            activity.title === "Förfrågan om ändring"
+              ? "consultant-request"
+              : "consultant-activity",
           start,
           end,
           draggable: false,
         };
       })
       .filter(Boolean);
-  }, [selectedConsultant]);
+  }, [consultantActivities, selectedConsultant]);
 
   const events = useMemo(
     () => [
@@ -331,11 +361,12 @@ export function PlannerWorkspace({
       startTime: session.timeStart?.split("T")[1]?.slice(0, 5) ?? "",
       endTime: session.timeEnd?.split("T")[1]?.slice(0, 5) ?? "",
       location: session.location ?? "ONSITE",
+      requestChange: false,
     });
     setIsModalOpen(true);
   }
 
-  function handleSessionFormChange(event) {
+  async function handleSessionFormChange(event) {
     const { name, value } = event.target;
     setFormData((prev) => ({
       ...prev,
@@ -343,7 +374,7 @@ export function PlannerWorkspace({
     }));
   }
 
-  function handleSessionSubmit(event) {
+  async function handleSessionSubmit(event) {
     event.preventDefault();
 
     if (selectedSession === null || !courseDraft) return;
@@ -368,6 +399,34 @@ export function PlannerWorkspace({
       ...courseDraft,
       sessionsDraft: updatedSessions,
     });
+
+    if (formData.requestChange && selectedConsultant?.id) {
+      const payload = {
+        date: formData.date,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        title: "Förfrågan om ändring",
+        type: "other",
+        description:
+          formData.requestComment ||
+          "Jag ser att du har en bokning här – finns det möjlighet att justera så att du kan ta detta pass?",
+        userId: selectedConsultant.userId,
+      };
+
+      console.log("🚀 Activity payload:", payload);
+      activityService
+        .create(payload)
+        .then((res) => {
+          console.log("✅ SUCCESS:", res);
+
+          const newActivity = res;
+
+          setConsultantActivities((prev) => [...prev, newActivity]);
+        })
+        .catch((error) => {
+          console.error("❌ ERROR:", error);
+        });
+    }
 
     setIsModalOpen(false);
     setSelectedSession(null);
@@ -666,8 +725,14 @@ export function PlannerWorkspace({
             focusDate={focusDate}
             events={events}
             onEventClick={(event) => {
-              if (event.type !== "assignment-session") return;
-              handleSessionClick(event.sessionIndex);
+              if (event.type === "assignment-session") {
+                handleSessionClick(event.sessionIndex);
+                return;
+              }
+
+              if (event.type === "consultant-request") {
+                alert(`${event.title}\n\n${event.description || ""}`);
+              }
             }}
             onEventDrop={handleEventDrop}
           />

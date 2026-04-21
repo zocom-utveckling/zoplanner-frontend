@@ -274,7 +274,19 @@
   color: #666;
   font-size: 13px;
 }
+.planner-month-event-pill--consultant-request {
+  background-color: #facc15; /* gul */
+  color: #000;
+  border: 2px solid #f59e0b;
+}
 
+.planner-month-event-pill--consultant-request .planner-month-event-time {
+  font-weight: 600;
+}
+
+.planner-month-event-pill--consultant-request .planner-month-event-title {
+  font-weight: 600;
+}
 
 /* =========================================================
    📝 3. COURSE SETUP FORM (CourseSetupForm.jsx)
