@@ -6,6 +6,7 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
+import { getDashboardEventColorVars } from "../core/utils/eventColors";
 
 const MAX_VISIBLE = 3;
 
@@ -124,15 +125,24 @@ export default function MonthView({
                   const isMultiDay = Boolean(
                     e.end && !isSameDay(e.start, e.end),
                   );
+                  const isActivityEvent = e?.source === "activity";
                   const pillClass = [
                     "month-event-pill",
+                    isActivityEvent ? "month-event-pill--activity" : "",
+                    !isActivityEvent ? "month-event-pill--non-activity" : "",
                     isMultiDay ? "is-start" : "is-single",
-                  ].join(" ");
+                  ]
+                    .filter(Boolean)
+                    .join(" ");
+                  const activityColorStyle = isActivityEvent
+                    ? getDashboardEventColorVars(e?.color)
+                    : {};
 
                   return (
                     <div
                       key={e.id}
                       className={pillClass}
+                      style={activityColorStyle}
                       draggable={e.source === "activity"}
                       onDragStart={
                         e.source === "activity"

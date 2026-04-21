@@ -26,14 +26,14 @@ export default function EventBlock({
     : isMediumEvent
       ? "event-block--medium"
       : "event-block--roomy";
-  const activityColorStyle =
-    event?.source === "activity"
-      ? getDashboardEventColorVars(event?.color)
-      : {};
+  const isActivityEvent = event?.source === "activity";
+  const activityColorStyle = isActivityEvent
+    ? getDashboardEventColorVars(event?.color)
+    : {};
 
   return (
     <div
-      className={`event-block ${sizeClass} ${isShortDurationEvent ? "event-block--short-duration" : ""}`}
+      className={`event-block ${sizeClass} ${isActivityEvent ? "event-block--activity" : ""} ${isShortDurationEvent ? "event-block--short-duration" : ""}`}
       style={{
         top,
         height,
