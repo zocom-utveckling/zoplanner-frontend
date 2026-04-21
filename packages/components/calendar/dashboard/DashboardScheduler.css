@@ -227,9 +227,9 @@
   box-sizing: border-box;
   padding: 8px 10px;
   border: 1px solid var(--border-color);
-  border-left: 4px solid #949191;
+  border-left: 6px solid var(--event-card-accent, #2f7de1);
   border-radius: 8px;
-  background: var(--surface);
+  background: var(--event-card-bg, #d8e6f7);
   cursor: pointer;
   transition:
     background-color 0.18s ease,

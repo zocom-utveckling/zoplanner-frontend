@@ -1,3 +1,5 @@
+import { getDashboardEventColorVars } from "../core/utils/eventColors";
+
 export default function EventBlock({
   event,
   top,
@@ -24,6 +26,10 @@ export default function EventBlock({
     : isMediumEvent
       ? "event-block--medium"
       : "event-block--roomy";
+  const activityColorStyle =
+    event?.source === "activity"
+      ? getDashboardEventColorVars(event?.color)
+      : {};
 
   return (
     <div
@@ -31,6 +37,7 @@ export default function EventBlock({
       style={{
         top,
         height,
+        ...activityColorStyle,
         ...style,
         cursor: draggable ? "grab" : undefined,
       }}

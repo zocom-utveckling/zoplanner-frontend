@@ -42,6 +42,7 @@ export function DashboardScheduler({ user }) {
     isActivityModalOpen,
     activityFormData,
     activityModalMode,
+    activityColorDirty,
     handleOpenActivityModal,
     handleOpenActivityModalForEvent,
     handleCloseActivityModal,
@@ -121,6 +122,7 @@ export function DashboardScheduler({ user }) {
         onClose={handleCloseActivityModal}
         formData={activityFormData}
         mode={activityModalMode}
+        colorDirty={activityColorDirty}
         onStartEdit={handleStartEditingActivity}
         onDelete={handleDeleteActivity}
         onChange={handleActivityChange}

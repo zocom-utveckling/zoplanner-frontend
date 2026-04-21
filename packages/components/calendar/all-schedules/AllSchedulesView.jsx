@@ -9,6 +9,7 @@ import {
   startOfMonth,
 } from "date-fns";
 import sv from "date-fns/locale/sv";
+import { getAllSchedulesEventColorVars } from "../core/utils/eventColors";
 
 const HOURS_START = 8;
 const HOURS_END = 18;
@@ -236,8 +237,16 @@ export default function AllSchedulesView({
                     const endMin = minutesFromStartOfDay(eventItem.end);
                     const safeEndMin = Math.max(endMin, startMin + 30);
 
-                    const visibleStart = clamp(startMin, GRID_START_MIN, GRID_END_MIN);
-                    const visibleEnd = clamp(safeEndMin, GRID_START_MIN, GRID_END_MIN);
+                    const visibleStart = clamp(
+                      startMin,
+                      GRID_START_MIN,
+                      GRID_END_MIN,
+                    );
+                    const visibleEnd = clamp(
+                      safeEndMin,
+                      GRID_START_MIN,
+                      GRID_END_MIN,
+                    );
 
                     const left =
                       ((visibleStart - GRID_START_MIN) / TOTAL_GRID_MIN) * 100;
@@ -253,7 +262,13 @@ export default function AllSchedulesView({
                         key={eventItem.id}
                         type="button"
                         className="all-schedules-event"
-                        style={{ left: `${left}%`, width: `${width}%` }}
+                        style={{
+                          left: `${left}%`,
+                          width: `${width}%`,
+                          ...(eventItem?.source === "activity"
+                            ? getAllSchedulesEventColorVars(eventItem?.color)
+                            : {}),
+                        }}
                         onClick={() => onEventClick?.(eventItem)}
                       >
                         <div className="all-schedules-event__title">

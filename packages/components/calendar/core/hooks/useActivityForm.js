@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { toLocalDateTime } from "../data/schedulerData";
+import { DEFAULT_ACTIVITY_COLOR } from "../utils/eventColors";
 
 const initialFormData = {
   title: "",
@@ -9,6 +10,7 @@ const initialFormData = {
   startTime: "",
   endTime: "",
   type: "meeting",
+  color: DEFAULT_ACTIVITY_COLOR,
 };
 
 function toFormDataFromEvent(eventItem) {
@@ -22,6 +24,7 @@ function toFormDataFromEvent(eventItem) {
     startTime: start ? format(start, "HH:mm") : "",
     endTime: end ? format(end, "HH:mm") : "",
     type: eventItem?.type || "meeting",
+    color: eventItem?.color || DEFAULT_ACTIVITY_COLOR,
   };
 }
 
@@ -35,11 +38,15 @@ export default function useActivityForm({
   const [activityFormData, setActivityFormData] = useState(initialFormData);
   const [activityModalMode, setActivityModalMode] = useState("create");
   const [editingEventId, setEditingEventId] = useState(null);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [activityColorDirty, setActivityColorDirty] = useState(false);
 
   function resetForm() {
     setActivityFormData(initialFormData);
     setActivityModalMode("create");
     setEditingEventId(null);
+    setEditingEvent(null);
+    setActivityColorDirty(false);
   }
 
   function handleOpenActivityModal(date) {
@@ -64,6 +71,7 @@ export default function useActivityForm({
 
     setActivityFormData(toFormDataFromEvent(eventItem));
     setEditingEventId(eventItem.id);
+    setEditingEvent(eventItem);
     setActivityModalMode("view");
     setIsActivityModalOpen(true);
   }
@@ -96,6 +104,11 @@ export default function useActivityForm({
       ...prev,
       [name]: value,
     }));
+
+    if (name === "color" && activityModalMode === "view" && editingEvent) {
+      onUpdateEvent?.({ ...editingEvent, color: value });
+      setActivityColorDirty(true);
+    }
   }
 
   function handleActivitySubmit(event) {
@@ -123,6 +136,7 @@ export default function useActivityForm({
         start,
         end,
         type: activityFormData.type || "meeting",
+        color: activityFormData.color || DEFAULT_ACTIVITY_COLOR,
       });
     } else {
       onCreateEvent({
@@ -133,6 +147,7 @@ export default function useActivityForm({
         start,
         end,
         type: activityFormData.type || "manual",
+        color: activityFormData.color || DEFAULT_ACTIVITY_COLOR,
       });
     }
 
@@ -143,6 +158,7 @@ export default function useActivityForm({
     isActivityModalOpen,
     activityFormData,
     activityModalMode,
+    activityColorDirty,
     handleOpenActivityModal,
     handleOpenActivityModalForEvent,
     handleCloseActivityModal,
