@@ -23,6 +23,20 @@ function DashboardTopbar({
       </div>
 
       <div className="controls controls--dashboard">
+        <label className="toggle-label" title="Visa bokningar i veckofärger">
+          <span className="toggle-text">Veckofärger</span>
+          <span
+            className={`toggle-track ${bookingWeekColors ? "toggle-track--on" : ""}`}
+          >
+            <span className="toggle-thumb" />
+          </span>
+          <input
+            type="checkbox"
+            className="toggle-input"
+            checked={bookingWeekColors}
+            onChange={onToggleBookingWeekColors}
+          />
+        </label>
         <button className="small-btn" onClick={onGoToday}>
           Idag
         </button>
@@ -41,14 +55,6 @@ function DashboardTopbar({
             Månadsvy
           </button>
         </div>
-
-        <button
-          className={`small-btn ${bookingWeekColors ? "small-btn--active" : ""}`}
-          onClick={onToggleBookingWeekColors}
-          title="Visa bokningar i veckofärger"
-        >
-          Veckofärger
-        </button>
 
         <input className="search" placeholder="Sök..." />
       </div>

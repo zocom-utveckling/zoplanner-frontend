@@ -31,7 +31,6 @@
 .title-with-nav {
   display: flex;
   align-items: center;
-  gap: 12px;
 }
 
 .nav-btn {
@@ -86,14 +85,60 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
-.small-btn--active {
-  background: #1f2a44;
-  color: #ffffff;
-  box-shadow: 0 1px 4px rgba(31, 42, 68, 0.25);
+/* ── Toggle switch ─────────────────────────────────── */
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  margin-right: 30px;
 }
 
-.small-btn--active:hover {
-  background: #263450;
+.toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.toggle-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.toggle-track {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: #c8cdd6;
+  transition: background 0.22s ease;
+  flex-shrink: 0;
+}
+
+.toggle-track--on {
+  background: #1f2a44;
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.22s ease;
+}
+
+.toggle-track--on .toggle-thumb {
+  transform: translateX(18px);
 }
 
 .search {
