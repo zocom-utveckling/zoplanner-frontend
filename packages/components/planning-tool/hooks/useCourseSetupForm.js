@@ -175,20 +175,9 @@ export function useCourseSetupForm(onSave, initialValues) {
       return;
     }
 
-    console.log("Saved course draft:", courseDraft);
+        console.log("Saved course draft:", courseDraft);
 
     onSave?.(courseDraft);
-
-    // reset (kan tas bort senare om du vill behålla state)
-    setCourseName("");
-    setCustomerId("");
-    setCustomerName("UTKAST – ange kund");
-    setClassId("");
-    setClassName("UTKAST – ange klass");
-    setStartDate("");
-    setEndDate("");
-    setTotalHours("");
-    setSelectedWeekdays([]);
   }
 
   return {

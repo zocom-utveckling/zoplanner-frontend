@@ -68,7 +68,17 @@ function AdminPage() {
           </div>
         )}
 
-        {adminView === "customers" && <CustomerRegistry user={user} />}
+        {adminView === "customers" && (
+          <CustomerRegistry
+            user={user}
+            onStartPlanning={(order) => {
+              console.log("📌 planning order", order);
+              setSelectedAssignmentForMatching(order);
+              setPlannerMode("planning");
+              setAdminView("planner");
+            }}
+          />
+        )}
         {adminView === "consultants" && <ConsultantRegistry user={user} />}
 
         {adminView === "courses" && (

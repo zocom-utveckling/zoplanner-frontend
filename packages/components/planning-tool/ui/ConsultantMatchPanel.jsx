@@ -10,6 +10,7 @@ export default function ConsultantMatchPanel({
   selectedConsultantId,
   missingFinalInfo = [],
   onCompleteMissingInfo,
+  onConfirmConsultant,
 }) {
   const [subjectFilter, setSubjectFilter] = useState("");
   const [includeConflicts, setIncludeConflicts] = useState(false);
@@ -49,14 +50,21 @@ export default function ConsultantMatchPanel({
       .sort((a, b) => a.conflictCount - b.conflictCount);
   }, [consultants, courseSessions, subjectFilter, includeConflicts]);
 
+  const courseName = assignment?.course?.name || "Planering";
+  const dateStart = assignment?.dateStart || "";
+  const dateEnd = assignment?.dateEnd || "";
+
   return (
     <section className="consultant-match-panel">
       <div className="consultant-match-panel__header">
-        <div>
+        <div className="consultant-match-panel__header-main">
+          <p className="consultant-match-panel__eyebrow">Nästa steg</p>
           <h2 className="consultant-match-panel__title">Hitta konsult</h2>
           <p className="consultant-match-panel__meta">
-            {assignment?.course?.name || "Planering"} · {assignment?.dateStart}{" "}
-            – {assignment?.dateEnd}
+            <strong>{courseName}</strong>
+          </p>
+          <p className="consultant-match-panel__meta">
+            Period: {dateStart} – {dateEnd}
           </p>
         </div>
 
@@ -66,10 +74,11 @@ export default function ConsultantMatchPanel({
             className="consultant-match-panel__back"
             onClick={onBack}
           >
-            Avbryt
+            Tillbaka till planering
           </button>
         )}
       </div>
+
       {missingFinalInfo.length > 0 && (
         <div className="consultant-match-panel__warning">
           <p className="consultant-match-panel__warning-text">
@@ -91,6 +100,7 @@ export default function ConsultantMatchPanel({
           </button>
         </div>
       )}
+
       <div className="consultant-match-panel__filters">
         <div className="consultant-match-panel__field">
           <label htmlFor="consultant-subject">Ämnesområde</label>
@@ -149,9 +159,17 @@ export default function ConsultantMatchPanel({
                 <button
                   type="button"
                   className="consultant-match-panel__select"
-                  onClick={() => onSelectConsultant?.(consultant)}
+                  onClick={() => {
+                    if (selectedConsultantId === consultant.id) {
+                      onConfirmConsultant?.(consultant);
+                    } else {
+                      onSelectConsultant?.(consultant);
+                    }
+                  }}
                 >
-                  Visa i kalender
+                  {selectedConsultantId === consultant.id
+                    ? `Tilldela ${consultant.name}`
+                    : "Visa i kalender"}
                 </button>
               </div>
 
@@ -159,7 +177,7 @@ export default function ConsultantMatchPanel({
                 <span>Krockar: {consultant.conflictCount}</span>
                 {selectedConsultantId === consultant.id && (
                   <span className="consultant-match-panel__preview-tag">
-                    Forhandsvisas
+                    Förhandsvisas
                   </span>
                 )}
               </div>
