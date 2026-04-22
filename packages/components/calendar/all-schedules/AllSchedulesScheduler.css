@@ -500,13 +500,27 @@
 }
 
 /* Färgindikator via top-border per veckodag */
-.all-schedules-monthdays__item.weekday-1 { border-top-color: #7fc464; } /* måndag – grön */
-.all-schedules-monthdays__item.weekday-2 { border-top-color: #5aaddb; } /* tisdag – blå */
-.all-schedules-monthdays__item.weekday-3 { border-top-color: #a8b5c2; } /* onsdag – grå */
-.all-schedules-monthdays__item.weekday-4 { border-top-color: #c9916a; } /* torsdag – brun */
-.all-schedules-monthdays__item.weekday-5 { border-top-color: #d4b84a; } /* fredag – gul */
-.all-schedules-monthdays__item.weekday-6 { border-top-color: #d48bbf; } /* lördag – rosa */
-.all-schedules-monthdays__item.weekday-0 { border-top-color: #d46a6a; } /* söndag – röd */
+.all-schedules-monthdays__item.weekday-1 {
+  border-top-color: #7fc464;
+} /* måndag – grön */
+.all-schedules-monthdays__item.weekday-2 {
+  border-top-color: #5aaddb;
+} /* tisdag – blå */
+.all-schedules-monthdays__item.weekday-3 {
+  border-top-color: #a8b5c2;
+} /* onsdag – grå */
+.all-schedules-monthdays__item.weekday-4 {
+  border-top-color: #c9916a;
+} /* torsdag – brun */
+.all-schedules-monthdays__item.weekday-5 {
+  border-top-color: #d4b84a;
+} /* fredag – gul */
+.all-schedules-monthdays__item.weekday-6 {
+  border-top-color: #d48bbf;
+} /* lördag – rosa */
+.all-schedules-monthdays__item.weekday-0 {
+  border-top-color: #d46a6a;
+} /* söndag – röd */
 
 .all-schedules-monthdays
   > .all-schedules-monthdays__item.all-schedules-weekdays__item--active {
