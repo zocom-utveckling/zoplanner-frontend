@@ -1,6 +1,52 @@
 import { useEffect, useState } from "react";
 import { activityService } from "@zoplanner/api";
 import { fetchSchedulerEvents, toLocalDateTime } from "../data/schedulerData";
+import {
+  DEFAULT_ACTIVITY_COLOR,
+  normalizeActivityColor,
+} from "../utils/eventColors";
+
+const ACTIVITY_COLOR_STORAGE_KEY = "zoplanner:activity-color-map:v1";
+
+function readActivityColorMap() {
+  if (typeof window === "undefined") return {};
+
+  try {
+    const raw = window.localStorage.getItem(ACTIVITY_COLOR_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeActivityColorMap(colorMap) {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.setItem(
+      ACTIVITY_COLOR_STORAGE_KEY,
+      JSON.stringify(colorMap || {}),
+    );
+  } catch {
+    // no-op
+  }
+}
+
+function applyStoredColor(eventItem, colorMap) {
+  if (!eventItem || eventItem.source !== "activity") return eventItem;
+
+  const eventKey = String(eventItem.id ?? "");
+  const storedColor = colorMap?.[eventKey];
+
+  return {
+    ...eventItem,
+    color: normalizeActivityColor(
+      storedColor ?? eventItem?.color ?? DEFAULT_ACTIVITY_COLOR,
+    ),
+  };
+}
 
 function emitActivitiesUpdated(userId) {
   if (typeof window === "undefined") return;
@@ -62,6 +108,9 @@ function toEventFromActivity(activity, fallbackEvent) {
     start: start || fallbackEvent?.start,
     end: end || fallbackEvent?.end,
     type: activity?.type ?? fallbackEvent?.type,
+    color: normalizeActivityColor(
+      activity?.color ?? fallbackEvent?.color ?? DEFAULT_ACTIVITY_COLOR,
+    ),
     isRequest,
   };
 }
@@ -90,6 +139,42 @@ export default function useSchedulerEvents(user, options = {}) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshToken, setRefreshToken] = useState(0);
+  const [, setActivityColorMap] = useState(() => readActivityColorMap());
+
+  function upsertActivityColor(eventId, color) {
+    if (eventId == null) return normalizeActivityColor(color);
+
+    const eventKey = String(eventId);
+    const normalizedColor = normalizeActivityColor(
+      color || DEFAULT_ACTIVITY_COLOR,
+    );
+
+    setActivityColorMap((prev) => {
+      const next = {
+        ...prev,
+        [eventKey]: normalizedColor,
+      };
+      writeActivityColorMap(next);
+      return next;
+    });
+
+    return normalizedColor;
+  }
+
+  function removeActivityColor(eventId) {
+    if (eventId == null) return;
+
+    const eventKey = String(eventId);
+
+    setActivityColorMap((prev) => {
+      if (!(eventKey in prev)) return prev;
+
+      const next = { ...prev };
+      delete next[eventKey];
+      writeActivityColorMap(next);
+      return next;
+    });
+  }
 
   async function addEvent(newEvent) {
     if (!newEvent) return;
@@ -105,8 +190,18 @@ export default function useSchedulerEvents(user, options = {}) {
           ...newEvent,
           source: "activity",
         });
+        const nextColor = upsertActivityColor(
+          createdEvent?.id,
+          createdEvent?.color || newEvent?.color || DEFAULT_ACTIVITY_COLOR,
+        );
 
-        setEvents((prev) => [...prev, createdEvent]);
+        setEvents((prev) => [
+          ...prev,
+          {
+            ...createdEvent,
+            color: nextColor,
+          },
+        ]);
         return;
       } catch {
         return;
@@ -128,6 +223,7 @@ export default function useSchedulerEvents(user, options = {}) {
       return;
     }
 
+    removeActivityColor(eventId);
     setEvents((prev) => prev.filter((eventItem) => eventItem.id !== eventId));
   }
 
@@ -138,6 +234,24 @@ export default function useSchedulerEvents(user, options = {}) {
 
     const activityId = Number(updatedEvent.id);
     if (!Number.isFinite(activityId)) return;
+
+    const normalizedColor = upsertActivityColor(
+      updatedEvent.id,
+      updatedEvent?.color || DEFAULT_ACTIVITY_COLOR,
+    );
+
+    // Optimistic UI update for immediate color feedback.
+    setEvents((prev) =>
+      prev.map((eventItem) =>
+        eventItem.id === updatedEvent.id
+          ? {
+              ...eventItem,
+              ...updatedEvent,
+              color: normalizedColor,
+            }
+          : eventItem,
+      ),
+    );
 
     const payload = toActivityPayload(updatedEvent, user?.id);
 
@@ -151,7 +265,11 @@ export default function useSchedulerEvents(user, options = {}) {
       setEvents((prev) =>
         prev.map((eventItem) =>
           eventItem.id === updatedEvent.id
-            ? { ...eventItem, ...nextEvent }
+            ? {
+                ...eventItem,
+                ...nextEvent,
+                color: normalizedColor,
+              }
             : eventItem,
         ),
       );
@@ -173,7 +291,16 @@ export default function useSchedulerEvents(user, options = {}) {
 
       try {
         const nextEvents = await fetchSchedulerEvents(user, options);
-        if (!isCancelled) setEvents(nextEvents);
+
+        if (!isCancelled) {
+          const storedColorMap = readActivityColorMap();
+          setActivityColorMap(storedColorMap);
+          setEvents(
+            nextEvents.map((eventItem) =>
+              applyStoredColor(eventItem, storedColorMap),
+            ),
+          );
+        }
       } catch {
         if (!isCancelled) setEvents([]);
       } finally {

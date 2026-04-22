@@ -12,6 +12,7 @@ function DashboardCalendarContent({
   onEventClick,
   onDayClick,
   onEventDrop,
+  bookingWeekColors,
 }) {
   return (
     <div className="content-card">
@@ -21,6 +22,7 @@ function DashboardCalendarContent({
           events={filteredEvents}
           onEventClick={onEventClick}
           onEventDrop={onEventDrop}
+          bookingWeekColors={bookingWeekColors}
         />
       ) : (
         <MonthView
@@ -31,6 +33,7 @@ function DashboardCalendarContent({
           onEventClick={onEventClick}
           onEventDrop={onEventDrop}
           showBookedPerson={false}
+          bookingWeekColors={bookingWeekColors}
         />
       )}
 

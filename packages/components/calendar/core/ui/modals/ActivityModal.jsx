@@ -1,3 +1,8 @@
+import {
+  ACTIVITY_COLOR_OPTIONS,
+  DEFAULT_ACTIVITY_COLOR,
+} from "../../utils/eventColors";
+
 export default function ActivityModal({
   isOpen,
   onClose,
@@ -5,12 +10,14 @@ export default function ActivityModal({
   onChange,
   onSubmit,
   mode = "create",
+  colorDirty = false,
   onStartEdit,
   onDelete,
 }) {
   if (!isOpen) return null;
 
   const isViewMode = mode === "view";
+  const selectedColor = formData.color || DEFAULT_ACTIVITY_COLOR;
   const submitLabel = mode === "edit" ? "Spara" : "Lägg till";
   const title = mode === "create" ? "Lägg till aktivitet" : "Aktivitet";
 
@@ -69,6 +76,26 @@ export default function ActivityModal({
               <option value="preparation">Förberedelse</option>
               <option value="other">Annat</option>
             </select>
+          </div>
+
+          <div className="scheduler-form-group">
+            <label>Färg</label>
+            <div className="scheduler-color-picker">
+              {ACTIVITY_COLOR_OPTIONS.map((colorOption) => (
+                <button
+                  key={colorOption.key}
+                  type="button"
+                  title={colorOption.label}
+                  className={`scheduler-color-dot${selectedColor === colorOption.key ? " scheduler-color-dot--active" : ""}`}
+                  style={{ "--dot-color": colorOption.accent }}
+                  onClick={() =>
+                    onChange({
+                      target: { name: "color", value: colorOption.key },
+                    })
+                  }
+                />
+              ))}
+            </div>
           </div>
 
           <div className="scheduler-form-group">
@@ -146,9 +173,9 @@ export default function ActivityModal({
               <button
                 type="button"
                 className="scheduler-btn-submit"
-                onClick={handleStartEditClick}
+                onClick={colorDirty ? onClose : handleStartEditClick}
               >
-                Redigera
+                {colorDirty ? "Spara" : "Redigera"}
               </button>
             ) : (
               <button type="submit" className="scheduler-btn-submit">

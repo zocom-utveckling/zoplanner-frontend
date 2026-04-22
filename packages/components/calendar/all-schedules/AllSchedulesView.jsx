@@ -9,6 +9,7 @@ import {
   startOfMonth,
 } from "date-fns";
 import sv from "date-fns/locale/sv";
+import { getAllSchedulesEventColorVars } from "../core/utils/eventColors";
 
 const HOURS_START = 8;
 const HOURS_END = 18;
@@ -171,7 +172,7 @@ export default function AllSchedulesView({
               <button
                 key={day.toISOString()}
                 type="button"
-                className={`all-schedules-weekdays__item all-schedules-monthdays__item ${
+                className={`all-schedules-weekdays__item all-schedules-monthdays__item weekday-${day.getDay()} ${
                   focusDate && isSameDay(day, focusDate)
                     ? "all-schedules-weekdays__item--active"
                     : ""
@@ -236,8 +237,16 @@ export default function AllSchedulesView({
                     const endMin = minutesFromStartOfDay(eventItem.end);
                     const safeEndMin = Math.max(endMin, startMin + 30);
 
-                    const visibleStart = clamp(startMin, GRID_START_MIN, GRID_END_MIN);
-                    const visibleEnd = clamp(safeEndMin, GRID_START_MIN, GRID_END_MIN);
+                    const visibleStart = clamp(
+                      startMin,
+                      GRID_START_MIN,
+                      GRID_END_MIN,
+                    );
+                    const visibleEnd = clamp(
+                      safeEndMin,
+                      GRID_START_MIN,
+                      GRID_END_MIN,
+                    );
 
                     const left =
                       ((visibleStart - GRID_START_MIN) / TOTAL_GRID_MIN) * 100;
@@ -252,8 +261,18 @@ export default function AllSchedulesView({
                       <button
                         key={eventItem.id}
                         type="button"
-                        className="all-schedules-event"
-                        style={{ left: `${left}%`, width: `${width}%` }}
+                        className={`all-schedules-event ${
+                          eventItem?.source === "activity"
+                            ? "all-schedules-event--activity"
+                            : "all-schedules-event--booking"
+                        }`}
+                        style={{
+                          left: `${left}%`,
+                          width: `${width}%`,
+                          ...(eventItem?.source === "activity"
+                            ? getAllSchedulesEventColorVars(eventItem?.color)
+                            : {}),
+                        }}
                         onClick={() => onEventClick?.(eventItem)}
                       >
                         <div className="all-schedules-event__title">

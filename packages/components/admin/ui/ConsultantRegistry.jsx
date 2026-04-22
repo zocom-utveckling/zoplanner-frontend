@@ -42,17 +42,19 @@ export function ConsultantRegistry({ user }) {
 
   return (
     <>
-      <div className="consultant-registry__header">
-        <h1>Konsulter</h1>
-        <button
-          type="button"
-          onClick={handleOpenInvite}
-          className="consultant-registry__add-button"
-        >
-          Bjud in ny konsult
-        </button>
-      </div>
-      <AllSchedulesScheduler user={user} />
+      <section className="consultant-registry">
+        <div className="consultant-registry__header">
+          <h1>Konsulter</h1>
+          <button
+            type="button"
+            onClick={handleOpenInvite}
+            className="consultant-registry__add-button"
+          >
+            + Bjud in konsult
+          </button>
+        </div>
+        <AllSchedulesScheduler user={user} />
+      </section>
       <ConsultantInviteModal
         isOpen={isInviteOpen}
         onClose={handleCloseInvite}

@@ -13,6 +13,8 @@ import "../core/index.css";
 import RequestActivityModal from "@zoplanner/planning-tool/ui/RequestActivityModal";
 
 export function DashboardScheduler({ user }) {
+  const [bookingWeekColors, setBookingWeekColors] = useState(false);
+
   const {
     view,
     setView,
@@ -44,6 +46,7 @@ export function DashboardScheduler({ user }) {
     isActivityModalOpen,
     activityFormData,
     activityModalMode,
+    activityColorDirty,
     handleOpenActivityModal,
     handleOpenActivityModalForEvent,
     handleCloseActivityModal,
@@ -111,6 +114,8 @@ export function DashboardScheduler({ user }) {
         onGoToday={goToday}
         onPrev={goPrev}
         onNext={goNext}
+        bookingWeekColors={bookingWeekColors}
+        onToggleBookingWeekColors={() => setBookingWeekColors((v) => !v)}
       />
 
       <DashboardCalendarContent
@@ -123,6 +128,7 @@ export function DashboardScheduler({ user }) {
         onEventClick={handleEventClick}
         onDayClick={handleOpenActivityModal}
         onEventDrop={handleEventDrop}
+        bookingWeekColors={bookingWeekColors}
       />
 
       <ActivityModal
@@ -130,6 +136,7 @@ export function DashboardScheduler({ user }) {
         onClose={handleCloseActivityModal}
         formData={activityFormData}
         mode={activityModalMode}
+        colorDirty={activityColorDirty}
         onStartEdit={handleStartEditingActivity}
         onDelete={handleDeleteActivity}
         onChange={handleActivityChange}

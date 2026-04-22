@@ -6,6 +6,10 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
+import {
+  getDashboardEventColorVars,
+  getBookingWeekdayColorVars,
+} from "../core/utils/eventColors";
 
 const MAX_VISIBLE = 3;
 
@@ -18,6 +22,7 @@ export default function MonthView({
   onEventDrop,
   showBookedPerson = false,
   deduplicateConsultantsPerDay = false,
+  bookingWeekColors = false,
 }) {
   const weekdays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
 
@@ -85,6 +90,14 @@ export default function MonthView({
             0,
             displayDayEvents.length - MAX_VISIBLE,
           );
+          const stackedCount = hiddenCount === 0 ? visibleEvents.length : 0;
+          const monthEventsClassName = [
+            "month-events",
+            stackedCount === 1 ? "month-events--single" : "",
+            stackedCount === 2 ? "month-events--double" : "",
+          ]
+            .filter(Boolean)
+            .join(" ");
 
           return (
             <div
@@ -119,20 +132,34 @@ export default function MonthView({
               }}
             >
               <div className="month-cell-header">{format(d, "d")}</div>
-              <div className="month-events">
+              <div className={monthEventsClassName}>
                 {visibleEvents.map((e) => {
                   const isMultiDay = Boolean(
                     e.end && !isSameDay(e.start, e.end),
                   );
+                  const isActivityEvent = e?.source === "activity";
+                  const isBookingColored =
+                    !isActivityEvent && bookingWeekColors && e?.start;
                   const pillClass = [
                     "month-event-pill",
+                    isActivityEvent || isBookingColored
+                      ? "month-event-pill--activity"
+                      : "month-event-pill--non-activity",
                     isMultiDay ? "is-start" : "is-single",
-                  ].join(" ");
+                  ]
+                    .filter(Boolean)
+                    .join(" ");
+                  const activityColorStyle = isActivityEvent
+                    ? getDashboardEventColorVars(e?.color)
+                    : isBookingColored
+                      ? getBookingWeekdayColorVars(e.start)
+                      : {};
 
                   return (
                     <div
                       key={e.id}
                       className={pillClass}
+                      style={activityColorStyle}
                       draggable={e.source === "activity"}
                       onDragStart={
                         e.source === "activity"

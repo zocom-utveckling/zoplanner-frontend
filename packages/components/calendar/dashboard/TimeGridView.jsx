@@ -96,6 +96,7 @@ export default function TimeGridView({
   events,
   onEventClick,
   onEventDrop,
+  bookingWeekColors,
 }) {
   const timeSlots = useMemo(() => {
     const slots = [];
@@ -253,6 +254,7 @@ export default function TimeGridView({
                       style={horizontalStyle}
                       onClick={onEventClick}
                       draggable={e.source === "activity"}
+                      bookingWeekColors={bookingWeekColors}
                       onDragStart={
                         e.source === "activity"
                           ? (evt) => {
