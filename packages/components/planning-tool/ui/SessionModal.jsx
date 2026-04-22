@@ -94,6 +94,24 @@ export default function SessionModal({
               <option value="REMOTE">Distans</option>
             </select>
           </div>
+          <label>
+            <input
+              type="checkbox"
+              name="requestChange"
+              checked={formData?.requestChange ?? false}
+              onChange={onChange}
+            />
+            Skicka förfrågan till konsult
+          </label>
+          <label>
+            Fråga till konsult
+            <textarea
+              name="requestComment"
+              value={formData?.requestComment ?? ""}
+              onChange={onChange}
+              placeholder="Jag ser att du har en bokning här – finns det möjlighet att justera så att du kan ta detta pass?"
+            />
+          </label>
 
           <div className="scheduler-modal-actions">
             <button

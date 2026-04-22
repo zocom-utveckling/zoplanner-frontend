@@ -1,8 +1,17 @@
 import "./index.css";
 import { useCustomers, useCurrentActor } from "@zoplanner/app-hooks";
 import { useState, useEffect } from "react";
+import { createPlanningOrder } from "@zoplanner/admin";
 
-export function CustomerRegistry({ user }) {
+const emptyOrder = {
+  courseName: "",
+  startDate: "",
+  endDate: "",
+  totalHours: "",
+  className: "",
+};
+
+export function CustomerRegistry({ user, onStartPlanning }) {
   const {
     customers,
     loading,
@@ -11,14 +20,16 @@ export function CustomerRegistry({ user }) {
     selectedCustomer,
     setSelectedCustomerId,
   } = useCustomers();
+
   const { managerId, isLoadingActor } = useCurrentActor(user);
+
   const [newCustomerName, setNewCustomerName] = useState("");
   const [newCustomerCity, setNewCustomerCity] = useState("");
   const [isCreating, setIsCreating] = useState(false);
 
   const [search, setSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [openFilter, setOpenFilter] = useState(null); // "city" | "subject"
+  const [openFilter, setOpenFilter] = useState(null);
 
   const [filters, setFilters] = useState({
     mine: false,
@@ -26,63 +37,31 @@ export function CustomerRegistry({ user }) {
     subjects: [],
   });
 
-  // const myCustomers = customers.filter((c) => c.manager_id === managerId);
-  // TEMP: backend returns managerId = 0 for all customers
-  // TEMP: subject data does not exist in backend yet
-  const uniqueSubjects = [];
+  const [orders, setOrders] = useState([]);
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  const [newOrder, setNewOrder] = useState(emptyOrder);
 
   const uniqueCities = [
     ...new Set(customers.map((c) => c.city).filter(Boolean)),
   ];
 
   useEffect(() => {
-    const handleClickOutside = () => {
-      setOpenFilter(null);
-    };
-
+    const handleClickOutside = () => setOpenFilter(null);
     document.addEventListener("click", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  const toggleMultiFilter = (key, value) => {
-    setFilters((prev) => {
-      const exists = prev[key].includes(value);
-
-      return {
-        ...prev,
-        [key]: exists
-          ? prev[key].filter((v) => v !== value)
-          : [...prev[key], value],
-      };
-    });
-  };
-
-  const toggleMine = () => {
-    setFilters((prev) => ({
-      ...prev,
-      mine: !prev.mine,
-    }));
-  };
-
-  const resetFilters = () => {
-    setFilters({
-      mine: false,
-      cities: [],
-      subjects: [],
-    });
-  };
+  useEffect(() => {
+    setNewOrder(emptyOrder);
+    setIsCreatingOrder(false);
+  }, [selectedCustomer?.id]);
 
   const filteredCustomers = customers
     .filter((c) =>
       (c.name || "").toLowerCase().startsWith(search.trim().toLowerCase()),
     )
     .filter((c) => {
-      if (filters.mine) {
-        return c.managerId === managerId;
-      }
+      if (filters.mine) return c.managerId === managerId;
       return true;
     })
     .filter((c) => {
@@ -93,140 +72,61 @@ export function CustomerRegistry({ user }) {
     });
 
   const handleCreateCustomer = async () => {
-    if (!managerId) {
-      console.error("Saknar managerId");
+    if (!managerId) return;
+
+    await createCustomer({
+      name: newCustomerName,
+      city: newCustomerCity,
+      managerId,
+    });
+
+    setNewCustomerName("");
+    setNewCustomerCity("");
+  };
+
+  const handleCreateOrder = async () => {
+    if (!selectedCustomer) return;
+
+    if (
+      !newOrder.courseName ||
+      !newOrder.startDate ||
+      !newOrder.endDate ||
+      !newOrder.className ||
+      !newOrder.totalHours
+    ) {
+      alert("Fyll i kursnamn, klass, datum och antal timmar.");
       return;
     }
+
     try {
-      console.log("payload", {
-        name: newCustomerName,
-        city: newCustomerCity,
-        managerId,
+      const order = await createPlanningOrder({
+        customerId: selectedCustomer.id,
+        customerName: selectedCustomer.name,
+        className: newOrder.className,
+        courseName: newOrder.courseName,
+        startDate: newOrder.startDate,
+        endDate: newOrder.endDate,
+        totalHours: newOrder.totalHours,
       });
-      await createCustomer({
-        name: newCustomerName,
-        city: newCustomerCity,
-        managerId,
-      });
-      setNewCustomerName("");
-      setNewCustomerCity("");
-    } catch (err) {
-      console.error(err);
+
+      setOrders((prev) => [...prev, order]);
+      setNewOrder(emptyOrder);
+      setIsCreatingOrder(false);
+    } catch (error) {
+      console.error("❌ Failed to create planning order:", error);
+      setNewOrder(emptyOrder);
+      setIsCreatingOrder(false);
+      alert("Kunde inte skapa beställning.");
     }
   };
 
   if (loading || isLoadingActor) return <p>Laddar kunder...</p>;
+
   return (
     <div className="customer-registry">
       <div className="customer-registry__header">
         <h1>Kunder</h1>
         <button onClick={() => setIsCreating(true)}>+ Ny kund</button>
-      </div>
-      <button onClick={() => setShowFilters((prev) => !prev)}>Filtrera</button>
-
-      {showFilters && (
-        <div className="customer-registry__filters">
-          <span onClick={toggleMine} className={filters.mine ? "active" : ""}>
-            Mina
-          </span>
-
-          <span
-            onClick={resetFilters}
-            className={
-              !filters.mine &&
-              filters.cities.length === 0 &&
-              filters.subjects.length === 0
-                ? "active"
-                : ""
-            }
-          >
-            Alla
-          </span>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpenFilter(openFilter === "cities" ? null : "cities");
-            }}
-          >
-            Stad
-          </button>
-
-          {openFilter === "cities" && (
-            <div
-              className="customer-registry__dropdown"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {uniqueCities.map((city) => (
-                <div
-                  key={city}
-                  onClick={() => toggleMultiFilter("cities", city)}
-                  className={filters.cities.includes(city) ? "active" : ""}
-                >
-                  {city}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* SUBJECT FILTER (future) */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpenFilter(openFilter === "subjects" ? null : "subjects");
-            }}
-          >
-            Ämnesområde
-          </button>
-
-          {openFilter === "subjects" && (
-            <div className="customer-registry__dropdown">
-              {uniqueSubjects.length === 0 ? (
-                <p>Kommer från backend senare</p>
-              ) : (
-                uniqueSubjects.map((subject) => (
-                  <div
-                    key={subject}
-                    onClick={() => toggleMultiFilter("subjects", subject)}
-                    className={
-                      filters.subjects.includes(subject) ? "active" : ""
-                    }
-                  >
-                    {subject}
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="customer-registry__active-filters">
-        {filters.mine && (
-          <span className="chip" onClick={toggleMine}>
-            Mina ✕
-          </span>
-        )}
-
-        {filters.cities.map((city) => (
-          <span
-            key={city}
-            className="chip"
-            onClick={() => toggleMultiFilter("cities", city)}
-          >
-            {city} ✕
-          </span>
-        ))}
-
-        {filters.subjects.map((subject) => (
-          <span
-            key={subject}
-            className="chip"
-            onClick={() => toggleMultiFilter("subjects", subject)}
-          >
-            {subject} ✕
-          </span>
-        ))}
       </div>
 
       <input
@@ -261,60 +161,108 @@ export function CustomerRegistry({ user }) {
         </form>
       )}
 
-      <div className="customer-registry__list-container">
-        <ul className="customer-registry__list">
-          {filteredCustomers.length === 0 ? (
-            <li className="customer-registry__empty">
-              {customers.length === 0
-                ? "Inga kunder ännu. Klicka på + Ny kund för att lägga till."
-                : "Inga kunder matchar din sökning eller filter."}
-            </li>
-          ) : (
-            filteredCustomers.map((c) => (
-              <li
-                key={c.id}
-                onClick={() => setSelectedCustomerId(c.id)}
-                style={{ cursor: "pointer" }}
-                className="customer-registry__item"
-              >
-                <span>
-                  {c.name} - {c.city}
-                </span>
-                <div className="customer-registry__actions">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const confirmed = window.confirm(
-                        `Är du säker på att du vill ta bort ${c.name}?`,
-                      );
-
-                      if (confirmed) {
-                        removeCustomer(c.id);
-                      }
-                    }}
-                  >
-                    Ta bort
-                  </button>
-                </div>
-              </li>
-            ))
-          )}
-        </ul>
-      </div>
+      <ul className="customer-registry__list">
+        {filteredCustomers.map((c) => (
+          <li
+            key={c.id}
+            onClick={() => setSelectedCustomerId(c.id)}
+            className="customer-registry__item"
+          >
+            {c.name} - {c.city}
+          </li>
+        ))}
+      </ul>
 
       {selectedCustomer && (
         <div className="customer-registry__detail">
           <h2>{selectedCustomer.name}</h2>
           <p>Stad: {selectedCustomer.city}</p>
 
-          <h3>Kurser</h3>
-          <p>(kommer snart)</p>
+          <h3>Beställningar</h3>
 
-          <h3>Konsulter</h3>
-          <p>(kommer snart)</p>
+          <button onClick={() => setIsCreatingOrder(true)}>
+            + Ny beställning
+          </button>
 
-          <h3>Kontakt</h3>
-          <p>(kommer snart)</p>
+          {isCreatingOrder && (
+            <div className="customer-registry__order-form">
+              <input
+                placeholder="Kursnamn"
+                value={newOrder.courseName}
+                onChange={(e) =>
+                  setNewOrder((p) => ({
+                    ...p,
+                    courseName: e.target.value,
+                  }))
+                }
+              />
+              <input
+                type="date"
+                value={newOrder.startDate}
+                onChange={(e) =>
+                  setNewOrder((p) => ({
+                    ...p,
+                    startDate: e.target.value,
+                  }))
+                }
+              />
+              <input
+                type="date"
+                value={newOrder.endDate}
+                onChange={(e) =>
+                  setNewOrder((p) => ({
+                    ...p,
+                    endDate: e.target.value,
+                  }))
+                }
+              />
+              <input
+                placeholder="Antal timmar"
+                value={newOrder.totalHours}
+                onChange={(e) =>
+                  setNewOrder((p) => ({
+                    ...p,
+                    totalHours: e.target.value,
+                  }))
+                }
+              />
+              <input
+                placeholder="Klass"
+                value={newOrder.className}
+                onChange={(e) =>
+                  setNewOrder((p) => ({
+                    ...p,
+                    className: e.target.value,
+                  }))
+                }
+              />
+
+              <button onClick={handleCreateOrder}>Spara beställning</button>
+            </div>
+          )}
+
+          <ul>
+            {orders
+              .filter((o) => o.customerId === selectedCustomer.id)
+              .map((o) => (
+                <li key={o.id}>
+                  <strong>{o.courseName}</strong>
+                  <br />
+                  {o.startDate} → {o.endDate}
+                  <br />
+                  {o.totalHours}h
+                  <br />
+                  <button
+                    onClick={() => {
+                      console.log("👉 Starta planering", o);
+                      onStartPlanning?.(o);
+                    }}
+                  >
+                    Planera
+                  </button>
+                </li>
+              ))}
+          </ul>
 
           <button onClick={() => setSelectedCustomerId(null)}>Stäng</button>
         </div>

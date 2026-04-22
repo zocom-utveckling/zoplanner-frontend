@@ -75,7 +75,6 @@ function toTimePart(value) {
   const minutes = String(date.getMinutes()).padStart(2, "0");
   return `${hours}:${minutes}`;
 }
-
 function toEventFromActivity(activity, fallbackEvent) {
   if (!activity) return fallbackEvent;
 
@@ -83,15 +82,27 @@ function toEventFromActivity(activity, fallbackEvent) {
     activity?.date && activity?.startTime
       ? toLocalDateTime(`${activity.date} ${activity.startTime}:00`)
       : null;
+
   const end =
     activity?.date && activity?.endTime
       ? toLocalDateTime(`${activity.date} ${activity.endTime}:00`)
       : null;
 
+  const baseTitle =
+    activity?.title ||
+    fallbackEvent?.title ||
+    "Aktivitet";
+
+  const cleanTitle = baseTitle.replace(/^Godkänd: |^Avböjd: /, "");
+
+  const isRequest =
+    typeof baseTitle === "string" &&
+    cleanTitle === "Förfrågan om ändring";
+
   return {
     ...fallbackEvent,
     id: activity?.id ?? fallbackEvent?.id,
-    title: activity?.title ?? fallbackEvent?.title,
+    title: baseTitle,
     subtitle: activity?.description ?? fallbackEvent?.subtitle,
     description: activity?.description ?? fallbackEvent?.description,
     start: start || fallbackEvent?.start,
@@ -100,6 +111,7 @@ function toEventFromActivity(activity, fallbackEvent) {
     color: normalizeActivityColor(
       activity?.color ?? fallbackEvent?.color ?? DEFAULT_ACTIVITY_COLOR,
     ),
+    isRequest,
   };
 }
 
