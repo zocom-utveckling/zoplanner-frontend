@@ -319,7 +319,7 @@
 .consultant-registry {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 .consultant-registry__header {
@@ -328,7 +328,7 @@
   justify-content: flex-start;
   flex-wrap: wrap;
   gap: 14px;
-  padding: 8px 4px 10px;
+  padding: 10px 4px 12px;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
@@ -345,7 +345,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px 14px;
+  padding: 10px 15px;
   border: none;
   border-radius: 12px;
   background: linear-gradient(135deg, #4f7cff, #3f67df);
@@ -373,7 +373,7 @@
 
 @media (max-width: 768px) {
   .consultant-registry {
-    gap: 14px;
+    gap: 16px;
   }
 
   .consultant-registry__header {
