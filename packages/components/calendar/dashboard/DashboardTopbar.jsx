@@ -1,6 +1,15 @@
 import { memo } from "react";
 
-function DashboardTopbar({ title, view, setView, onGoToday, onPrev, onNext }) {
+function DashboardTopbar({
+  title,
+  view,
+  setView,
+  onGoToday,
+  onPrev,
+  onNext,
+  bookingWeekColors,
+  onToggleBookingWeekColors,
+}) {
   return (
     <div className="topbar topbar--dashboard">
       <div className="title-with-nav">
@@ -32,6 +41,14 @@ function DashboardTopbar({ title, view, setView, onGoToday, onPrev, onNext }) {
             Månadsvy
           </button>
         </div>
+
+        <button
+          className={`small-btn ${bookingWeekColors ? "small-btn--active" : ""}`}
+          onClick={onToggleBookingWeekColors}
+          title="Visa bokningar i veckofärger"
+        >
+          Veckofärger
+        </button>
 
         <input className="search" placeholder="Sök..." />
       </div>

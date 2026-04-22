@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./DashboardScheduler.css";
 import DashboardTopbar from "./DashboardTopbar";
 import DashboardCalendarContent from "./DashboardCalendarContent";
@@ -11,6 +12,8 @@ import useSchedulerFilters from "../core/hooks/useSchedulerFilters";
 import "../core/index.css";
 
 export function DashboardScheduler({ user }) {
+  const [bookingWeekColors, setBookingWeekColors] = useState(false);
+
   const {
     view,
     setView,
@@ -103,6 +106,8 @@ export function DashboardScheduler({ user }) {
         onGoToday={goToday}
         onPrev={goPrev}
         onNext={goNext}
+        bookingWeekColors={bookingWeekColors}
+        onToggleBookingWeekColors={() => setBookingWeekColors((v) => !v)}
       />
 
       <DashboardCalendarContent
@@ -115,6 +120,7 @@ export function DashboardScheduler({ user }) {
         onEventClick={handleEventClick}
         onDayClick={handleOpenActivityModal}
         onEventDrop={handleEventDrop}
+        bookingWeekColors={bookingWeekColors}
       />
 
       <ActivityModal

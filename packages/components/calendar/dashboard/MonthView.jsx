@@ -6,7 +6,10 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
-import { getDashboardEventColorVars } from "../core/utils/eventColors";
+import {
+  getDashboardEventColorVars,
+  getBookingWeekdayColorVars,
+} from "../core/utils/eventColors";
 
 const MAX_VISIBLE = 3;
 
@@ -19,6 +22,7 @@ export default function MonthView({
   onEventDrop,
   showBookedPerson = false,
   deduplicateConsultantsPerDay = false,
+  bookingWeekColors = false,
 }) {
   const weekdays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
 
@@ -134,17 +138,22 @@ export default function MonthView({
                     e.end && !isSameDay(e.start, e.end),
                   );
                   const isActivityEvent = e?.source === "activity";
+                  const isBookingColored =
+                    !isActivityEvent && bookingWeekColors && e?.start;
                   const pillClass = [
                     "month-event-pill",
-                    isActivityEvent ? "month-event-pill--activity" : "",
-                    !isActivityEvent ? "month-event-pill--non-activity" : "",
+                    isActivityEvent || isBookingColored
+                      ? "month-event-pill--activity"
+                      : "month-event-pill--non-activity",
                     isMultiDay ? "is-start" : "is-single",
                   ]
                     .filter(Boolean)
                     .join(" ");
                   const activityColorStyle = isActivityEvent
                     ? getDashboardEventColorVars(e?.color)
-                    : {};
+                    : isBookingColored
+                      ? getBookingWeekdayColorVars(e.start)
+                      : {};
 
                   return (
                     <div
@@ -193,6 +202,3 @@ export default function MonthView({
     </div>
   );
 }
-
-
-

@@ -1,4 +1,7 @@
-import { getDashboardEventColorVars } from "../core/utils/eventColors";
+import {
+  getDashboardEventColorVars,
+  getBookingWeekdayColorVars,
+} from "../core/utils/eventColors";
 
 export default function EventBlock({
   event,
@@ -8,6 +11,7 @@ export default function EventBlock({
   onClick,
   draggable,
   onDragStart,
+  bookingWeekColors,
 }) {
   const cardHeight = Number(height) || 0;
   const isCompactEvent = cardHeight <= 32;
@@ -27,13 +31,17 @@ export default function EventBlock({
       ? "event-block--medium"
       : "event-block--roomy";
   const isActivityEvent = event?.source === "activity";
+  const isBookingColored =
+    !isActivityEvent && bookingWeekColors && event?.start;
   const activityColorStyle = isActivityEvent
     ? getDashboardEventColorVars(event?.color)
-    : {};
+    : isBookingColored
+      ? getBookingWeekdayColorVars(event.start)
+      : {};
 
   return (
     <div
-      className={`event-block ${sizeClass} ${isActivityEvent ? "event-block--activity" : ""} ${isShortDurationEvent ? "event-block--short-duration" : ""}`}
+      className={`event-block ${sizeClass} ${isActivityEvent || isBookingColored ? "event-block--activity" : ""} ${isShortDurationEvent ? "event-block--short-duration" : ""}`}
       style={{
         top,
         height,

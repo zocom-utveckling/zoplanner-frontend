@@ -86,6 +86,16 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
+.small-btn--active {
+  background: #1f2a44;
+  color: #ffffff;
+  box-shadow: 0 1px 4px rgba(31, 42, 68, 0.25);
+}
+
+.small-btn--active:hover {
+  background: #263450;
+}
+
 .search {
   min-width: 280px;
   padding: 10px 12px;
@@ -238,7 +248,7 @@
 
 .event-block:not(.event-block--activity) {
   border: 1.5px solid #b0bac8;
-  border-left: 5px solid #1f2a44;
+  border-left: 5px solid #949191;
   border-radius: 14px;
   background: #f0f4fa;
   box-shadow:

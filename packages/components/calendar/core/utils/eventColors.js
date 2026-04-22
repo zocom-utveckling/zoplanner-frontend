@@ -56,3 +56,30 @@ export function getAllSchedulesEventColorVars(colorKey) {
     "--event-bg": tokens.background,
   };
 }
+
+// Weekday colors (Mon=0 … Sun=6), matching the week-color palette in the UI
+const WEEKDAY_COLOR_MAP = [
+  { accent: "#5cb85c", background: "#d9f0d9" }, // Måndag – grön
+  { accent: "#4faabd", background: "#cce8f3" }, // Tisdag – ljusblå
+  { accent: "#aaaaaa", background: "#f5f5f5" }, // Onsdag – neutral
+  { accent: "#c0924c", background: "#eddfc5" }, // Torsdag – brun/tan
+  { accent: "#c0c020", background: "#f4f1b0" }, // Fredag – gul
+  { accent: "#9070cc", background: "#e2d8f5" }, // Lördag – lavendel
+  { accent: "#cc5060", background: "#f5d5d8" }, // Söndag – rosa
+];
+
+/**
+ * Returns CSS variable object for a booking based on its day of week.
+ * @param {Date|string} date - the event's start date
+ */
+export function getBookingWeekdayColorVars(date) {
+  const d = date instanceof Date ? date : new Date(date);
+  // JS getDay(): 0=Sunday … 6=Saturday → convert to Mon=0 … Sun=6
+  const jsDay = d.getDay();
+  const idx = jsDay === 0 ? 6 : jsDay - 1;
+  const tokens = WEEKDAY_COLOR_MAP[idx];
+  return {
+    "--event-card-accent": tokens.accent,
+    "--event-card-bg": tokens.background,
+  };
+}
