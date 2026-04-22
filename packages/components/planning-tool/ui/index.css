@@ -274,8 +274,93 @@
   color: #666;
   font-size: 13px;
 }
+.planner-month-event-pill--consultant-request {
+  background-color: #facc15; /* gul */
+  color: #000;
+  border: 2px solid #f59e0b;
+}
 
+.planner-month-event-pill--consultant-request .planner-month-event-time {
+  font-weight: 600;
+}
 
+.planner-month-event-pill--consultant-request .planner-month-event-title {
+  font-weight: 600;
+}
+.planner-month-event-pill--consultant-request {
+  background: #fde68a;
+}
+
+.planner-month-event-pill--consultant-request-accepted {
+  background: #86efac;
+}
+
+.planner-month-event-pill--consultant-request-declined {
+  background: #fca5a5;
+}
+/* =========================================================
+   2. REQUEST MODAL  (RequestActivityModal.jsx)
+   ========================================================= */
+
+.request-modal {
+  width: min(480px, 100%);
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.request-modal__title {
+  margin: 0 0 12px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.request-modal__text {
+  margin: 0 0 16px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.request-modal__time {
+  margin: 0 0 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.request-modal__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.request-modal__button {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.request-modal__button--accept {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.request-modal__button--decline {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.request-modal__button--close {
+  background: #e2e8f0;
+  color: #334155;
+}
 /* =========================================================
    📝 3. COURSE SETUP FORM (CourseSetupForm.jsx)
    ========================================================= */
@@ -693,4 +778,34 @@
 
 .consultant-match-panel__card--selected .consultant-match-panel__select {
   background: #1d4ed8;
+}
+.consultant-match-panel__warning {
+  padding: 12px;
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+  background: #fffbeb;
+}
+
+.consultant-match-panel__warning-text {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.consultant-match-panel__warning-list {
+  margin: 0 0 12px 18px;
+  padding: 0;
+  color: #92400e;
+  font-size: 14px;
+}
+
+.consultant-match-panel__complete {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #f59e0b;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
 }

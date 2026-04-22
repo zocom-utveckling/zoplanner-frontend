@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./DashboardScheduler.css";
 import DashboardTopbar from "./DashboardTopbar";
 import DashboardCalendarContent from "./DashboardCalendarContent";
@@ -9,6 +10,7 @@ import useEventDetailsModal from "../core/hooks/useEventDetailsModal";
 import useSchedulerEvents from "../core/hooks/useSchedulerEvents";
 import useSchedulerFilters from "../core/hooks/useSchedulerFilters";
 import "../core/index.css";
+import RequestActivityModal from "@zoplanner/planning-tool/ui/RequestActivityModal";
 
 export function DashboardScheduler({ user }) {
   const {
@@ -55,7 +57,7 @@ export function DashboardScheduler({ user }) {
     onDeleteEvent: removeEvent,
     onUpdateEvent: updateEvent,
   });
-
+  const [selectedRequest, setSelectedRequest] = useState(null);
   function isAddButtonActivity(eventItem) {
     const hasDatabaseId = Number.isFinite(Number(eventItem?.id));
 
@@ -75,6 +77,13 @@ export function DashboardScheduler({ user }) {
   }
 
   function handleEventClick(eventItem) {
+    console.log("CLICKED EVENT:", eventItem);
+    if (eventItem.isRequest) {
+      setSelectedRequest(eventItem);
+      console.log("SETTING selectedRequest");
+      return;
+    }
+
     if (isAddButtonActivity(eventItem)) {
       handleOpenActivityModalForEvent(eventItem);
       return;
@@ -92,7 +101,7 @@ export function DashboardScheduler({ user }) {
   function handleEditEvent() {
     handleCloseEventModal();
   }
-
+  console.log("selectedRequest:", selectedRequest);
   return (
     <main className="main">
       <DashboardTopbar
@@ -134,6 +143,24 @@ export function DashboardScheduler({ user }) {
         onEdit={handleEditEvent}
         onDelete={handleDeleteEvent}
       />
+      {selectedRequest && (
+        <div
+          className="scheduler-modal-overlay"
+          onClick={() => setSelectedRequest(null)}
+        >
+          <RequestActivityModal
+            activity={selectedRequest}
+            onClose={() => setSelectedRequest(null)}
+            onUpdate={(id, newTitle) => {
+              updateEvent({
+                ...selectedRequest,
+                id,
+                title: newTitle,
+              });
+            }}
+          />
+        </div>
+      )}
     </main>
   );
 }

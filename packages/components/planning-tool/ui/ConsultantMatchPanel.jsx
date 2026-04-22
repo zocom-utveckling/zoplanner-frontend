@@ -8,6 +8,8 @@ export default function ConsultantMatchPanel({
   onSelectConsultant,
   onBack,
   selectedConsultantId,
+  missingFinalInfo = [],
+  onCompleteMissingInfo,
 }) {
   const [subjectFilter, setSubjectFilter] = useState("");
   const [includeConflicts, setIncludeConflicts] = useState(false);
@@ -68,7 +70,27 @@ export default function ConsultantMatchPanel({
           </button>
         )}
       </div>
+      {missingFinalInfo.length > 0 && (
+        <div className="consultant-match-panel__warning">
+          <p className="consultant-match-panel__warning-text">
+            Du måste komplettera följande innan du kan spara slutligt:
+          </p>
 
+          <ul className="consultant-match-panel__warning-list">
+            {missingFinalInfo.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+
+          <button
+            type="button"
+            className="consultant-match-panel__complete"
+            onClick={onCompleteMissingInfo}
+          >
+            Fyll i uppgifter
+          </button>
+        </div>
+      )}
       <div className="consultant-match-panel__filters">
         <div className="consultant-match-panel__field">
           <label htmlFor="consultant-subject">Ämnesområde</label>
