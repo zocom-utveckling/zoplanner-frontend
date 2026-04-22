@@ -49,7 +49,7 @@ export function ConsultantRegistry({ user }) {
           onClick={handleOpenInvite}
           className="consultant-registry__add-button"
         >
-          Bjud in ny konsult
+          + Bjud in konsult
         </button>
       </div>
       <AllSchedulesScheduler user={user} />
