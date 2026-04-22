@@ -86,6 +86,14 @@ export default function MonthView({
             0,
             displayDayEvents.length - MAX_VISIBLE,
           );
+          const stackedCount = hiddenCount === 0 ? visibleEvents.length : 0;
+          const monthEventsClassName = [
+            "month-events",
+            stackedCount === 1 ? "month-events--single" : "",
+            stackedCount === 2 ? "month-events--double" : "",
+          ]
+            .filter(Boolean)
+            .join(" ");
 
           return (
             <div
@@ -120,7 +128,7 @@ export default function MonthView({
               }}
             >
               <div className="month-cell-header">{format(d, "d")}</div>
-              <div className="month-events">
+              <div className={monthEventsClassName}>
                 {visibleEvents.map((e) => {
                   const isMultiDay = Boolean(
                     e.end && !isSameDay(e.start, e.end),
@@ -185,3 +193,6 @@ export default function MonthView({
     </div>
   );
 }
+
+
+

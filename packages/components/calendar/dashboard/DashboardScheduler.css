@@ -237,12 +237,12 @@
 }
 
 .event-block:not(.event-block--activity) {
-  border: 1.5px solid #c8b89a;
-  border-left: 5px solid #b09070;
+  border: 1.5px solid #b0bac8;
+  border-left: 5px solid #1f2a44;
   border-radius: 14px;
-  background: #fffdf9;
+  background: #f0f4fa;
   box-shadow:
-    0 2px 8px rgba(80, 60, 30, 0.07),
+    0 2px 8px rgba(31, 42, 68, 0.08),
     inset 0 0 0 1px rgba(255, 255, 255, 0.7);
 }
 
@@ -374,6 +374,8 @@
 }
 
 .month-cell {
+  display: flex;
+  flex-direction: column;
   padding: 10px;
   border-right: 1px solid var(--border-subtle);
   border-bottom: 1px solid var(--border-subtle);
@@ -389,12 +391,32 @@
 
 .month-events {
   display: grid;
+  flex: 1;
+  min-height: 0;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, auto);
   gap: 6px;
   margin-right: -10px;
   margin-left: -10px;
   align-content: start;
+}
+
+.month-events--single {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+}
+
+.month-events--double {
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(2, auto);
+}
+
+.month-events--single .month-event-pill,
+.month-events--double .month-event-pill {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 0;
 }
 
 .month-cell--out-of-month {
@@ -450,14 +472,14 @@
 }
 
 .month-event-pill--non-activity {
-  border: 1.5px solid #c8b89a;
-  border-left: 5px solid #b09070;
+  border: 1.5px solid #b0bac8;
+  border-left: 5px solid #1f2a44;
   border-radius: 14px;
   color: var(--event-fg);
   box-shadow:
-    0 1px 4px rgba(80, 60, 30, 0.07),
+    0 1px 4px rgba(31, 42, 68, 0.08),
     inset 0 0 0 1px rgba(255, 255, 255, 0.7);
-  background: #fffdf9;
+  background: #f0f4fa;
 }
 
 .month-event-pill--non-activity.is-start {
