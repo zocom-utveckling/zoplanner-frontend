@@ -245,6 +245,7 @@
   border: none;
   padding: 10px 12px;
   border-right: 1px solid var(--border-subtle);
+  position: relative;
   text-align: center;
   font-size: 14px;
   font-weight: 600;
@@ -252,6 +253,26 @@
   background: var(--surface);
   cursor: pointer;
   transition: background-color 0.15s ease;
+}
+
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(1) {
+  background: #94cf4a;
+}
+
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(2) {
+  background: #8cc0d4;
+}
+
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(3) {
+  background: #d9d9d9;
+}
+
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(4) {
+  background: #c7935d;
+}
+
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(5) {
+  background: #eceb67;
 }
 
 .all-schedules-weekdays__item:last-child {
@@ -263,8 +284,43 @@
 }
 
 .all-schedules-weekdays__item--active {
-  color: var(--active-fg);
-  background: var(--active-bg);
+  z-index: 1;
+  color: #101c30;
+  font-weight: 800;
+  box-shadow:
+    inset 0 0 0 3px rgba(16, 28, 48, 0.45),
+    inset 0 -2px 0 rgba(16, 28, 48, 0.65);
+}
+
+.all-schedules-weekdays__item--active::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: #101c30;
+}
+
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(1):hover {
+  background: #88c244;
+}
+
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(2):hover {
+  background: #7bb3c9;
+}
+
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(3):hover {
+  background: #cfcfcf;
+}
+
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(4):hover {
+  background: #bb8751;
+}
+
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(5):hover {
+  background: #e4e15d;
 }
 
 .all-schedules-monthdays {
@@ -395,38 +451,60 @@
 
 .all-schedules-event {
   position: absolute;
-  top: 5px;
-  bottom: 5px;
+  top: 6px;
+  bottom: 6px;
   z-index: 1;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
-  padding: 6px 10px;
-  border: 1px solid var(--event-border);
-  border-radius: 10px;
-  background: var(--event-bg);
+  justify-content: flex-start;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid #a8b3c2;
+  border-radius: 8px;
+  background: #ffffff;
   text-align: left;
   cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.all-schedules-event--booking {
+  border: 1.5px solid #b0bac8;
+  border-left: 5px solid #949191;
+  border-radius: 14px;
+  background: #f0f4fa;
+  box-shadow:
+    0 2px 8px rgba(31, 42, 68, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.all-schedules-event--activity {
+  border-left: 6px solid var(--event-border, #2f7de1);
+  background: var(--event-bg, #d8e6f7);
 }
 
 .all-schedules-event__title {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 700;
-  color: var(--event-fg);
+  line-height: 1.25;
+  color: #233247;
 }
 
 .all-schedules-event__meta {
-  margin-top: 1px;
+  margin-top: 2px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 13px;
-  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  color: #4f6278;
 }
 
 .all-schedules-empty {

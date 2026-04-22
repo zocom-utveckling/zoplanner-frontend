@@ -261,7 +261,11 @@ export default function AllSchedulesView({
                       <button
                         key={eventItem.id}
                         type="button"
-                        className="all-schedules-event"
+                        className={`all-schedules-event ${
+                          eventItem?.source === "activity"
+                            ? "all-schedules-event--activity"
+                            : "all-schedules-event--booking"
+                        }`}
                         style={{
                           left: `${left}%`,
                           width: `${width}%`,
