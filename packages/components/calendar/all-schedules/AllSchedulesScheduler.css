@@ -408,198 +408,111 @@
 }
 
 .all-schedules-weekdays {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
-  padding: 10px 10px 8px;
+  display: flex;
+  gap: 4px;
+  padding: 8px 10px 0;
   border-bottom: 1px solid rgba(15, 23, 42, 0.1);
   background: #f8fafd;
 }
 
 .all-schedules-weekdays > .all-schedules-weekdays__item {
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  padding: 12px 14px;
   position: relative;
-  text-align: center;
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-top: 3px solid transparent;
+  border-radius: 10px 10px 0 0;
+  background: #eef3f8;
+  color: #6b7280;
   font-size: 14px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: #1f2d3d;
-  background: #ffffff;
-  border-radius: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-align: center;
   cursor: pointer;
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.15s ease;
+    background 0.18s ease,
+    color 0.18s ease;
 }
 
+/* Färgindikator via top-border per veckodag */
 .all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(1) {
-  background: linear-gradient(180deg, #eaf6d9, #deefc2);
+  border-top-color: #7fc464; /* måndag – grön */
 }
-
 .all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(2) {
-  background: linear-gradient(180deg, #e3f1f8, #d5e8f1);
+  border-top-color: #5aaddb; /* tisdag – blå */
 }
-
 .all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(3) {
-  background: linear-gradient(180deg, #f2f4f7, #e7ebf0);
+  border-top-color: #a8b5c2; /* onsdag – grå */
 }
-
 .all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(4) {
-  background: linear-gradient(180deg, #f4e8da, #ead8c2);
+  border-top-color: #c9916a; /* torsdag – brun */
 }
-
 .all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(5) {
-  background: linear-gradient(180deg, #f8f7d7, #f1efbc);
+  border-top-color: #d4b84a; /* fredag – gul */
 }
 
 .all-schedules-weekdays > .all-schedules-weekdays__item:hover {
-  border-color: rgba(15, 23, 42, 0.12);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-  transform: translateY(-1px);
+  background: #e2eaf2;
+  color: #1f2d3d;
 }
 
 .all-schedules-weekdays
   > .all-schedules-weekdays__item.all-schedules-weekdays__item--active {
-  z-index: 1;
-  color: #0f1a2a;
-  font-weight: 800;
-  border-color: rgba(16, 28, 48, 0.22);
-  box-shadow:
-    0 10px 20px rgba(16, 28, 48, 0.12),
-    inset 0 0 0 2px rgba(16, 28, 48, 0.32);
+  background: #dfe6ee;
+  color: #111827;
+  font-weight: 600;
 }
 
 .all-schedules-weekdays
   > .all-schedules-weekdays__item.all-schedules-weekdays__item--active::after {
-  content: "";
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 6px;
-  height: 4px;
-  border-radius: 999px;
-  background: #101c30;
-}
-
-.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(1):hover {
-  background: linear-gradient(180deg, #e2f2ca, #d5e9b4);
-}
-
-.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(2):hover {
-  background: linear-gradient(180deg, #dcecf5, #cde2ec);
-}
-
-.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(3):hover {
-  background: linear-gradient(180deg, #eceff3, #e1e6ec);
-}
-
-.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(4):hover {
-  background: linear-gradient(180deg, #f0e1d0, #e5d0b8);
-}
-
-.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(5):hover {
-  background: linear-gradient(180deg, #f4f2c5, #ece8a8);
+  display: none;
 }
 
 .all-schedules-monthdays {
   display: flex;
-  padding: 0;
+  padding: 8px 10px 0;
   border-bottom: 1px solid var(--all-schedules-grid-line);
   overflow-x: auto;
-  background: var(--surface);
+  background: #f8fafd;
+  gap: 4px;
 }
 
 .all-schedules-monthdays__item {
   flex: 0 0 auto;
+  position: relative;
   padding: 10px 14px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-right: 1px solid var(--all-schedules-grid-line-soft);
-  border-radius: 10px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: #1f2d3d;
-  background: #ffffff;
+  border: none;
+  border-top: 3px solid transparent;
+  border-radius: 10px 10px 0 0;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #6b7280;
+  background: #eef3f8;
+  cursor: pointer;
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.15s ease;
+    background 0.18s ease,
+    color 0.18s ease;
 }
 
 .all-schedules-monthdays__item:hover {
-  border-color: rgba(15, 23, 42, 0.12);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-  transform: translateY(-1px);
+  background: #e2eaf2;
+  color: #1f2d3d;
 }
 
-/* måndag */
-.all-schedules-monthdays__item.weekday-1 {
-  background: linear-gradient(180deg, #eaf6d9, #deefc2);
-}
-/* tisdag */
-.all-schedules-monthdays__item.weekday-2 {
-  background: linear-gradient(180deg, #e3f1f8, #d5e8f1);
-}
-/* onsdag */
-.all-schedules-monthdays__item.weekday-3 {
-  background: linear-gradient(180deg, #f2f4f7, #e7ebf0);
-}
-/* torsdag */
-.all-schedules-monthdays__item.weekday-4 {
-  background: linear-gradient(180deg, #f4e8da, #ead8c2);
-}
-/* fredag  */
-.all-schedules-monthdays__item.weekday-5 {
-  background: linear-gradient(180deg, #f8f7d7, #f1efbc);
-}
-/* lördag */
-.all-schedules-monthdays__item.weekday-6 {
-  background: linear-gradient(180deg, #f7dff0, #efcbe3);
-}
-/* söndag */
-.all-schedules-monthdays__item.weekday-0 {
-  background: linear-gradient(180deg, #ffdede, #ffc4c4);
-}
-
-/* måndag */
-.all-schedules-monthdays__item.weekday-1:hover {
-  background: linear-gradient(180deg, #e2f2ca, #d5e9b4);
-}
-/* tisdag */
-.all-schedules-monthdays__item.weekday-2:hover {
-  background: linear-gradient(180deg, #dcecf5, #cde2ec);
-}
-/* onsdag */
-.all-schedules-monthdays__item.weekday-3:hover {
-  background: linear-gradient(180deg, #eceff3, #e1e6ec);
-}
-/* torsdag */
-.all-schedules-monthdays__item.weekday-4:hover {
-  background: linear-gradient(180deg, #f0e1d0, #e5d0b8);
-}
-/* fredag  */
-.all-schedules-monthdays__item.weekday-5:hover {
-  background: linear-gradient(180deg, #f4f2c5, #ece8a8);
-}
-/* lördag */
-.all-schedules-monthdays__item.weekday-6:hover {
-  background: linear-gradient(180deg, #f4d5ea, #ebbdd9);
-}
-/* söndag */
-.all-schedules-monthdays__item.weekday-0:hover {
-  background: linear-gradient(180deg, #ffcfcf, #ffb6b6);
-}
+/* Färgindikator via top-border per veckodag */
+.all-schedules-monthdays__item.weekday-1 { border-top-color: #7fc464; } /* måndag – grön */
+.all-schedules-monthdays__item.weekday-2 { border-top-color: #5aaddb; } /* tisdag – blå */
+.all-schedules-monthdays__item.weekday-3 { border-top-color: #a8b5c2; } /* onsdag – grå */
+.all-schedules-monthdays__item.weekday-4 { border-top-color: #c9916a; } /* torsdag – brun */
+.all-schedules-monthdays__item.weekday-5 { border-top-color: #d4b84a; } /* fredag – gul */
+.all-schedules-monthdays__item.weekday-6 { border-top-color: #d48bbf; } /* lördag – rosa */
+.all-schedules-monthdays__item.weekday-0 { border-top-color: #d46a6a; } /* söndag – röd */
 
 .all-schedules-monthdays
   > .all-schedules-monthdays__item.all-schedules-weekdays__item--active {
-  color: #0f1a2a;
-  border-color: rgba(16, 28, 48, 0.22);
-  box-shadow:
-    0 10px 20px rgba(16, 28, 48, 0.12),
-    inset 0 0 0 2px rgba(16, 28, 48, 0.32);
+  background: #dfe6ee;
+  color: #111827;
+  font-weight: 600;
 }
 
 .all-schedules-board__viewport {
