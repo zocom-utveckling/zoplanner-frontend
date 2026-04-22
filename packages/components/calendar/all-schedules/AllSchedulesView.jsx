@@ -172,7 +172,7 @@ export default function AllSchedulesView({
               <button
                 key={day.toISOString()}
                 type="button"
-                className={`all-schedules-weekdays__item all-schedules-monthdays__item ${
+                className={`all-schedules-weekdays__item all-schedules-monthdays__item weekday-${day.getDay()} ${
                   focusDate && isSameDay(day, focusDate)
                     ? "all-schedules-weekdays__item--active"
                     : ""
