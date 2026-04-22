@@ -1,8 +1,17 @@
 import "./index.css";
 import { useCustomers, useCurrentActor } from "@zoplanner/app-hooks";
 import { useState, useEffect } from "react";
+import { createPlanningOrder } from "@zoplanner/admin";
 
-export function CustomerRegistry({ user }) {
+const emptyOrder = {
+  courseName: "",
+  startDate: "",
+  endDate: "",
+  totalHours: "",
+  className: "",
+};
+
+export function CustomerRegistry({ user, onStartPlanning }) {
   const {
     customers,
     loading,
@@ -28,17 +37,9 @@ export function CustomerRegistry({ user }) {
     subjects: [],
   });
 
-  // 🔥 NEW: Beställningar state (frontend only for now)
   const [orders, setOrders] = useState([]);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
-
-  const [newOrder, setNewOrder] = useState({
-    courseName: "",
-    startDate: "",
-    endDate: "",
-    totalHours: "",
-    className: "",
-  });
+  const [newOrder, setNewOrder] = useState(emptyOrder);
 
   const uniqueCities = [
     ...new Set(customers.map((c) => c.city).filter(Boolean)),
@@ -49,6 +50,11 @@ export function CustomerRegistry({ user }) {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    setNewOrder(emptyOrder);
+    setIsCreatingOrder(false);
+  }, [selectedCustomer?.id]);
 
   const filteredCustomers = customers
     .filter((c) =>
@@ -78,33 +84,40 @@ export function CustomerRegistry({ user }) {
     setNewCustomerCity("");
   };
 
-  // 🔥 NEW: skapa beställning
-  const handleCreateOrder = () => {
+  const handleCreateOrder = async () => {
     if (!selectedCustomer) return;
 
-    if (!newOrder.courseName || !newOrder.startDate || !newOrder.endDate) {
-      alert("Fyll i kursnamn och datum.");
+    if (
+      !newOrder.courseName ||
+      !newOrder.startDate ||
+      !newOrder.endDate ||
+      !newOrder.className ||
+      !newOrder.totalHours
+    ) {
+      alert("Fyll i kursnamn, klass, datum och antal timmar.");
       return;
     }
 
-    const order = {
-      id: Date.now(),
-      customerId: selectedCustomer.id,
-      ...newOrder,
-      status: "draft",
-    };
+    try {
+      const order = await createPlanningOrder({
+        customerId: selectedCustomer.id,
+        customerName: selectedCustomer.name,
+        className: newOrder.className,
+        courseName: newOrder.courseName,
+        startDate: newOrder.startDate,
+        endDate: newOrder.endDate,
+        totalHours: newOrder.totalHours,
+      });
 
-    setOrders((prev) => [...prev, order]);
-
-    setNewOrder({
-      courseName: "",
-      startDate: "",
-      endDate: "",
-      totalHours: "",
-      className: "",
-    });
-
-    setIsCreatingOrder(false);
+      setOrders((prev) => [...prev, order]);
+      setNewOrder(emptyOrder);
+      setIsCreatingOrder(false);
+    } catch (error) {
+      console.error("❌ Failed to create planning order:", error);
+      setNewOrder(emptyOrder);
+      setIsCreatingOrder(false);
+      alert("Kunde inte skapa beställning.");
+    }
   };
 
   if (loading || isLoadingActor) return <p>Laddar kunder...</p>;
@@ -160,13 +173,11 @@ export function CustomerRegistry({ user }) {
         ))}
       </ul>
 
-      {/* 🔥 CUSTOMER DETAIL */}
       {selectedCustomer && (
         <div className="customer-registry__detail">
           <h2>{selectedCustomer.name}</h2>
           <p>Stad: {selectedCustomer.city}</p>
 
-          {/* 🔥 BESTÄLLNINGAR */}
           <h3>Beställningar</h3>
 
           <button onClick={() => setIsCreatingOrder(true)}>
@@ -216,7 +227,7 @@ export function CustomerRegistry({ user }) {
                 }
               />
               <input
-                placeholder="Klass (valfri)"
+                placeholder="Klass"
                 value={newOrder.className}
                 onChange={(e) =>
                   setNewOrder((p) => ({
@@ -230,7 +241,6 @@ export function CustomerRegistry({ user }) {
             </div>
           )}
 
-          {/* 🔥 LISTA */}
           <ul>
             {orders
               .filter((o) => o.customerId === selectedCustomer.id)
@@ -245,7 +255,7 @@ export function CustomerRegistry({ user }) {
                   <button
                     onClick={() => {
                       console.log("👉 Starta planering", o);
-                      // här kopplar vi planner sen
+                      onStartPlanning?.(o);
                     }}
                   >
                     Planera

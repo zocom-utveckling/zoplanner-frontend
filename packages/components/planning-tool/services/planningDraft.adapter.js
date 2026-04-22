@@ -120,8 +120,10 @@ export function toPlanningDraftFromAssignment(assignment) {
     assignment?.client?.name ||
     "UTKAST – ange kund";
 
-  const totalHours = inferTotalHoursFromSessions(sessionsDraft);
-
+  const totalHours =
+  assignment?.totalHours != null
+    ? Number(assignment.totalHours)
+    : inferTotalHoursFromSessions(sessionsDraft);
   return toPlanningDraft({
     id: assignmentId,
     assignmentId,
