@@ -164,8 +164,20 @@
   height: 66px;
   width: auto;
   margin-bottom: 18px;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08));
-  animation: loginLogoIn 0.5s ease-out;
+  filter: drop-shadow(0 10px 18px rgba(52, 152, 219, 0.18))
+    drop-shadow(0 3px 8px rgba(15, 23, 42, 0.12));
+  transition:
+    transform 0.25s ease,
+    filter 0.25s ease;
+  animation:
+    loginLogoIn 0.5s ease-out,
+    loginLogoFloat 3.2s ease-in-out 0.6s infinite;
+}
+
+.login-logo:hover {
+  transform: translateY(-2px) scale(1.015);
+  filter: drop-shadow(0 14px 24px rgba(52, 152, 219, 0.24))
+    drop-shadow(0 5px 12px rgba(15, 23, 42, 0.14));
 }
 
 .login-page h2 {
@@ -212,11 +224,21 @@
 @keyframes loginLogoIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px) scale(0.985);
   }
   to {
     opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes loginLogoFloat {
+  0%,
+  100% {
     transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
   }
 }
 
@@ -239,5 +261,12 @@
   .login-footer {
     width: calc(100% - 32px);
     text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-logo {
+    animation: loginLogoIn 0.01ms linear;
+    transition: none;
   }
 }
