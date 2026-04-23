@@ -146,8 +146,12 @@ function LoginPage() {
     <>
       <div className="login-root">
         <dev.QuickDevRegisterEntry managers={managers} />
-        <div className="container">
-          <h1>ZoPlanner</h1>
+        <div className="login-page">
+          <img
+            src="/zoplanner-logo-navbar.png"
+            alt="ZoPlanner Logo"
+            className="login-logo"
+          />
           <form onSubmit={handleSubmit}>
             <h2>Logga in</h2>
             <div className="field">
@@ -184,6 +188,7 @@ function LoginPage() {
               <p>Registrering sker via inbjudan. Använd länken i mejlet.</p>
             </div>
           </form>
+          <p className="login-footer">ZoPlanner is a product of ZoCom</p>
         </div>
       </div>
     </>
