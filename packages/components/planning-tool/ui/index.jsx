@@ -4,6 +4,7 @@ import { useConsultantSchedule } from "../hooks/useConsultantSchedule";
 import { useSessionEditor } from "../hooks/useSessionEditor";
 import { useAssignmentPublishFlow } from "../hooks/useAssignmentPublishFlow";
 import { usePlannerEventClick } from "../hooks/usePlannerEventClick";
+import { useDraftRelationSync } from "../hooks/useDraftRelationSync";
 import PlannerPlanningPanel from "./PlannerPlanningPanel";
 import PlannerMatchingPanel from "./PlannerMatchingPanel";
 import {
@@ -64,6 +65,7 @@ export function PlannerWorkspace({
     consultantActivities,
     setConsultantActivities,
   });
+  const { isPreparingDraft, prepareDraftRelations } = useDraftRelationSync();
   const { isSaving, handleAssignConsultant, handlePublishDraft } =
     useAssignmentPublishFlow({
       managerId,
@@ -71,6 +73,24 @@ export function PlannerWorkspace({
       setActiveAssignment,
       setPlannerMode,
     });
+
+  async function handleSavePlanningDraft(draft) {
+    const preparedDraft = await prepareDraftRelations(
+      draft,
+      managerId,
+      courseDraft,
+    );
+
+    if (!preparedDraft) {
+      return;
+    }
+
+    setActiveAssignment(null);
+    setSelectedConsultant(null);
+    setCourseDraft(preparedDraft);
+    setShowScheduleEditor(false);
+    setIsEditingBasicInfo(false);
+  }
 
   useEffect(() => {
     if (!courseDraft) return;
@@ -198,10 +218,29 @@ export function PlannerWorkspace({
     activeAssignment?.sessions ?? courseDraft?.sessionsDraft ?? [],
   );
 
+  const isDraftValue = (value) => {
+    const normalized = String(value ?? "")
+      .trim()
+      .toUpperCase();
+    return !normalized || normalized.startsWith("UTKAST");
+  };
+
+  const isDraftCourse =
+    Boolean(courseDraft?.isDraftCourse) ||
+    isDraftValue(courseDraft?.courseName);
+  const isDraftCustomer =
+    Boolean(courseDraft?.isDraftCustomer) ||
+    Boolean(courseDraft?.isDraftCustomerEntity) ||
+    isDraftValue(courseDraft?.customerName);
+  const isDraftClass =
+    Boolean(courseDraft?.isDraftClass) ||
+    Boolean(courseDraft?.isDraftClassEntity) ||
+    isDraftValue(courseDraft?.className);
+
   const missingFinalInfo = [];
-  if (courseDraft?.isDraftCustomer) missingFinalInfo.push("kund");
-  if (courseDraft?.isDraftClass) missingFinalInfo.push("klass");
-  if (courseDraft?.isDraftCourse) missingFinalInfo.push("kursnamn");
+  if (isDraftCustomer) missingFinalInfo.push("kund");
+  if (isDraftClass) missingFinalInfo.push("klass");
+  if (isDraftCourse) missingFinalInfo.push("kursnamn");
 
   console.log("summaryAssignment", summaryAssignment);
   console.log("activeAssignment", activeAssignment);
@@ -230,8 +269,8 @@ export function PlannerWorkspace({
                 setPlannerMode={setPlannerMode}
                 setActiveAssignment={setActiveAssignment}
                 setSelectedConsultant={setSelectedConsultant}
-                setCourseDraft={setCourseDraft}
-                isSaving={isSaving}
+                onSaveDraft={handleSavePlanningDraft}
+                isSaving={isSaving || isPreparingDraft}
               />
             ) : (
               <PlannerMatchingPanel
