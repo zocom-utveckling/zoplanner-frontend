@@ -4,12 +4,7 @@ import {
   activityService,
   userService,
 } from "@zoplanner/api";
-
-function toArray(value) {
-  if (Array.isArray(value)) return value;
-  if (Array.isArray(value?.data)) return value.data;
-  return [];
-}
+import { toArray } from "../utils/array.helpers";
 
 function firstNonEmptyString(...values) {
   for (const value of values) {
