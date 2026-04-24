@@ -1,8 +1,40 @@
+.calendar-user-name-with-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  width: 100%;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+.calendar-user-name {
+  text-align: left;
+}
 .calendar-user-name {
   font-weight: 700;
   font-size: 1.6em;
   text-align: left;
-  margin-bottom: 8px;
+}
+.message-btn {
+  background: #2563eb;
+  color: #fff;
+  border: 1.5px solid #1742a0;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 500;
+  padding: 8px 22px;
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    box-shadow 0.18s;
+  box-shadow: 0 2px 6px rgba(30, 64, 175, 0.1);
+  margin-left: 10px;
+  outline: none;
+}
+.message-btn:hover,
+.message-btn:focus {
+  background: #1742a0;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.16);
 }
 
 .title-with-nav {
