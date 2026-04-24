@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { DarkModeButton } from "@zoplanner/dark-mode-button";
 import { ConfirmPopup } from "../../confirm-popup/ui";
 
-function Navbar({ user, activePage, setActivePage }) {
+function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
   const [openConfirm, setOpenConfirm] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
@@ -55,7 +55,13 @@ function Navbar({ user, activePage, setActivePage }) {
       )}
       <nav className="navbar">
         <div className="navbar-left">
-          <button className="logo" onClick={() => navigate(homeRoute)}>
+          <button
+            className="logo"
+            onClick={() => {
+              if (onResetCalendarUser) onResetCalendarUser();
+              navigate(homeRoute);
+            }}
+          >
             <img
               className="logo-image"
               src="/zoplanner-logo-navbar.png"
@@ -81,6 +87,7 @@ function Navbar({ user, activePage, setActivePage }) {
           <div className="routes">
             <button
               onClick={() => {
+                if (onResetCalendarUser) onResetCalendarUser();
                 navigate(`/dashboard/${user.id}`);
               }}
               className={activePage == "dashboard" ? "active" : ""}

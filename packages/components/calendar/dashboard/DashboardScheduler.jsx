@@ -12,7 +12,7 @@ import useSchedulerFilters from "../core/hooks/useSchedulerFilters";
 import "../core/index.css";
 import RequestActivityModal from "@zoplanner/planning-tool/ui/RequestActivityModal";
 
-export function DashboardScheduler({ user }) {
+export function DashboardScheduler({ user, calendarUser, managerUser }) {
   const [bookingWeekColors, setBookingWeekColors] = useState(false);
 
   const {
@@ -116,6 +116,8 @@ export function DashboardScheduler({ user }) {
         onNext={goNext}
         bookingWeekColors={bookingWeekColors}
         onToggleBookingWeekColors={() => setBookingWeekColors((v) => !v)}
+        calendarUser={calendarUser}
+        managerUser={managerUser}
       />
 
       <DashboardCalendarContent

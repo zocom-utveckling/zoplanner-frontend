@@ -5,7 +5,7 @@ import { ProfileCard } from "@zoplanner/profile-card";
 import { AddActivityButton } from "@zoplanner/add-activity-button";
 import { MonthCalendar } from "@zoplanner/month-calender-sidebar";
 
-function Sidebar({ user }) {
+function Sidebar({ user, onSelectCalendarUser }) {
   const roleValue =
     typeof user?.role === "string" ? user.role.toLowerCase() : "";
   const normalizedRoles = roleValue
@@ -234,13 +234,17 @@ function Sidebar({ user }) {
               <div className="sidebar-users__loading">Laddar användare...</div>
             ) : listedUsers.length ? (
               listedUsers.map((listedUser) => (
-                <UserProfile
+                <div
                   key={
                     listedUser?.id || listedUser?.username || listedUser?.name
                   }
-                  user={listedUser}
-                  variant="compact"
-                />
+                  style={{ cursor: "pointer" }}
+                  onClick={() =>
+                    onSelectCalendarUser && onSelectCalendarUser(listedUser)
+                  }
+                >
+                  <UserProfile user={listedUser} variant="compact" />
+                </div>
               ))
             ) : (
               <div className="sidebar-users__empty">

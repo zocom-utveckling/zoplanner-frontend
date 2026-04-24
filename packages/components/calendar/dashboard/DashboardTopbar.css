@@ -1,0 +1,12 @@
+.calendar-user-name {
+  font-weight: 700;
+  font-size: 1.6em;
+  text-align: left;
+  margin-bottom: 8px;
+}
+
+.title-with-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
