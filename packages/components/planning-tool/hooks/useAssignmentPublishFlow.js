@@ -2,8 +2,8 @@ import { useState } from "react";
 import { dev } from "@zoplanner/admin";
 import {
   assignmentService,
-  sessionService,
   courseService,
+  sessionService,
 } from "@zoplanner/api";
 import {
   removePlanningDraft,
@@ -71,14 +71,16 @@ export function useAssignmentPublishFlow({
       let resolvedCourseId = courseDraft.courseId ?? null;
 
       if (!resolvedCourseId) {
-        if (!courseDraft.classId) {
-          alert("Du måste ange en giltig klass innan du sparar.");
+        const resolvedClassId = courseDraft.classId ?? null;
+
+        if (!resolvedClassId) {
+          alert("Kunde inte hitta klass för planeringen. Öppna 'Visa upplägg' igen.");
           return;
         }
 
         try {
           const createdCourse = await courseService.create({
-            classId: courseDraft.classId,
+            classId: resolvedClassId,
             name: courseDraft.courseName,
             dateStart: courseDraft.startDate,
             dateEnd: courseDraft.endDate,
