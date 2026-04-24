@@ -23,6 +23,7 @@ function DashboardCalendarContent({
           onEventClick={onEventClick}
           onEventDrop={onEventDrop}
           bookingWeekColors={bookingWeekColors}
+          onDayClick={onDayClick}
         />
       ) : (
         <MonthView

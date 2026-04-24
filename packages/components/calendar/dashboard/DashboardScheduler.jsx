@@ -29,7 +29,7 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
   } = useSchedulerNavigation();
 
   const { events, loading, addEvent, updateEvent, removeEvent } =
-    useSchedulerEvents(user);
+    useSchedulerEvents(calendarUser || user);
 
   const { filteredEvents } = useSchedulerFilters(events, {
     defaultPeriod: "all",
