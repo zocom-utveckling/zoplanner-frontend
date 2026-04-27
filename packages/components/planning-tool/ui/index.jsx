@@ -143,15 +143,15 @@ export function PlannerWorkspace({
     };
   }, [hasUnsavedPlanning]);
 
-  const calendarSource =
-    courseDraft ??
-    (activeAssignment
+  const calendarSource = courseDraft?.sessionsDraft?.length
+    ? courseDraft
+    : activeAssignment
       ? {
           startDate: activeAssignment.dateStart,
           endDate: activeAssignment.dateEnd,
           sessionsDraft: activeAssignment.sessions ?? [],
         }
-      : null);
+      : courseDraft;
 
   const calendarGridDays = useMemo(() => {
     if (calendarSource?.startDate && calendarSource?.endDate) {
@@ -288,8 +288,8 @@ export function PlannerWorkspace({
                   setPlannerMode={setPlannerMode}
                   setActiveAssignment={setActiveAssignment}
                   setSelectedConsultant={setSelectedConsultant}
-                  setCourseDraft={setCourseDraft}
-                  isSaving={isSaving}
+                  onSaveDraft={handleSavePlanningDraft}
+                  isSaving={isSaving || isPreparingDraft}
                 />
               ) : (
                 <PlannerMatchingPanel
