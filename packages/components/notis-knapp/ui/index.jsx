@@ -15,9 +15,10 @@ function SendAssignmentNotification() {
     try {
       const data = await sendNewAssignmentNotification({
         teacherEmail: email,
-        teacherName: "Lärare-1",
+        teacherName: "Amir",
         assignmentDescription: "New assignment created",
-        assignmentDueDate: "2026-03-15T17:00:00.000Z",
+        assignmentDueDate: "2026-05-15T17:00:00.000Z",
+        assignmentId:"1"
       });
       alert(data.message);
     } catch (error) {
@@ -35,7 +36,7 @@ function SendAssignmentNotification() {
     }
 
     try {
-      const data = await SendDirectMessage({ RecipientEmail: email, Message: message, Subject: "Direct Message" });
+      const data = await SendDirectMessage({ RecipientEmail: email, Message: message });
       alert(data.message);
     } catch (error) {
       console.log("notification error:", error.message);
@@ -52,7 +53,7 @@ function SendAssignmentNotification() {
 
     try {
       const data = await sendScheduleUpdated({
-        teacherEmail: email,
+         email,
         message: "Your schedule has been updated.",
       });
       alert(data.message);
