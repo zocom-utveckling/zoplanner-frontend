@@ -17,6 +17,8 @@ export default function PlannerMatchingPanel({
   onConfirmConsultant,
   assignedConsultantName,
   scheduleSummary,
+  onExportPdf,
+  onSendMessage,
 }) {
   if (consultantsLoading) {
     return <p>Laddar konsulter...</p>;
@@ -32,8 +34,14 @@ export default function PlannerMatchingPanel({
         startDate={courseDraft?.startDate}
         endDate={courseDraft?.endDate}
         scheduleSummary={scheduleSummary}
-        onExportPdf={() => {}}
-        onSendMessage={() => {}}
+        onExportPdf={() => {
+          console.log("PDF BUTTON CLICKED");
+          onExportPdf?.();
+        }}
+        onSendMessage={() => {
+          console.log("SEND MESSAGE CLICKED");
+          onSendMessage?.();
+        }}
       />
     );
   }

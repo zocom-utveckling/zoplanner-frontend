@@ -7,6 +7,7 @@ import { usePlannerEventClick } from "../hooks/usePlannerEventClick";
 import { useDraftRelationSync } from "../hooks/useDraftRelationSync";
 import PlannerPlanningPanel from "./PlannerPlanningPanel";
 import PlannerMatchingPanel from "./PlannerMatchingPanel";
+import { notificationService } from "@zoplanner/api";
 import {
   PlannerMonthView,
   CourseSummary,
@@ -22,6 +23,7 @@ import {
   eachDayOfInterval,
 } from "date-fns";
 import { buildScheduleSummary } from "../utils/scheduleSummary.helpers";
+import { exportSchedulePdf } from "../utils/exportSchedulePdf";
 
 export function PlannerWorkspace({
   managerId,
@@ -328,6 +330,47 @@ export function PlannerWorkspace({
                   }}
                   assignedConsultantName={assignedConsultantName}
                   scheduleSummary={scheduleSummary}
+                  onExportPdf={() =>
+                    exportSchedulePdf({
+                      ...courseDraft,
+                      sessions:
+                        activeAssignment?.sessions ??
+                        courseDraft?.sessionsDraft ??
+                        [],
+                      sessionsDraft:
+                        courseDraft?.sessionsDraft ??
+                        activeAssignment?.sessions ??
+                        [],
+                      customerName: courseDraft?.customerName,
+                      courseName: courseDraft?.courseName,
+                      className: courseDraft?.className,
+                    })
+                  }
+                  onSendMessage={async () => {
+                    try {
+                      const recipientEmail = selectedConsultant?.email;
+
+                      console.log("recipientEmail", recipientEmail);
+
+                      if (!recipientEmail) {
+                        console.error("No consultant email found");
+                        return;
+                      }
+
+                      const result =
+                        await notificationService.sendDirectMessage({
+                          recipientEmail,
+                          subject: "Nytt uppdrag",
+                          message: `Du har fått ett nytt uppdrag:\n\n${
+                            courseDraft?.courseName || "Kursschema"
+                          }\n${courseDraft?.startDate} - ${courseDraft?.endDate}`,
+                        });
+
+                      console.log("Message sent", result);
+                    } catch (error) {
+                      console.error("Failed to send message", error);
+                    }
+                  }}
                 />
               )}
             </section>
