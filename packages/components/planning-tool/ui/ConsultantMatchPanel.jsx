@@ -6,10 +6,7 @@ export default function ConsultantMatchPanel({
   assignment,
   consultants = [],
   onSelectConsultant,
-  onBack,
   selectedConsultantId,
-  missingFinalInfo = [],
-  onCompleteMissingInfo,
   onConfirmConsultant,
 }) {
   const [subjectFilter, setSubjectFilter] = useState("");
@@ -50,57 +47,8 @@ export default function ConsultantMatchPanel({
       .sort((a, b) => a.conflictCount - b.conflictCount);
   }, [consultants, courseSessions, subjectFilter, includeConflicts]);
 
-  const courseName = assignment?.course?.name || "Planering";
-  const dateStart = assignment?.dateStart || "";
-  const dateEnd = assignment?.dateEnd || "";
-
   return (
     <section className="consultant-match-panel">
-      <div className="consultant-match-panel__header">
-        <div className="consultant-match-panel__header-main">
-          <p className="consultant-match-panel__eyebrow">Nästa steg</p>
-          <h2 className="consultant-match-panel__title">Hitta konsult</h2>
-          <p className="consultant-match-panel__meta">
-            <strong>{courseName}</strong>
-          </p>
-          <p className="consultant-match-panel__meta">
-            Period: {dateStart} – {dateEnd}
-          </p>
-        </div>
-
-        {onBack && (
-          <button
-            type="button"
-            className="consultant-match-panel__back"
-            onClick={onBack}
-          >
-            Tillbaka till planering
-          </button>
-        )}
-      </div>
-
-      {missingFinalInfo.length > 0 && (
-        <div className="consultant-match-panel__warning">
-          <p className="consultant-match-panel__warning-text">
-            Du måste komplettera följande innan du kan spara slutligt:
-          </p>
-
-          <ul className="consultant-match-panel__warning-list">
-            {missingFinalInfo.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-
-          <button
-            type="button"
-            className="consultant-match-panel__complete"
-            onClick={onCompleteMissingInfo}
-          >
-            Fyll i uppgifter
-          </button>
-        </div>
-      )}
-
       <div className="consultant-match-panel__filters">
         <div className="consultant-match-panel__field">
           <label htmlFor="consultant-subject">Ämnesområde</label>

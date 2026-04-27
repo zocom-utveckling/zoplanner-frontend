@@ -681,9 +681,9 @@
 }
 
 .planner-match-actions__status {
-  margin: 0;
+  margin-top: 30px;
   min-height: 20px;
-  font-size: 14px;
+  font-size: 20px;
   color: #374151;
 }
 

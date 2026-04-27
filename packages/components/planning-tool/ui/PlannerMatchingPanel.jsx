@@ -40,6 +40,30 @@ export default function PlannerMatchingPanel({
 
   return (
     <>
+      <div className="consultant-match-panel__header">
+        <div className="consultant-match-panel__header-main">
+          <p className="consultant-match-panel__eyebrow">Nästa steg</p>
+          <h2 className="consultant-match-panel__title">Hitta konsult</h2>
+          <p className="consultant-match-panel__meta">
+            <strong>{courseDraft?.courseName || "Kursschema"}</strong>
+          </p>
+          <p className="consultant-match-panel__meta">
+            Period: {courseDraft?.startDate || ""} –{" "}
+            {courseDraft?.endDate || ""}
+          </p>
+        </div>
+
+        {onBack && (
+          <button
+            type="button"
+            className="consultant-match-panel__back"
+            onClick={onBack}
+          >
+            Tillbaka till planering
+          </button>
+        )}
+      </div>
+
       <div className="planner-match-actions">
         <p className="planner-match-actions__status">
           {isLoadingConsultantSchedule
@@ -64,21 +88,11 @@ export default function PlannerMatchingPanel({
 
       <ConsultantMatchPanel
         assignment={{
-          dateStart: courseDraft?.startDate,
-          dateEnd: courseDraft?.endDate,
-          course: {
-            name: courseDraft?.courseName || "Kursschema",
-          },
           sessions: courseDraft?.sessionsDraft ?? [],
         }}
         consultants={consultants}
         selectedConsultantId={selectedConsultant?.id}
-        missingFinalInfo={missingFinalInfo}
-        onCompleteMissingInfo={() => {
-          setPlannerMode("planning");
-        }}
         onSelectConsultant={onSelectConsultant}
-        onBack={onBack}
         onConfirmConsultant={onConfirmConsultant}
       />
     </>

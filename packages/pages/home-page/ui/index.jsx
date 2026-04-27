@@ -10,16 +10,23 @@ import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Profile_Page } from "../../profile-page/ui";
 
-function DashboardLayout({ user, activePage, setActivePage, children }) {
+function DashboardLayout({
+  user,
+  activePage,
+  setActivePage,
+  children,
+  onSelectCalendarUser,
+  onResetCalendarUser,
+}) {
   return (
     <>
       <Navbar
         user={user}
         activePage={"dashboard"}
-       
+        onResetCalendarUser={onResetCalendarUser}
       />
       <div className="app">
-        <Sidebar user={user} />
+        <Sidebar user={user} onSelectCalendarUser={onSelectCalendarUser} />
         {children}
       </div>
     </>
@@ -31,6 +38,7 @@ function HomePage() {
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState(null);
   const [activePage, setActivePage] = useState("dashboard");
+  const [calendarUser, setCalendarUser] = useState(null);
 
   useEffect(() => {
     const viewFromUrl = searchParams.get("view");
@@ -40,6 +48,9 @@ function HomePage() {
       setActivePage("dashboard");
     }
   }, [searchParams]);
+
+  // Funktion för att återställa kalendern till manager
+  const handleResetCalendarUser = () => setCalendarUser(null);
   console.log(localStorage.getItem("managerId"));
 
   useEffect(() => {
@@ -84,9 +95,14 @@ function HomePage() {
       user={user}
       activePage={resolvedActivePage}
       setActivePage={setActivePage}
+      onSelectCalendarUser={setCalendarUser}
+      onResetCalendarUser={handleResetCalendarUser}
     >
-       <Dashboard user={user} />
-     
+      <Dashboard
+        user={calendarUser || user}
+        calendarUser={calendarUser}
+        managerUser={user}
+      />
     </DashboardLayout>
   );
 }

@@ -10,9 +10,7 @@ export default function PlannerPlanningPanel({
   setShowScheduleEditor,
   setShowBasicInfo,
   setPlannerMode,
-  setActiveAssignment,
-  setSelectedConsultant,
-  setCourseDraft,
+  onSaveDraft,
   isSaving,
 }) {
   return (
@@ -26,13 +24,7 @@ export default function PlannerPlanningPanel({
         showScheduleEditor={showScheduleEditor}
         onEditBasicInfo={() => setIsEditingBasicInfo(true)}
         onEditSchedule={() => setShowScheduleEditor(true)}
-        onSave={(draft) => {
-          setActiveAssignment(null);
-          setSelectedConsultant(null);
-          setCourseDraft(draft);
-          setShowScheduleEditor(false);
-          setIsEditingBasicInfo(false);
-        }}
+        onSave={onSaveDraft}
       />
 
       <button

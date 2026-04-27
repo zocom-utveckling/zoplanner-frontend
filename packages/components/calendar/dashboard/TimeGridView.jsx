@@ -97,6 +97,7 @@ export default function TimeGridView({
   onEventClick,
   onEventDrop,
   bookingWeekColors,
+  onDayClick,
 }) {
   const timeSlots = useMemo(() => {
     const slots = [];
@@ -197,6 +198,22 @@ export default function TimeGridView({
                   newStart.setHours(h, m, 0, 0);
                   const newEnd = new Date(newStart.getTime() + durationMs);
                   onEventDrop?.(eventId, newStart, newEnd);
+                }}
+                onClick={(evt) => {
+                  // Lägg till aktivitet om man klickar på tom yta
+                  if (onDayClick) {
+                    const rect = evt.currentTarget.getBoundingClientRect();
+                    const relativeY = Math.max(0, evt.clientY - rect.top);
+                    const rawSlotIndex = Math.floor(relativeY / gridRowHeight);
+                    const slotIndex = Math.max(
+                      0,
+                      Math.min(rawSlotIndex, timeSlots.length - 1),
+                    );
+                    const { h, m } = timeSlots[slotIndex];
+                    const slotDate = new Date(day);
+                    slotDate.setHours(h, m, 0, 0);
+                    onDayClick(slotDate);
+                  }
                 }}
               >
                 {/* slot backgrounds */}

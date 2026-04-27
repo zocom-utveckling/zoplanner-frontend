@@ -12,7 +12,7 @@ import useSchedulerFilters from "../core/hooks/useSchedulerFilters";
 import "../core/index.css";
 import RequestActivityModal from "@zoplanner/planning-tool/ui/RequestActivityModal";
 
-export function DashboardScheduler({ user }) {
+export function DashboardScheduler({ user, calendarUser, managerUser }) {
   const [bookingWeekColors, setBookingWeekColors] = useState(false);
 
   const {
@@ -28,8 +28,11 @@ export function DashboardScheduler({ user }) {
     goNext,
   } = useSchedulerNavigation();
 
+  // Hämta events-hook för calendarUser (eller manager)
   const { events, loading, addEvent, updateEvent, removeEvent } =
-    useSchedulerEvents(user);
+    useSchedulerEvents(calendarUser || user);
+  // Hämta events-hook för managerUser ALLTID (hooks får ej vara villkorliga)
+  const managerEventsApi = useSchedulerEvents(managerUser);
 
   const { filteredEvents } = useSchedulerFilters(events, {
     defaultPeriod: "all",
@@ -41,6 +44,14 @@ export function DashboardScheduler({ user }) {
 
   const { selectedEvent, handleOpenEventModal, handleCloseEventModal } =
     useEventDetailsModal();
+
+  // Wrapper för att skapa aktivitet på båda användare om manager lägger till på annan
+  function handleCreateEventForBothUsers(eventData) {
+    addEvent(eventData);
+    if (managerUser && calendarUser && managerUser.id !== calendarUser.id) {
+      managerEventsApi.addEvent(eventData);
+    }
+  }
 
   const {
     isActivityModalOpen,
@@ -56,7 +67,7 @@ export function DashboardScheduler({ user }) {
     handleActivitySubmit,
   } = useActivityForm({
     onDateSelected: setFocusDate,
-    onCreateEvent: addEvent,
+    onCreateEvent: handleCreateEventForBothUsers,
     onDeleteEvent: removeEvent,
     onUpdateEvent: updateEvent,
   });
@@ -116,6 +127,8 @@ export function DashboardScheduler({ user }) {
         onNext={goNext}
         bookingWeekColors={bookingWeekColors}
         onToggleBookingWeekColors={() => setBookingWeekColors((v) => !v)}
+        calendarUser={calendarUser}
+        managerUser={managerUser}
       />
 
       <DashboardCalendarContent
