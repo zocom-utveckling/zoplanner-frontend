@@ -2,10 +2,10 @@
   width: 100%;
   padding: 12px 16px;
   margin-top: 16px;
-  background-color: var(--action-bg);
+  background-color: #2e7de3;
   color: var(--action-fg);
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   font-family: "Poppins", sans-serif;
