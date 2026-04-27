@@ -212,6 +212,15 @@ export function PlannerWorkspace({
   const sidebarTitle =
     activeAssignment?.course?.name || courseDraft?.courseName || "Ny planering";
 
+  const plannerModeLabel =
+    plannerMode === "planning" ? "Planering" : "Matchning";
+  const focusMonthLabel = focusDate
+    .toLocaleDateString("sv-SE", {
+      month: "long",
+      year: "numeric",
+    })
+    .replace(/^./, (char) => char.toUpperCase());
+
   const assignedConsultantName = activeAssignment?.consultant?.name || "";
   const isAssigned = Boolean(activeAssignment?.consultantId);
   const scheduleSummary = buildScheduleSummary(
@@ -249,102 +258,116 @@ export function PlannerWorkspace({
 
   return (
     <div className="planner-workspace">
-      <div className="planner-workspace__header"></div>
-
-      <div className="planner-workspace__layout">
-        <aside className="planner-workspace__sidebar">
-          <section className="planner-workspace__panel planner-workspace__panel--form">
-            <h2>{sidebarTitle}</h2>
-
-            {plannerMode === "planning" ? (
-              <PlannerPlanningPanel
-                courseDraft={courseDraft}
-                selectedAssignmentForMatching={selectedAssignmentForMatching}
-                isEditingBasicInfo={isEditingBasicInfo}
-                showBasicInfo={showBasicInfo}
-                showScheduleEditor={showScheduleEditor}
-                setIsEditingBasicInfo={setIsEditingBasicInfo}
-                setShowScheduleEditor={setShowScheduleEditor}
-                setShowBasicInfo={setShowBasicInfo}
-                setPlannerMode={setPlannerMode}
-                setActiveAssignment={setActiveAssignment}
-                setSelectedConsultant={setSelectedConsultant}
-                onSaveDraft={handleSavePlanningDraft}
-                isSaving={isSaving || isPreparingDraft}
-              />
-            ) : (
-              <PlannerMatchingPanel
-                consultantsLoading={consultantsLoading}
-                isAssigned={isAssigned}
-                isLoadingConsultantSchedule={isLoadingConsultantSchedule}
-                selectedConsultant={selectedConsultant}
-                missingFinalInfo={missingFinalInfo}
-                setPlannerMode={setPlannerMode}
-                courseDraft={courseDraft}
-                consultants={consultants}
-                onSelectConsultant={(consultant) => {
-                  console.log("SELECTED CONSULTANT:", consultant);
-                  setSelectedConsultant(consultant);
-                }}
-                onBack={() => {
-                  setPlannerMode("planning");
-                  setSelectedConsultant(null);
-                  setConsultantAssignmentEvents([]);
-                  setShowBasicInfo(true);
-                  setShowScheduleEditor(false);
-                  setIsEditingBasicInfo(false);
-                }}
-                onConfirmConsultant={async (consultant) => {
-                  setSelectedConsultant(consultant);
-
-                  if (missingFinalInfo.length > 0) {
-                    return;
-                  }
-
-                  const publishedAssignment = await handlePublishDraft();
-                  await handleAssignConsultant(publishedAssignment, consultant);
-                }}
-                assignedConsultantName={assignedConsultantName}
-                scheduleSummary={scheduleSummary}
-              />
-            )}
-          </section>
-
-          {summaryAssignment && !isAssigned ? (
-            <section className="planner-workspace__panel">
-              <CourseSummary
-                assignment={summaryAssignment}
-                onDelete={() => {
-                  setCourseDraft(null);
-                  setActiveAssignment(null);
-                  setSelectedConsultant(null);
-                  setConsultantAssignmentEvents([]);
-                  setPlannerMode("planning");
-                  clearSelectedAssignmentForMatching?.();
-                }}
-              />
-            </section>
-          ) : null}
-        </aside>
-
-        <main className="planner-workspace__main">
-          <PlannerMonthView
-            monthGridDays={calendarGridDays}
-            focusDate={focusDate}
-            events={events}
-            onEventClick={handleEventClick}
-            onEventDrop={handleEventDrop}
-          />
-        </main>
+      <div className="planner-workspace__header">
+        <h1>Planera</h1>
+        <div className="planner-workspace__header-meta">
+          <span className="planner-workspace__header-mode">
+            {plannerModeLabel}
+          </span>
+          <span className="planner-workspace__header-month">
+            {focusMonthLabel}
+          </span>
+        </div>
       </div>
+      <div className="main">
+        <div className="planner-workspace__layout">
+          <aside className="planner-workspace__sidebar">
+            <section className="planner-workspace__panel planner-workspace__panel--form">
+              <h2>{sidebarTitle}</h2>
 
-      <SessionModal
-        isOpen={isModalOpen}
-        onClose={handleSessionModalClose}
-        formData={formData}
-        onChange={handleSessionFormChange}
-        onSubmit={handleSessionSubmit}
-      />
+              {plannerMode === "planning" ? (
+                <PlannerPlanningPanel
+                  courseDraft={courseDraft}
+                  selectedAssignmentForMatching={selectedAssignmentForMatching}
+                  isEditingBasicInfo={isEditingBasicInfo}
+                  showBasicInfo={showBasicInfo}
+                  showScheduleEditor={showScheduleEditor}
+                  setIsEditingBasicInfo={setIsEditingBasicInfo}
+                  setShowScheduleEditor={setShowScheduleEditor}
+                  setShowBasicInfo={setShowBasicInfo}
+                  setPlannerMode={setPlannerMode}
+                  setActiveAssignment={setActiveAssignment}
+                  setSelectedConsultant={setSelectedConsultant}
+                  setCourseDraft={setCourseDraft}
+                  isSaving={isSaving}
+                />
+              ) : (
+                <PlannerMatchingPanel
+                  consultantsLoading={consultantsLoading}
+                  isAssigned={isAssigned}
+                  isLoadingConsultantSchedule={isLoadingConsultantSchedule}
+                  selectedConsultant={selectedConsultant}
+                  missingFinalInfo={missingFinalInfo}
+                  setPlannerMode={setPlannerMode}
+                  courseDraft={courseDraft}
+                  consultants={consultants}
+                  onSelectConsultant={(consultant) => {
+                    console.log("SELECTED CONSULTANT:", consultant);
+                    setSelectedConsultant(consultant);
+                  }}
+                  onBack={() => {
+                    setPlannerMode("planning");
+                    setSelectedConsultant(null);
+                    setConsultantAssignmentEvents([]);
+                    setShowBasicInfo(true);
+                    setShowScheduleEditor(false);
+                    setIsEditingBasicInfo(false);
+                  }}
+                  onConfirmConsultant={async (consultant) => {
+                    setSelectedConsultant(consultant);
+
+                    if (missingFinalInfo.length > 0) {
+                      return;
+                    }
+
+                    const publishedAssignment = await handlePublishDraft();
+                    await handleAssignConsultant(
+                      publishedAssignment,
+                      consultant,
+                    );
+                  }}
+                  assignedConsultantName={assignedConsultantName}
+                  scheduleSummary={scheduleSummary}
+                />
+              )}
+            </section>
+
+            {summaryAssignment && !isAssigned ? (
+              <section className="planner-workspace__panel">
+                <CourseSummary
+                  assignment={summaryAssignment}
+                  onDelete={() => {
+                    setCourseDraft(null);
+                    setActiveAssignment(null);
+                    setSelectedConsultant(null);
+                    setConsultantAssignmentEvents([]);
+                    setPlannerMode("planning");
+                    clearSelectedAssignmentForMatching?.();
+                  }}
+                />
+              </section>
+            ) : null}
+          </aside>
+
+          <main className="planner-workspace__main">
+            <PlannerMonthView
+              monthGridDays={calendarGridDays}
+              focusDate={focusDate}
+              events={events}
+              onEventClick={handleEventClick}
+              onEventDrop={handleEventDrop}
+            />
+          </main>
+        </div>
+
+        <SessionModal
+          isOpen={isModalOpen}
+          onClose={handleSessionModalClose}
+          formData={formData}
+          onChange={handleSessionFormChange}
+          onSubmit={handleSessionSubmit}
+        />
+      </div>
     </div>
   );
 }

@@ -1,0 +1,279 @@
+import "./index.css";
+import { useEffect, useState } from "react";
+import { consultantService, userService } from "@zoplanner/api";
+
+export function RegistrySearchFilter({
+  search,
+  onSearchChange,
+  searchPlaceholder = "Sök...",
+  showFilters,
+  onToggleFilters,
+  filters = [],
+  citySourceRecords = [],
+  filterState = {},
+  onToggleFilter,
+  onMultiFilterToggle,
+  onResetFilters,
+}) {
+  const [openFilter, setOpenFilter] = useState(null);
+  const [cityOptions, setCityOptions] = useState([]);
+
+  useEffect(() => {
+    if (!showFilters) {
+      setOpenFilter(null);
+    }
+  }, [showFilters]);
+
+  useEffect(() => {
+    const hasCityFilter = filters.some(
+      (filter) => filter.type === "multi" && filter.key === "cities",
+    );
+
+    if (!hasCityFilter) {
+      return;
+    }
+
+    const loadCityOptions = async () => {
+      try {
+        const [consultants, users] = await Promise.all([
+          consultantService.getAll(),
+          userService.getAll(),
+        ]);
+
+        const sourceCities = (citySourceRecords ?? []).map(
+          (record) => record.city,
+        );
+        const consultantCities = (consultants ?? []).map(
+          (consultant) => consultant.city,
+        );
+        const userCities = (users ?? []).map((userItem) => userItem.city);
+
+        const mergedCities = [
+          ...sourceCities,
+          ...consultantCities,
+          ...userCities,
+        ]
+          .filter(Boolean)
+          .map((city) => city.trim())
+          .filter((city) => city.length > 0);
+
+        const uniqueCities = [...new Set(mergedCities)].sort((a, b) =>
+          a.localeCompare(b, "sv"),
+        );
+
+        setCityOptions(uniqueCities);
+      } catch (error) {
+        console.error("Failed to load city options", error);
+
+        const fallbackCities = [
+          ...new Set((citySourceRecords ?? []).map((record) => record.city)),
+        ]
+          .filter(Boolean)
+          .map((city) => city.trim())
+          .filter((city) => city.length > 0)
+          .sort((a, b) => a.localeCompare(b, "sv"));
+
+        setCityOptions(fallbackCities);
+      }
+    };
+
+    loadCityOptions();
+  }, [citySourceRecords, filters]);
+
+  const resolvedFilters = filters.map((filter) => {
+    if (filter.type === "multi" && filter.key === "cities") {
+      return {
+        ...filter,
+        options: cityOptions.map((city) => ({
+          label: city,
+          value: city,
+        })),
+      };
+    }
+
+    if (filter.type === "multi") {
+      const normalizedOptions = (filter.options ?? []).map((option) => {
+        if (typeof option === "string") {
+          return { label: option, value: option };
+        }
+
+        return {
+          label: option.label ?? option.value,
+          value: option.value,
+        };
+      });
+
+      return {
+        ...filter,
+        options: normalizedOptions,
+      };
+    }
+
+    return {
+      ...filter,
+      options: filter.options ?? [],
+    };
+  });
+
+  const hasActiveFilters = resolvedFilters.some((filter) => {
+    if (filter.type === "toggle") return Boolean(filterState[filter.key]);
+    if (filter.type === "multi") return filterState[filter.key]?.length > 0;
+    return false;
+  });
+
+  const activeChips = resolvedFilters.flatMap((filter) => {
+    if (filter.type === "multi") {
+      return (filterState[filter.key] ?? []).map((value) => {
+        const matchedOption = (filter.options ?? []).find(
+          (option) => option.value === value,
+        );
+
+        return {
+          key: `${filter.key}-${value}`,
+          label: matchedOption?.label ?? value,
+          onRemove: () => onMultiFilterToggle(filter.key, value),
+        };
+      });
+    }
+
+    return [];
+  });
+
+  return (
+    <div className="controls--all-schedules">
+      <div className="controls--all-schedules-filters">
+        <div className="registry-search-filter__left">
+          <button
+            type="button"
+            className="filter-select registry-search-filter__toggle"
+            onClick={onToggleFilters}
+          >
+            {showFilters ? "Filter ×" : "Filtrera"}
+          </button>
+          {showFilters ? (
+            <div className="registry-search-filter__controls">
+              <button
+                type="button"
+                onClick={() => {
+                  setOpenFilter(null);
+                  onResetFilters();
+                }}
+                className={!hasActiveFilters ? "active" : ""}
+              >
+                Alla
+              </button>
+
+              {resolvedFilters.map((filter) => {
+                const isActive =
+                  filter.type === "toggle"
+                    ? Boolean(filterState[filter.key])
+                    : filterState[filter.key]?.length > 0;
+
+                if (filter.type === "toggle") {
+                  return (
+                    <button
+                      key={filter.key}
+                      type="button"
+                      onClick={() => onToggleFilter(filter.key)}
+                      className={isActive ? "active" : ""}
+                    >
+                      {filter.label}
+                    </button>
+                  );
+                }
+
+                if (filter.type === "multi") {
+                  return (
+                    <div
+                      key={filter.key}
+                      className="registry-search-filter__dropdown-trigger"
+                    >
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOpenFilter((prev) =>
+                            prev === filter.key ? null : filter.key,
+                          )
+                        }
+                        className={
+                          isActive || openFilter === filter.key ? "active" : ""
+                        }
+                      >
+                        {filter.label}
+                      </button>
+
+                      {openFilter === filter.key ? (
+                        <div className="registry-search-filter__cities-panel">
+                          <button
+                            type="button"
+                            className="registry-search-filter__dropdown-close"
+                            onClick={() => setOpenFilter(null)}
+                            aria-label="Stäng stadfilter"
+                          >
+                            ×
+                          </button>
+
+                          {filter.demoNote ? (
+                            <p className="registry-search-filter__future-note">
+                              {filter.demoNote}
+                            </p>
+                          ) : null}
+
+                          <div className="registry-search-filter__cities-list">
+                            {filter.options.map((option) => (
+                              <button
+                                key={option.value}
+                                type="button"
+                                className={
+                                  filterState[filter.key]?.includes(
+                                    option.value,
+                                  )
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick={() =>
+                                  onMultiFilterToggle(filter.key, option.value)
+                                }
+                              >
+                                {option.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                }
+
+                return null;
+              })}
+            </div>
+          ) : null}
+        </div>
+
+        <input
+          className="search"
+          type="text"
+          placeholder={searchPlaceholder}
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
+      </div>
+
+      {activeChips.length > 0 && (
+        <div className="registry-search-filter__active-filters">
+          {activeChips.map((chip) => (
+            <button
+              key={chip.key}
+              type="button"
+              className="chip"
+              onClick={chip.onRemove}
+            >
+              {chip.label} ✕
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

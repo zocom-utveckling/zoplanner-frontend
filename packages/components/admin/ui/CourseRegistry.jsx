@@ -5,6 +5,7 @@ import { assignmentService } from "@zoplanner/api";
 import { dev } from "@zoplanner/admin";
 import CourseDetailsModal from "./CourseDetailsModal";
 import { loadPlanningDrafts } from "@zoplanner/planning-tool";
+import { RegistrySearchFilter } from "./RegistrySearchFilter";
 
 export function CourseRegistry({
   user,
@@ -26,6 +27,7 @@ export function CourseRegistry({
   const [filters, setFilters] = useState({
     mine: false,
     statuses: [],
+    subjects: [],
   });
 
   useEffect(() => {
@@ -78,6 +80,13 @@ export function CourseRegistry({
     sessions: assignment.sessions ?? [],
     consultantId: assignment.consultantId ?? null,
     managerId: assignment.managerId ?? null,
+    subject:
+      assignment.course?.subject ||
+      assignment.course?.subjectArea ||
+      assignment.course?.courseSubject ||
+      assignment.subject ||
+      assignment.Subject ||
+      "",
     status: getStatus({
       startDate: assignment.dateStart,
       endDate: assignment.dateEnd,
@@ -94,6 +103,7 @@ export function CourseRegistry({
     endDate: draft.endDate,
     sessions: draft.sessionsDraft ?? [],
     managerId: null,
+    subject: draft.subject || draft.subjectArea || draft.courseSubject || "",
     status: "draft",
   }));
 
@@ -112,19 +122,21 @@ export function CourseRegistry({
     });
   };
 
-  const toggleMine = () => {
-    setFilters((prev) => ({
-      ...prev,
-      mine: !prev.mine,
-    }));
-  };
-
   const resetFilters = () => {
     setFilters({
       mine: false,
       statuses: [],
+      subjects: [],
     });
   };
+
+  const subjectOptions = [
+    ...new Set(
+      allCourses
+        .map((course) => (course.subject || "").trim())
+        .filter((subject) => subject.length > 0),
+    ),
+  ].sort((a, b) => a.localeCompare(b, "sv"));
 
   const incompleteFilteredCourses = selectedIncompleteItem?.assignmentId
     ? allCourses.filter(
@@ -158,6 +170,12 @@ export function CourseRegistry({
         return filters.statuses.includes(c.status);
       }
       return true;
+    })
+    .filter((c) => {
+      if (filters.subjects.length > 0) {
+        return filters.subjects.includes((c.subject || "").trim());
+      }
+      return true;
     });
 
   function handleCloseCourseModal() {
@@ -174,137 +192,96 @@ export function CourseRegistry({
       <div className="course-registry__header">
         <h1>Kurser</h1>
       </div>
+      <div className="main">
+        <RegistrySearchFilter
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Sök kurs eller kund..."
+          showFilters={showFilters}
+          onToggleFilters={() => setShowFilters((prev) => !prev)}
+          filters={[
+            { key: "mine", label: "Mina", type: "toggle" },
+            {
+              key: "statuses",
+              label: "Status",
+              type: "multi",
+              options: [
+                { value: "draft", label: "Utkast" },
+                { value: "upcoming", label: "Kommande" },
+                { value: "ongoing", label: "Pågående" },
+                { value: "completed", label: "Avslutade" },
+              ],
+            },
+            {
+              key: "subjects",
+              label: "Ämnesområde",
+              type: "multi",
+              demoNote:
+                "Demo: Ämnesområde-filter saknar backendstöd ännu och baseras på tillgänglig frontenddata.",
+              options: subjectOptions.map((subject) => ({
+                value: subject,
+                label: subject,
+              })),
+            },
+          ]}
+          filterState={filters}
+          onToggleFilter={(key) =>
+            setFilters((prev) => ({
+              ...prev,
+              [key]: !prev[key],
+            }))
+          }
+          onMultiFilterToggle={toggleMultiFilter}
+          onResetFilters={resetFilters}
+        />
 
-      <div className="course-registry__toolbar">
-        <button
-          className="course-registry__filter-toggle"
-          onClick={() => setShowFilters((prev) => !prev)}
-        >
-          Filtrera
-        </button>
+        <div className="course-registry__list-container">
+          <ul className="course-registry__list">
+            {filteredCourses.length === 0 ? (
+              <li className="course-registry__empty">
+                Inga kurser matchar din sökning eller filter.
+              </li>
+            ) : (
+              filteredCourses.map((c) => (
+                <li
+                  key={c.id}
+                  className="course-registry__item"
+                  onClick={() => {
+                    setSelectedCourse(c);
+                    setIsCourseModalOpen(true);
+                  }}
+                >
+                  <div className="course-item__top">
+                    <span className="course-item__name">{c.name}</span>
+                    <span
+                      className={`course-item__status course-item__status--${c.status}`}
+                    >
+                      {getStatusLabel(c.status)}
+                    </span>
+                  </div>
 
-        <input
-          className="course-registry__search"
-          type="text"
-          placeholder="Sök kurs eller kund..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+                  <div className="course-item__meta">
+                    <span>
+                      {c.startDate} → {c.endDate}
+                    </span>
+                    <span>{c.customer}</span>
+                  </div>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
+
+        <CourseDetailsModal
+          isOpen={isCourseModalOpen}
+          course={selectedCourse}
+          onClose={handleCloseCourseModal}
+          onFindConsultant={(course) => {
+            handleCloseCourseModal();
+            onOpenConsultantMatching?.(course);
+          }}
         />
       </div>
-
-      {showFilters && (
-        <div className="course-registry__filters">
-          <span onClick={toggleMine} className={filters.mine ? "active" : ""}>
-            Mina
-          </span>
-
-          <span
-            onClick={resetFilters}
-            className={
-              !filters.mine && filters.statuses.length === 0 ? "active" : ""
-            }
-          >
-            Alla
-          </span>
-
-          <button
-            type="button"
-            onClick={() => toggleMultiFilter("statuses", "draft")}
-            className={filters.statuses.includes("draft") ? "active" : ""}
-          >
-            Utkast
-          </button>
-
-          <button
-            type="button"
-            onClick={() => toggleMultiFilter("statuses", "upcoming")}
-            className={filters.statuses.includes("upcoming") ? "active" : ""}
-          >
-            Kommande
-          </button>
-
-          <button
-            type="button"
-            onClick={() => toggleMultiFilter("statuses", "ongoing")}
-            className={filters.statuses.includes("ongoing") ? "active" : ""}
-          >
-            Pågående
-          </button>
-
-          <button
-            type="button"
-            onClick={() => toggleMultiFilter("statuses", "completed")}
-            className={filters.statuses.includes("completed") ? "active" : ""}
-          >
-            Avslutade
-          </button>
-        </div>
-      )}
-
-      <div className="course-registry__active-filters">
-        {filters.mine && (
-          <span className="chip" onClick={toggleMine}>
-            Mina ✕
-          </span>
-        )}
-
-        {filters.statuses.map((status) => (
-          <span
-            key={status}
-            className="chip"
-            onClick={() => toggleMultiFilter("statuses", status)}
-          >
-            {getStatusLabel(status)} ✕
-          </span>
-        ))}
-      </div>
-
-      <div className="course-registry__list-container">
-        <ul className="course-registry__list">
-          {filteredCourses.length === 0 ? (
-            <li className="course-registry__empty">
-              Inga kurser matchar din sökning eller filter.
-            </li>
-          ) : (
-            filteredCourses.map((c) => (
-              <li
-                key={c.id}
-                className="course-registry__item"
-                onClick={() => {
-                  setSelectedCourse(c);
-                  setIsCourseModalOpen(true);
-                }}
-              >
-                <div className="course-item__top">
-                  <span className="course-item__name">{c.name}</span>
-                  <span
-                    className={`course-item__status course-item__status--${c.status}`}
-                  >
-                    {getStatusLabel(c.status)}
-                  </span>
-                </div>
-
-                <div className="course-item__meta">
-                  <span>
-                    {c.startDate} → {c.endDate}
-                  </span>
-                  <span>{c.customer}</span>
-                </div>
-              </li>
-            ))
-          )}
-        </ul>
-      </div>
-
-      <CourseDetailsModal
-        isOpen={isCourseModalOpen}
-        course={selectedCourse}
-        onClose={handleCloseCourseModal}
-        onFindConsultant={(course) => {
-          handleCloseCourseModal();
-          onOpenConsultantMatching?.(course);
-        }}
-      />
     </div>
   );
 }
