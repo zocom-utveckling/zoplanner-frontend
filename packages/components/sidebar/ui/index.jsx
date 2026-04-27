@@ -220,7 +220,7 @@ function Sidebar({ user, onSelectCalendarUser }) {
             onClick={() => setIsUsersOpen((prev) => !prev)}
             aria-expanded={isUsersOpen}
           >
-            <span className="sidebar-users__title">Team</span>
+            <span className="sidebar-users__title">Konsulter</span>
             <span
               className={`sidebar-users__chevron${isUsersOpen ? " is-open" : ""}`}
               aria-hidden="true"
