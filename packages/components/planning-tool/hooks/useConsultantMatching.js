@@ -57,8 +57,15 @@ export function useConsultantMatching() {
         const enrichedConsultants = consultantData.map((consultant) => {
           const linkedUser = userById.get(consultant?.userId);
 
-          return {
+        return {
             ...consultant,
+            user: linkedUser,
+            email: firstNonEmptyString(
+              consultant?.email,
+              consultant?.Email,
+              linkedUser?.email,
+              linkedUser?.Email,
+            ),
             name: getDisplayName(consultant, linkedUser),
             subject: firstNonEmptyString(
               consultant?.subject,
