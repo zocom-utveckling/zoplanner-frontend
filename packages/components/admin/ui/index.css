@@ -1,4 +1,6 @@
-.main {
+.admin-overview__main,
+.course-registry__main,
+.customer-registry__main {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -10,13 +12,13 @@
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
 }
 
-.controls--all-schedules {
+.registry-search-filter {
   justify-content: flex-start;
   width: 100%;
   gap: 12px;
 }
 
-.controls--all-schedules-filters {
+.registry-search-filter__bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -28,8 +30,8 @@
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
 }
 
-.controls--all-schedules-filters .search,
-.controls--all-schedules-filters .filter-select {
+.registry-search-filter__bar .registry-search-filter__search,
+.registry-search-filter__bar .registry-search-filter__toggle {
   height: 44px;
   border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 12px;
@@ -38,7 +40,7 @@
   font-size: 15px;
 }
 
-.controls--all-schedules-filters .search {
+.registry-search-filter__bar .registry-search-filter__search {
   flex: 0 0 280px;
   width: 280px;
   min-width: 0;
@@ -47,7 +49,7 @@
   margin-left: auto;
 }
 
-.controls--all-schedules-filters .filter-select {
+.registry-search-filter__bar .registry-search-filter__toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -58,7 +60,7 @@
   white-space: nowrap;
 }
 
-.controls--all-schedules-filters .registry-search-filter__toggle {
+.registry-search-filter__bar .registry-search-filter__toggle {
   width: 104px;
   min-width: 104px;
   max-width: 104px;
@@ -198,8 +200,8 @@
   color: #1f4d84;
 }
 
-.controls--all-schedules-filters .search:focus,
-.controls--all-schedules-filters .filter-select:focus {
+.registry-search-filter__bar .registry-search-filter__search:focus,
+.registry-search-filter__bar .registry-search-filter__toggle:focus {
   border-color: rgba(79, 124, 255, 0.7);
   box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.14);
 }
@@ -1550,13 +1552,13 @@
   padding: 10px;
   border: none;
   border-radius: 6px;
-   background: var(--action-bg);
+  background: var(--action-bg);
   color: #fff;
   cursor: pointer;
 }
 
 .quick-dev-register__continue:hover {
-    background: var(--action-bg-hover);
+  background: var(--action-bg-hover);
 }
 
 .quick-dev-register__continue:disabled {
@@ -1911,8 +1913,10 @@
   color: #374151;
 }
 
-[data-theme="dark"] .main,
-[data-theme="dark"] .controls--all-schedules-filters,
+[data-theme="dark"] .admin-overview__main,
+[data-theme="dark"] .course-registry__main,
+[data-theme="dark"] .customer-registry__main,
+[data-theme="dark"] .registry-search-filter__bar,
 [data-theme="dark"] .overview-list-panel,
 [data-theme="dark"] .customer-registry__list-container,
 [data-theme="dark"] .course-registry__list-container,
@@ -1922,8 +1926,12 @@
   box-shadow: var(--elevation-card);
 }
 
-[data-theme="dark"] .controls--all-schedules-filters .search,
-[data-theme="dark"] .controls--all-schedules-filters .filter-select,
+[data-theme="dark"]
+  .registry-search-filter__bar
+  .registry-search-filter__search,
+[data-theme="dark"]
+  .registry-search-filter__bar
+  .registry-search-filter__toggle,
 [data-theme="dark"] .registry-search-filter__controls > button,
 [data-theme="dark"] .registry-search-filter__dropdown-trigger > button,
 [data-theme="dark"] .registry-search-filter__cities-list button,
@@ -2172,7 +2180,9 @@
   box-shadow: var(--elevation-card);
 }
 
-[data-theme="dark"] .main {
+[data-theme="dark"] .admin-overview__main,
+[data-theme="dark"] .course-registry__main,
+[data-theme="dark"] .customer-registry__main {
   border-color: var(--border-color);
   background: var(--surface-alt);
   box-shadow: var(--elevation-card);
