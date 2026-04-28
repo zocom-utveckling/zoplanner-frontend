@@ -1,21 +1,21 @@
-.sent-container {
+.messages-sent__container {
   width: 100%;
 }
 
-.sent-container h2 {
+.messages-sent__container h2 {
   text-align: center;
   color: var(--text-muted);
   font-weight: 500;
   margin-top: 40px;
 }
 
-.sent-content {
+.messages-sent__content {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.sent-card {
+.messages-sent__card {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,25 +28,25 @@
     box-shadow 0.2s ease;
 }
 
-.sent-card:hover {
+.messages-sent__card:hover {
   background-color: var(--surface-muted);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
-.sent-left {
+.messages-sent__left {
   display: flex;
   flex-direction: column;
   gap: 30px;
 }
 
-.sent-left h3 {
+.messages-sent__left h3 {
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.sent-left p {
+.messages-sent__left p {
   margin: 0;
   font-size: 0.95rem;
   color: var(--text-muted);
@@ -56,19 +56,21 @@
   max-width: 420px;
   margin-bottom: 10px;
 }
-.sent-header {
+
+.messages-sent__header {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
-.sent-header h4 {
+
+.messages-sent__header h4 {
   margin: 0;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--accent);
 }
 
-.sent-right {
+.messages-sent__right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -78,18 +80,18 @@
   color: var(--text-subtle);
 }
 
-.sent-right span:last-child {
+.messages-sent__right span:last-child {
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
 }
 
 @media (max-width: 600px) {
-  .sent-card {
+  .messages-sent__card {
     padding: 12px;
   }
 
-  .sent-left p {
+  .messages-sent__left p {
     max-width: 220px;
   }
 }
