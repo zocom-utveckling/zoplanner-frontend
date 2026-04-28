@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { managerService, consultantService } from "@zoplanner/api";
 
-const API_BASE_URL = "http://localhost:5027/api";
 
 const ACCESS = {
   ADMIN: "admin",
@@ -34,19 +34,23 @@ export function useCurrentActor(user) {
       setActorError(null);
 
       try {
-        const [managerRes, consultantRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/Manager`),
-          fetch(`${API_BASE_URL}/Consultant`),
-        ]);
+       const managersPromise = managerService.getAll();
 
-        if (!managerRes.ok || !consultantRes.ok) {
-          throw new Error("Kunde inte hämta actor-data");
-        }
+      const consultantsPromise =
+        role === "CONSULTANT"
+          ? consultantService.getMe()
+          : consultantService.getAll();
 
-        const [managers, consultants] = await Promise.all([
-          managerRes.json(),
-          consultantRes.json(),
-        ]);
+      const [managers, consultantsData] = await Promise.all([
+        managersPromise,
+        consultantsPromise,
+      ]);
+
+      const consultants = Array.isArray(consultantsData)
+        ? consultantsData
+        : [consultantsData]
+          ? [consultantsData]
+          : [];
 
         if (!isMounted) return;
 
