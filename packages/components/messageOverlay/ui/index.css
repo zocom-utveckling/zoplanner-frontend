@@ -1,4 +1,4 @@
-.messageOverlay-container {
+.message-overlay {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -11,7 +11,8 @@
   align-items: center;
   z-index: 1000;
 }
-.messageOverlay-content {
+
+.message-overlay__content {
   background-color: var(--surface);
   border-radius: 12px;
   width: 600px;
@@ -21,7 +22,8 @@
   flex-direction: column;
   gap: 16px;
 }
-.messageOverlay-content-header {
+
+.message-overlay__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -30,36 +32,42 @@
   justify-content: space-between;
   padding: 24px;
 }
-.messageOverlay-content-header h2 {
+
+.message-overlay__header h2 {
   margin: 0;
   font-size: 24px;
   font-weight: 700;
   color: var(--text-primary);
 }
-.messageOverlay-main {
+
+.message-overlay__main {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-.messageOverlay-main-header {
+
+.message-overlay__meta-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 24px;
   align-items: center;
 }
-.messageOverlay-main-header h3 {
+
+.message-overlay__meta-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 500;
   color: var(--text-primary);
 }
-.messageOverlay-main-header p {
+
+.message-overlay__meta-header p {
   margin: 0;
   font-size: 12px;
   color: var(--text-secondary);
 }
-.messageOverlay-main section {
+
+.message-overlay__body {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -71,7 +79,7 @@
   color: var(--text-primary);
 }
 
-.messageOverlay-footer {
+.message-overlay__footer {
   display: flex;
   justify-content: flex-end;
   gap: 12px;

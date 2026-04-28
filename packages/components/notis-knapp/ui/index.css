@@ -1,4 +1,4 @@
-.notis-knapp-container {
+.notis-knapp {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10,7 +10,8 @@
   background-color: var(--surface-alt);
   height: 300px;
 }
-.notis-knapp-container button {
+
+.notis-knapp__action {
   padding: 0.5rem 1rem;
   font-size: 1rem;
   color: var(--action-fg);
@@ -19,6 +20,7 @@
   border-radius: 4px;
   cursor: pointer;
 }
-.notis-knapp-container button:hover {
+
+.notis-knapp__action:hover {
   background-color: var(--accent-hover);
 }
