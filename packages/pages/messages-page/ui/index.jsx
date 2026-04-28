@@ -530,7 +530,7 @@ function MessagesPage({ user: initialUser }) {
             selectedChat={selectedChat}
             onMessageSend={handleMessageSend}
           />
-          <MessagesSidebar onConsultantClick={handleConsultantClick} />
+          <MessagesSidebar user={user} onConsultantClick={handleConsultantClick} />
         </div>
       </div>
     </>
