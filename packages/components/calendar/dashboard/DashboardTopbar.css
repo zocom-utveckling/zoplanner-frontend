@@ -16,12 +16,12 @@
   text-align: left;
 }
 .message-btn {
-  background: #2563eb;
+  background: #2e7de3;
   color: #fff;
-  border: 1.5px solid #1742a0;
+  border: 1.5px solid #2e7de3;
   border-radius: 8px;
   font-size: 1em;
-  font-weight: 500;
+  font-weight: 600;
   padding: 8px 22px;
   cursor: pointer;
   transition:
