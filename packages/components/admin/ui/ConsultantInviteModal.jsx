@@ -26,11 +26,18 @@ export function ConsultantInviteModal({ isOpen, onClose, onSubmit }) {
           />
 
           <div className="consultant-invite-modal__actions">
-            <button type="button" className="consultant-invite-modal__btn" onClick={onClose}>
+            <button
+              type="button"
+              className="consultant-invite-modal__btn"
+              onClick={onClose}
+            >
               Avbryt
             </button>
 
-            <button type="submit" className="consultant-invite-modal__btn consultant-invite-modal__btn--primary">
+            <button
+              type="submit"
+              className="consultant-invite-modal__btn consultant-invite-modal__btn--primary"
+            >
               Skicka
             </button>
           </div>

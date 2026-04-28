@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./index.css";
-import "react-icons/fa"
+import "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
 import { SendAssignmentNotification } from "../../../components/notis-knapp";
 import { Navbar } from "@zoplanner/navbar";
@@ -9,8 +9,8 @@ function CoursesPage() {
   const [assignments, setAssignments] = useState([]);
   const consultantId = localStorage.getItem("consultantId");
   const [user, setUser] = useState(null);
-  const [show,setShow]=useState(false)
-  const userId =useParams().id
+  const [show, setShow] = useState(false);
+  const userId = useParams().id;
   const maxShownSessions = 2;
   useEffect(() => {
     async function getAssignments() {
@@ -51,9 +51,8 @@ function CoursesPage() {
 
   return (
     <>
-      <Navbar activePage={"assignments"} user={user}/>
+      <Navbar activePage={"assignments"} user={user} />
       <div className="courses-page__container">
-         
         <h2>Uppdrag</h2>
         <div className="courses-page__content">
           {assignments.length == 0 ? (
@@ -80,7 +79,10 @@ function CoursesPage() {
                           const [, endTime] = session.timeEnd.split(" ");
 
                           return (
-                            <div className="courses-page__session-card" key={session.id}>
+                            <div
+                              className="courses-page__session-card"
+                              key={session.id}
+                            >
                               <section className="courses-page__session-upper">
                                 <h4>{session.comment}</h4>
                                 <p>{date}</p>
@@ -108,8 +110,8 @@ function CoursesPage() {
           )}
         </div>
       </div>
-     
-       <SendAssignmentNotification/> 
+
+      <SendAssignmentNotification />
     </>
   );
 }
