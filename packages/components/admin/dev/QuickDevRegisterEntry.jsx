@@ -35,7 +35,15 @@ export function QuickDevRegisterEntry({ managers = [] }) {
   };
 
   const handleContinue = () => {
-    if (!selectedManagerId || !email) return;
+    if (!selectedManagerId) {
+      alert("Välj en manager för att fortsätta");
+      return;
+    }
+
+    if (!email) {
+      alert("Ange en e-postadress för konsulten");
+      return;
+    }
 
     const params = new URLSearchParams({
       managerId: selectedManagerId,
@@ -95,7 +103,7 @@ export function QuickDevRegisterEntry({ managers = [] }) {
               </>
             ) : (
               <>
-                <h2>Select manager</h2>
+                <h3>1. Select manager</h3>
 
                 <div className="quick-dev-register__list">
                   {managers.map((manager) => {
@@ -114,6 +122,7 @@ export function QuickDevRegisterEntry({ managers = [] }) {
                     );
                   })}
                 </div>
+                <h3>2. Enter consultant's email</h3>
 
                 <input
                   type="email"
@@ -127,7 +136,6 @@ export function QuickDevRegisterEntry({ managers = [] }) {
                   type="button"
                   className="quick-dev-register__continue"
                   onClick={handleContinue}
-                  disabled={!selectedManagerId || !email}
                 >
                   Continue
                 </button>
@@ -141,6 +149,11 @@ export function QuickDevRegisterEntry({ managers = [] }) {
                 </button>
               </>
             )}
+            <p className="customer-registry__modal-future-note">
+              Den här funktionen gör det möjligt att skapa ett konsultkonto i
+              demo utan att först sätta upp data manuellt. Om ingen manager
+              finns behöver ett managerkonto skapas först.
+            </p>
           </div>
         </div>
       )}

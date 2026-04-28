@@ -1504,6 +1504,7 @@
 
 .quick-dev-register__close {
   margin-top: 16px;
+  margin-bottom: 16px;
   padding: 10px 16px;
   border: none;
   border-radius: 6px;
@@ -1553,13 +1554,13 @@
   padding: 10px;
   border: none;
   border-radius: 6px;
-  background: #4caf50;
+   background: var(--action-bg);
   color: #fff;
   cursor: pointer;
 }
 
 .quick-dev-register__continue:hover {
-  background: #43a047;
+    background: var(--action-bg-hover);
 }
 
 .quick-dev-register__continue:disabled {
