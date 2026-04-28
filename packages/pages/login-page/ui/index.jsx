@@ -16,26 +16,20 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [managers, setManager] = useState([]);
-  const [consultants, setConsultant] = useState([]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    // NOTE:
+    // Manager-listan hämtas här före login för att QuickDevRegisterEntry ska fungera i demo.
+    // I en riktig RBAC-satt setup bör detta istället göras efter login (med token),
+    // eller flyttas till en skyddad vy där manager redan är autentiserad.
     async function fetchManagers() {
       const data = await managerService.getAll();
       setManager(data);
     }
 
     fetchManagers();
-  }, []);
-
-  useEffect(() => {
-    async function fetchConsultants() {
-      const data = await consultantService.getAll();
-      setConsultant(data);
-    }
-
-    fetchConsultants();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -68,7 +62,13 @@ function LoginPage() {
 
       // Kopplar inloggad user till eventuell manager-/consultant-profil.
       const manager = managers.find((m) => m.userId === userData.id);
-      const consultant = consultants.find((c) => c.userId === userData.id);
+      let consultant = null;
+
+      try {
+        consultant = await consultantService.getMe();
+      } catch {
+        consultant = null;
+      }
 
       if (manager) {
         localStorage.setItem("managerId", manager.id);
