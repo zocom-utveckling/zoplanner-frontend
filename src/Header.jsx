@@ -1,10 +1,11 @@
-function Header() {
+import "./Header.css";
 
-    return (
-        <header className="container">
-            <div className="logo">ZoPlanner</div>
-        </header>
-    )
+function Header() {
+  return (
+    <header className="header__container">
+      <div className="header__logo">ZoPlanner</div>
+    </header>
+  );
 }
 
-export default Header
+export default Header;

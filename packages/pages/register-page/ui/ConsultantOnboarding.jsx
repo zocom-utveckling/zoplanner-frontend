@@ -201,7 +201,7 @@ export function ConsultantOnboarding() {
           />
         </div>
 
-        <div className="button">
+        <div className="register-page__button-group">
           <Button text="Skapa konto" type={"submit"} style={"submit"} />
         </div>
         <p className="customer-registry__modal-future-note">

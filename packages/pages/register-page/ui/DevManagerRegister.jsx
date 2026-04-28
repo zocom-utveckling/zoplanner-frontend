@@ -154,7 +154,7 @@ function DevManagerRegister() {
             />
           </div>
 
-          <div className="button">
+          <div className="register-page__button-group">
             <Button
               text={loading ? "Loading..." : "Skapa managerkonto"}
               type="submit"

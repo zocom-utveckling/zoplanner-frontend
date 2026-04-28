@@ -1,4 +1,4 @@
-.login-page {
+.login-page__root {
   position: relative;
   width: 100vw;
   min-height: 100vh;
@@ -24,15 +24,15 @@
   box-sizing: border-box;
 }
 
-.login-page::before,
-.login-page::after {
+.login-page__root::before,
+.login-page__root::after {
   content: "";
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
 }
 
-.login-page::before {
+.login-page__root::before {
   width: 380px;
   height: 380px;
   top: -120px;
@@ -41,7 +41,7 @@
   filter: blur(6px);
 }
 
-.login-page::after {
+.login-page__root::after {
   width: 310px;
   height: 310px;
   right: -90px;
@@ -50,7 +50,7 @@
   filter: blur(8px);
 }
 
-.login-page form {
+.login-page__form-wrapper {
   position: relative;
   z-index: 1;
   display: flex;
@@ -59,6 +59,14 @@
   gap: 14px;
   width: min(100%, 430px);
   overflow: visible;
+}
+
+.login-page__form-wrapper form {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 14px;
   background: var(--surface);
   padding: 26px 26px 24px;
   border-radius: 18px;
@@ -69,14 +77,14 @@
   animation: loginCardIn 0.55s ease-out;
 }
 
-.login-page .field {
+.login-page__field {
   display: flex;
   flex-direction: column;
   width: 100%;
   gap: 7px;
 }
 
-.login-page .field input {
+.login-page__field input {
   padding: 0 14px;
   height: 46px;
   box-sizing: border-box;
@@ -96,19 +104,30 @@
     background-color 0.2s ease;
 }
 
-.login-page .field input::placeholder {
+.login-page__field input::placeholder {
   color: var(--text-subtle);
   font-family: "Poppins", sans-serif;
 }
 
-.login-page .field input:focus {
+.login-page__field input:focus {
   outline: none;
   border-color: var(--accent);
   background: var(--surface);
   box-shadow: 0 0 0 4px var(--accent-ring);
 }
 
-.login-page .button {
+.login-page__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.login-page__button-group {
   margin-top: 12px;
   width: 100%;
   display: flex;
@@ -118,7 +137,7 @@
   gap: 8px;
 }
 
-.login-page .button .button_submit {
+.login-page__button-group .button_submit {
   height: 48px;
   border-radius: 12px;
   background: var(--accent-gradient);
@@ -131,17 +150,17 @@
     filter 0.18s ease;
 }
 
-.login-page .button .button_submit:hover {
+.login-page__button-group .button_submit:hover {
   filter: brightness(1.03);
   transform: translateY(-2px) !important;
   box-shadow: 0 14px 24px var(--accent-ring);
 }
 
-.login-page .button .button_submit:active {
+.login-page__button-group .button_submit:active {
   transform: translateY(0) !important;
 }
 
-.login-page .button p {
+.login-page__button-group p {
   margin: 0;
   font-size: 12px;
   text-align: center;
@@ -180,14 +199,21 @@
     drop-shadow(0 5px 12px rgba(15, 23, 42, 0.14));
 }
 
-.login-page h2 {
+.login-page__form-wrapper h2 {
   color: var(--accent);
   letter-spacing: 0.03em;
   margin: 0 0 4px 0;
   font-size: 1.55rem;
 }
 
-.login-footer {
+.login-page__logo {
+  width: 140px;
+  height: auto;
+  margin: 0 auto 32px;
+  display: block;
+}
+
+.login-page__footer {
   position: absolute;
   bottom: 28px;
   left: 50%;

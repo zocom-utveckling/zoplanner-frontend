@@ -209,29 +209,29 @@ function Sidebar({ user, onSelectCalendarUser }) {
   }
 
   return (
-    <aside className="sidebar">
+    <aside className="sidebar__root">
       <ProfileCard user={user} />
 
       {isManager && (
-        <div className="sidebar-users">
+        <div className="sidebar__users">
           <button
             type="button"
-            className="sidebar-users__toggle"
+            className="sidebar__users__toggle"
             onClick={() => setIsUsersOpen((prev) => !prev)}
             aria-expanded={isUsersOpen}
           >
-            <span className="sidebar-users__title">Konsulter</span>
+            <span className="sidebar__users__title">Konsulter</span>
             <span
-              className={`sidebar-users__chevron${isUsersOpen ? " is-open" : ""}`}
+              className={`sidebar__users__chevron${isUsersOpen ? " is-open" : ""}`}
               aria-hidden="true"
             />
           </button>
 
           <div
-            className={`sidebar-users__list${isUsersOpen ? " is-open" : ""}`}
+            className={`sidebar__users__list${isUsersOpen ? " is-open" : ""}`}
           >
             {isLoadingUsers ? (
-              <div className="sidebar-users__loading">Laddar användare...</div>
+              <div className="sidebar__users__loading">Laddar användare...</div>
             ) : listedUsers.length ? (
               listedUsers.map((listedUser) => (
                 <div
@@ -247,7 +247,7 @@ function Sidebar({ user, onSelectCalendarUser }) {
                 </div>
               ))
             ) : (
-              <div className="sidebar-users__empty">
+              <div className="sidebar__users__empty">
                 Inga användare hittades.
               </div>
             )}

@@ -1,0 +1,31 @@
+/* =========================================================
+   HEADER
+   Fil: Header.jsx
+   ========================================================= */
+
+.header__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 72px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.header__logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+}
+
+[data-theme="dark"] .header__container {
+  background: var(--surface);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .header__logo {
+  color: var(--accent);
+}
