@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { userService } from "@zoplanner/api";
 
 export function QuickDevRegisterEntry({ managers = [] }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,10 +16,7 @@ export function QuickDevRegisterEntry({ managers = [] }) {
       const results = await Promise.all(
         managers.map(async (manager) => {
           try {
-            const res = await fetch(
-              `http://localhost:5027/api/User/${manager.userId}`,
-            );
-            const data = await res.json();
+            const data = await userService.getById(manager.userId);
             return [manager.id, data];
           } catch {
             return [manager.id, null];
