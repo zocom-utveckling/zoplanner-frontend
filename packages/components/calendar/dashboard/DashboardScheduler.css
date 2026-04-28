@@ -1,5 +1,5 @@
 /* Dashboard scheduler layout */
-.main {
+.dashboard-scheduler {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -7,7 +7,7 @@
   padding: 20px 20px 24px;
 }
 
-.content-card {
+.dashboard-scheduler__content-card {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 200px);
@@ -18,7 +18,7 @@
   background: var(--surface);
 }
 
-.topbar {
+.dashboard-topbar {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -28,12 +28,12 @@
   background: transparent;
 }
 
-.title-with-nav {
+.dashboard-topbar__title-nav {
   display: flex;
   align-items: center;
 }
 
-.nav-btn {
+.dashboard-topbar__nav-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,19 +48,19 @@
   transition: all 0.2s;
 }
 
-.nav-btn:hover {
+.dashboard-topbar__nav-btn:hover {
   background: var(--surface-muted);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
-.title {
+.dashboard-topbar__title {
   min-width: 200px;
   font-size: 22px;
   font-weight: 800;
   color: var(--text-primary);
 }
 
-.controls {
+.dashboard-topbar__controls {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -68,7 +68,7 @@
   justify-content: flex-end;
 }
 
-.small-btn {
+.dashboard-topbar__today-btn {
   padding: 8px 14px;
   border: none;
   border-radius: 8px;
@@ -81,12 +81,12 @@
   transition: all 0.2s;
 }
 
-.small-btn:hover {
+.dashboard-topbar__today-btn:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
 /* ── Toggle switch ─────────────────────────────────── */
-.toggle-label {
+.dashboard-topbar__toggle-label {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -95,7 +95,7 @@
   margin-right: 30px;
 }
 
-.toggle-input {
+.dashboard-topbar__toggle-input {
   position: absolute;
   opacity: 0;
   width: 0;
@@ -103,14 +103,14 @@
   pointer-events: none;
 }
 
-.toggle-text {
+.dashboard-topbar__toggle-text {
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
 }
 
-.toggle-track {
+.dashboard-topbar__toggle-track {
   position: relative;
   display: inline-block;
   width: 40px;
@@ -121,11 +121,11 @@
   flex-shrink: 0;
 }
 
-.toggle-track--on {
+.dashboard-topbar__toggle-track--on {
   background: #1f2a44;
 }
 
-.toggle-thumb {
+.dashboard-topbar__toggle-thumb {
   position: absolute;
   top: 3px;
   left: 3px;
@@ -137,11 +137,11 @@
   transition: transform 0.22s ease;
 }
 
-.toggle-track--on .toggle-thumb {
+.dashboard-topbar__toggle-track--on .dashboard-topbar__toggle-thumb {
   transform: translateX(18px);
 }
 
-.search {
+.dashboard-topbar__search {
   min-width: 280px;
   padding: 10px 12px;
   border: 1px solid var(--border-color);
@@ -152,11 +152,11 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.search::placeholder {
+.dashboard-topbar__search::placeholder {
   color: var(--text-subtle);
 }
 
-.segment {
+.dashboard-topbar__segment {
   display: inline-flex;
   overflow: hidden;
   border-radius: 8px;
@@ -164,7 +164,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.segment-btn {
+.dashboard-topbar__segment-btn {
   padding: 8px 14px;
   border: none;
   border-right: 1px solid var(--border-color);
@@ -176,16 +176,18 @@
   transition: all 0.2s;
 }
 
-.segment-btn:last-child {
+.dashboard-topbar__segment-btn:last-child {
   border-right: none;
 }
 
-.segment-btn.segment-active {
+.dashboard-topbar__segment-btn.dashboard-topbar__segment-btn--active {
   color: var(--segment-active-fg);
   background: var(--segment-active-bg);
 }
 
-.segment-btn:hover:not(.segment-active) {
+.dashboard-topbar__segment-btn:hover:not(
+    .dashboard-topbar__segment-btn--active
+  ) {
   background: var(--surface-muted);
 }
 

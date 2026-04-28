@@ -117,7 +117,7 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
   }
   console.log("selectedRequest:", selectedRequest);
   return (
-    <main className="main">
+    <main className="dashboard-scheduler">
       <DashboardTopbar
         title={title}
         view={view}

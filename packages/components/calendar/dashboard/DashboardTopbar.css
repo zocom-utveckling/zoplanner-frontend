@@ -1,4 +1,4 @@
-.calendar-user-name-with-btn {
+.dashboard-topbar__calendar-user-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -7,15 +7,18 @@
   padding: 0 24px;
   box-sizing: border-box;
 }
-.calendar-user-name {
+
+.dashboard-topbar__calendar-user-name {
   text-align: left;
 }
-.calendar-user-name {
+
+.dashboard-topbar__calendar-user-name {
   font-weight: 700;
   font-size: 1.6em;
   text-align: left;
 }
-.message-btn {
+
+.dashboard-topbar__message-btn {
   background: #2e7de3;
   color: #fff;
   border: 1.5px solid #2e7de3;
@@ -31,27 +34,28 @@
   margin-left: 10px;
   outline: none;
 }
-.message-btn:hover,
-.message-btn:focus {
+
+.dashboard-topbar__message-btn:hover,
+.dashboard-topbar__message-btn:focus {
   background: #1742a0;
   box-shadow: 0 4px 12px rgba(30, 64, 175, 0.16);
 }
 
-.title-with-nav {
+.dashboard-topbar__title-nav {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-[data-theme="dark"] .message-btn {
+[data-theme="dark"] .dashboard-topbar__message-btn {
   background: var(--segment-active-bg);
   color: var(--segment-active-fg);
   border-color: var(--segment-active-bg);
   box-shadow: var(--elevation-card);
 }
 
-[data-theme="dark"] .message-btn:hover,
-[data-theme="dark"] .message-btn:focus {
+[data-theme="dark"] .dashboard-topbar__message-btn:hover,
+[data-theme="dark"] .dashboard-topbar__message-btn:focus {
   background: var(--accent-hover);
   box-shadow: var(--elevation-modal);
 }
