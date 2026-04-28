@@ -10,13 +10,11 @@
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
 }
 
-
 .controls--all-schedules {
   justify-content: flex-start;
   width: 100%;
   gap: 12px;
 }
-
 
 .controls--all-schedules-filters {
   display: flex;
@@ -183,7 +181,8 @@
   cursor: pointer;
 }
 
-.registry-search-filter__cities-panel .registry-search-filter__dropdown-close:hover {
+.registry-search-filter__cities-panel
+  .registry-search-filter__dropdown-close:hover {
   background: rgba(15, 23, 42, 0.06);
 }
 
@@ -204,9 +203,6 @@
   border-color: rgba(79, 124, 255, 0.7);
   box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.14);
 }
-
-
-
 
 /* =========================================================
    ADMIN TABS
@@ -453,7 +449,8 @@
 }
 
 .overview-list-item--clickable:hover {
-  background: var(--action-bg-hover, #f0f4ff);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-color));
 }
 
 .overview-list-item__time {
@@ -756,7 +753,6 @@
   color: #0f1a2a;
 }
 
-
 .customer-registry__add-button {
   display: inline-flex;
   align-items: center;
@@ -776,7 +772,6 @@
     box-shadow 0.16s ease,
     filter 0.16s ease;
 }
-
 
 .customer-registry__form,
 .customer-registry__order-form {
@@ -977,7 +972,8 @@
 }
 
 .customer-registry__item:hover {
-  background: var(--action-bg-hover, #f0f4ff);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-color));
 }
 
 .customer-registry__item-content {
@@ -1851,7 +1847,8 @@
 }
 
 .course-registry__item:hover {
-  background: var(--action-bg-hover, #f0f4ff);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-color));
 }
 
 .course-registry__empty {
