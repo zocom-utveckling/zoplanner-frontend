@@ -204,6 +204,10 @@ export function ConsultantOnboarding() {
         <div className="button">
           <Button text="Skapa konto" type={"submit"} style={"submit"} />
         </div>
+        <p className="customer-registry__modal-future-note">
+          Detta formulär är tänkt att nås via konsultens inbjudningslänk. I demo
+          skickas man hit direkt från dev-flödet.
+        </p>
       </form>
     </div>
   );
