@@ -4,7 +4,7 @@
   padding: 0;
 }
 
-.app {
+.home-page__root {
   display: flex;
   position: relative;
   align-items: stretch;
@@ -24,11 +24,11 @@
     );
 }
 
-.app > .sidebar {
+.home-page__root > .sidebar__root {
   flex-shrink: 0;
 }
 
-.app > :not(.sidebar) {
+.home-page__root > :not(.sidebar__root) {
   position: relative;
   min-width: 0;
   flex: 1;
@@ -40,7 +40,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
-.app > :not(.sidebar)::before {
+.home-page__root > :not(.sidebar__root)::before {
   content: "";
   position: absolute;
   inset: 0;

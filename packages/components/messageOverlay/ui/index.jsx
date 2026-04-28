@@ -3,7 +3,7 @@ import "./index.css";
 
 function MessageOverlay({ message, onClose, status }) {
   return (
-    <div className="message-overlay">
+    <div className="message-overlay__overlay">
       <div className="message-overlay__content">
         <header className="message-overlay__header">
           <h2>{status == "recieved" ? message.sender : message.recipient}</h2>
