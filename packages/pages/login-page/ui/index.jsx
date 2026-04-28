@@ -148,9 +148,9 @@ function LoginPage() {
             <p>Registrering sker via inbjudan. Använd länken i mejlet.</p>
           </div>
         </form>
-
-        <p className="login-page__footer">ZoPlanner is a product of ZoCom</p>
       </div>
+
+      <p className="login-page__footer">ZoPlanner is a product of ZoCom</p>
     </div>
   );
 }
