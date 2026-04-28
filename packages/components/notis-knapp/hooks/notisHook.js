@@ -8,7 +8,7 @@ try{
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ RecipientEmail, Message,Subject,EventType:"DIRECT-MESSAGE" }),
+      body: JSON.stringify({ RecipientEmail, Message,Subject:"Study",EventType:"DIRECT_MESSAGE" }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -23,7 +23,7 @@ try{
 
   }
 
-const sendNewAssignmentNotification = async ({ teacherEmail,teacherName, assignmentDescription,assignmentDueDate }) => {
+const sendNewAssignmentNotification = async ({ teacherEmail,teacherName, assignmentDescription,assignmentDueDate,assignmentId }) => {
     try {
         if (!teacherEmail || !teacherName || !assignmentDescription || !assignmentDueDate) {
             throw new Error("All fields are required");
@@ -33,7 +33,7 @@ const sendNewAssignmentNotification = async ({ teacherEmail,teacherName, assignm
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({  teacherEmail, teacherName, assignmentDescription, assignmentDueDate, eventType:"NEW_ASSIGNMENT" }),
+            body: JSON.stringify({  teacherEmail, teacherName, assignmentDescription, assignmentDueDate,assignmentId, timestamp:"2026-04-12T13:00:00.000Z", eventType:"NEW_ASSIGNMENT" }),
         });
         const data = await res.json();
         if (!res.ok) {
@@ -46,9 +46,9 @@ const sendNewAssignmentNotification = async ({ teacherEmail,teacherName, assignm
       throw error;
     }
   };
-  const sendScheduleUpdated = async ({ teacherEmail, message }) => {
+  const sendScheduleUpdated = async ({  message,email }) => {
     try {
-      if (!teacherEmail || !message) {
+      if (!email || !message) {
         throw new Error("Email and message are required");
       }
       const res = await fetch("http://localhost:5027/api/Notification/send-schedule-updated", {
@@ -56,7 +56,17 @@ const sendNewAssignmentNotification = async ({ teacherEmail,teacherName, assignm
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ teacherEmail, message, EventType:"SCHEDULE-UPDATED" }),
+        body: JSON.stringify(
+          {
+  eventType: "SCHEDULE_UPDATED",
+  recipient:email,
+  teacherEmail: email,
+  subject: "Schedule update – week 12",
+  message,
+  eventTime: "2026-03-15T09:00:00.000Z",
+ 
+ 
+} ),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -78,7 +88,7 @@ const sendNewAssignmentNotification = async ({ teacherEmail,teacherName, assignm
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ TeacherEmail, TeacherName, MonthTitle,WeekRange, EventType:"SCHEDULE-CALENDAR" }),
+        body: JSON.stringify({ TeacherEmail, TeacherName, MonthTitle,WeekRange,Days, EventType:"SCHEDULE_CALENDAR" }),
       });
       const data = await res.json();
       if (!res.ok) {
