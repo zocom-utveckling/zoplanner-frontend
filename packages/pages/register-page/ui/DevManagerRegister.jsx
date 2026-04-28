@@ -4,9 +4,9 @@
 
 import { useState } from "react";
 import "./index.css";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@zoplanner/button";
-import { authService } from "@zoplanner/api";
+import { authService, managerService, userService } from "@zoplanner/api";
 import { FaLock, FaEnvelope, FaUser } from "react-icons/fa";
 
 function DevManagerRegister() {
@@ -17,7 +17,6 @@ function DevManagerRegister() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-
   const addManager = async ({ userId }) => {
     try {
       if (!userId) {
@@ -25,17 +24,7 @@ function DevManagerRegister() {
         return false;
       }
 
-      const res = await fetch(`http://localhost:5027/api/Manager/${userId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert("Kunde inte lägga till manager");
-        return false;
-      }
+      const data = await managerService.create(userId);
 
       if (data?.id) {
         localStorage.setItem("managerId", data.id);
@@ -70,12 +59,8 @@ function DevManagerRegister() {
       // Auth/register returnerar inte userId.
       // Vi hämtar därför användaren efteråt
       // för att kunna skapa manager-kopplingen.
-      const userRes = await fetch(
-        `http://localhost:5027/api/User/username/${username}`,
-      );
-      const userData = await userRes.json();
-
-      if (!userRes.ok || !userData?.id) {
+      const userData = await userService.getByUsername(username);
+      if (!userData?.id) {
         alert("Kunde inte hämta användaren efter registrering");
         return;
       }

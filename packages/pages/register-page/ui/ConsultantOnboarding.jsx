@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@zoplanner/button";
+import { authService, consultantService, userService } from "@zoplanner/api";
 import { FaEnvelope, FaLock, FaUser } from "react-icons/fa";
 import "./index.css";
 
@@ -66,43 +67,23 @@ export function ConsultantOnboarding() {
       alert("Ange ditt namn");
       return;
     }
+
     try {
       const userPayload = {
         username: formData.username,
         email: formData.email,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
-        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        name: fullName,
         city: "PENDING",
         role: "CONSULTANT",
       };
 
-      const registerRes = await fetch(
-        "http://localhost:5027/api/Auth/register",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userPayload),
-        },
-      );
+      await authService.register(userPayload);
 
-      if (!registerRes.ok) {
-        const message = await getErrorMessage(
-          registerRes,
-          "Kunde inte skapa användare",
-        );
-        console.error("Register failed:", message);
-        alert(message);
-        return;
-      }
+      const createdUser = await userService.getByUsername(formData.username);
 
-      const userRes = await fetch(
-        `http://localhost:5027/api/User/username/${formData.username}`,
-      );
-
-      const createdUser = await userRes.json();
-
-      if (!userRes.ok || !createdUser?.id) {
+      if (!createdUser?.id) {
         alert("Kunde inte hämta skapad användare");
         return;
       }
@@ -113,32 +94,12 @@ export function ConsultantOnboarding() {
         city: "PENDING",
       };
 
-      const consultantRes = await fetch(
-        "http://localhost:5027/api/Consultant",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(consultantPayload),
-        },
-      );
-
-      if (!consultantRes.ok) {
-        const message = await getErrorMessage(
-          consultantRes,
-          "Kunde inte skapa konsult",
-        );
-        console.error("Consultant creation failed:", {
-          message,
-          consultantPayload,
-        });
-        alert(message);
-        return;
-      }
+      await consultantService.create(consultantPayload);
 
       navigate(`/home-page/${createdUser.id}`);
     } catch (error) {
       console.error(error);
-      alert("Något gick fel");
+      alert(error.message || "Något gick fel");
     }
   };
 
