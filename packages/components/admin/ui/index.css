@@ -1105,16 +1105,96 @@
   font-size: 14px;
 }
 
-/* ---- Customer info modal ---- */
-.customer-registry__modal-backdrop {
+/* =========================================================
+   🔲 7. CONSULTANT INVITE MODAL
+   Fil: ConsultantInviteModal.jsx
+   ========================================================= */
+
+.consultant-invite-modal__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.35);
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.25);
 }
+
+.consultant-invite-modal__content {
+  width: 100%;
+  min-width: 360px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.consultant-invite-modal__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.consultant-invite-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.consultant-invite-modal__input {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 14px;
+  outline: none;
+}
+
+.consultant-invite-modal__input::placeholder {
+  color: var(--text-subtle);
+}
+
+.consultant-invite-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.consultant-invite-modal__btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s;
+}
+
+.consultant-invite-modal__btn:hover {
+  background: var(--surface-muted);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.consultant-invite-modal__btn--primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.consultant-invite-modal__btn--primary:hover {
+  background: var(--accent-hover);
+}
+
+/* ---- Old .modal classes (removed - use consultant-invite-modal__ instead) ---- */
 
 .customer-registry__modal {
   background: #ffffff;
@@ -1288,95 +1368,6 @@
   color: #374151;
   font-size: 12px;
   cursor: pointer;
-}
-
-/* =========================================================
-   GENERIC MODAL
-   Fil: ConsultantInviteModal.jsx (eller annan enkel modal)
-   ========================================================= */
-
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.25);
-}
-
-.modal__content {
-  width: 100%;
-  min-width: 360px;
-  max-width: 480px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 20px;
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-
-.modal__title {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.modal__body {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.modal__input {
-  padding: 10px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--surface);
-  font-size: 14px;
-  outline: none;
-}
-
-.modal__input::placeholder {
-  color: var(--text-subtle);
-}
-
-.modal__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.modal__btn {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s;
-}
-
-.modal__btn:hover {
-  background: var(--surface-muted);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
-}
-
-.modal__btn--primary {
-  background: var(--active-bg);
-  color: var(--active-fg);
-}
-
-.modal__btn--primary:hover {
-  opacity: 0.9;
 }
 
 /* =========================================================

@@ -52,26 +52,26 @@ function CoursesPage() {
   return (
     <>
       <Navbar activePage={"assignments"} user={user}/>
-      <div className="assignment-container">
+      <div className="courses-page__container">
          
         <h2>Uppdrag</h2>
-        <div className="assignment-content">
+        <div className="courses-page__content">
           {assignments.length == 0 ? (
             <h2>Inga uppdrag hittades</h2>
           ) : (
-            <div className="assignments-list">
+            <div className="courses-page__list">
               {assignments.map((assignment) => (
-                <div className="assignment-card">
-                  <section className="assignment-upper">
+                <div className="courses-page__assignment-card">
+                  <section className="courses-page__assignment-upper">
                     <h2>{assignment.course.name} </h2>
 
                     <p>
                       {assignment.dateStart}-{assignment.dateEnd}
                     </p>
                   </section>
-                  <section className="assignment-under">
+                  <section className="courses-page__assignment-under">
                     <h3>Lektioner</h3>
-                    <div className="sessions">
+                    <div className="courses-page__sessions">
                       {assignment.sessions
                         .slice(0, maxShownSessions)
                         .map((session) => {
@@ -80,13 +80,13 @@ function CoursesPage() {
                           const [, endTime] = session.timeEnd.split(" ");
 
                           return (
-                            <div className="session-card" key={session.id}>
-                              <section className="session-upper">
+                            <div className="courses-page__session-card" key={session.id}>
+                              <section className="courses-page__session-upper">
                                 <h4>{session.comment}</h4>
                                 <p>{date}</p>
                               </section>
 
-                              <section className="session-under">
+                              <section className="courses-page__session-under">
                                 <p>{session.location}</p>
                                 <p>
                                   {startTime} - {endTime}

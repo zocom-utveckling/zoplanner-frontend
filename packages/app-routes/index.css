@@ -1,0 +1,68 @@
+/* =========================================================
+   DASHBOARD LAYOUT
+   Fil: DashboardLayout.jsx
+   ========================================================= */
+
+.dashboard-layout__container {
+  display: flex;
+  position: relative;
+  align-items: stretch;
+  gap: 14px;
+  min-height: calc(100vh - 72px);
+  padding: 14px;
+  background:
+    radial-gradient(
+      140% 120% at 100% 0%,
+      color-mix(in srgb, var(--accent) 8%, transparent),
+      transparent 58%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--app-bg) 92%, #fff 8%),
+      var(--app-bg)
+    );
+}
+
+.dashboard-layout__container > .sidebar__root {
+  flex-shrink: 0;
+}
+
+.dashboard-layout__container > :not(.sidebar__root) {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface) 94%, var(--surface-alt) 6%);
+  box-shadow:
+    0 16px 34px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.dashboard-layout__container > :not(.sidebar__root)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 80% at 0% 0%,
+    color-mix(in srgb, var(--surface) 0%, transparent),
+    color-mix(in srgb, var(--surface-alt) 0%, transparent)
+  );
+}
+
+/* Dark mode support */
+[data-theme="dark"] .dashboard-layout__container {
+  background:
+    radial-gradient(
+      140% 120% at 100% 0%,
+      color-mix(in srgb, var(--accent) 6%, transparent),
+      transparent 58%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--app-bg) 88%, #1a1a1a 12%),
+      var(--app-bg)
+    );
+}
