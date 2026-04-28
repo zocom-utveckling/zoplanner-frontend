@@ -451,6 +451,7 @@
   color: #6b7280;
   font-size: 14px;
   font-weight: 500;
+  font-family: "Poppins", sans-serif;
   letter-spacing: 0;
   text-align: center;
   cursor: pointer;
@@ -509,6 +510,7 @@
   border: none;
   border-top: 3px solid transparent;
   border-radius: 10px 10px 0 0;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
   letter-spacing: 0;
   color: #6b7280;
