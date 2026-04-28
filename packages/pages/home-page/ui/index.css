@@ -10,14 +10,6 @@
   background: var(--app-bg);
 }
 
-.sidebar {
-  flex: 0 0 250px;
-  background: var(--surface);
-  border-right: 1px solid var(--border-color);
-  padding: 24px;
-  align-self: stretch;
-}
-
 .brand {
   font-weight: 800;
   font-size: 22px;
