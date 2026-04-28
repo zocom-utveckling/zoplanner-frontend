@@ -278,7 +278,16 @@ export function CourseRegistry({
           onClose={handleCloseCourseModal}
           onFindConsultant={(course) => {
             handleCloseCourseModal();
-            onOpenConsultantMatching?.(course);
+
+            const assignmentForMatching = course.assignment
+              ? {
+                  ...course.assignment,
+                  sessions: course.sessions ?? course.assignment.sessions ?? [],
+                  consultantId: course.assignment.consultantId ?? null,
+                  consultant: course.assignment.consultant ?? null,
+                }
+              : course;
+            onOpenConsultantMatching?.(assignmentForMatching);
           }}
         />
       </div>

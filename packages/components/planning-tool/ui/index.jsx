@@ -224,7 +224,7 @@ export function PlannerWorkspace({
     .replace(/^./, (char) => char.toUpperCase());
 
   const assignedConsultantName = activeAssignment?.consultant?.name || "";
-  const isAssigned = Boolean(activeAssignment?.consultantId);
+  const isAssigned = Number(activeAssignment?.consultantId) > 0;
   const scheduleSummary = buildScheduleSummary(
     activeAssignment?.sessions ?? courseDraft?.sessionsDraft ?? [],
   );
