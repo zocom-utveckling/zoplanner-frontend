@@ -2,7 +2,7 @@
   width: 100%;
   padding: 12px 16px;
   margin-top: 16px;
-  background-color: #2e7de3;
+  background-color: var(--segment-active-bg);
   color: var(--action-fg);
   border: none;
   border-radius: 8px;
@@ -32,7 +32,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--overlay-backdrop);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,7 +44,7 @@
   border-radius: 8px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--elevation-modal);
   font-family: "Poppins", sans-serif;
 }
 

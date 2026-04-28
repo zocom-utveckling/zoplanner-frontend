@@ -10,9 +10,15 @@ body {
   padding: 0;
 }
 
+html {
+  color-scheme: light dark;
+}
+
 :root {
   --app-bg: #eef2f8;
   --nav-bg: #ffffff;
+  --navbar-bg: #9b9999;
+  --navbar-fg: #ffffff;
   --surface: #ffffff;
   --surface-alt: #f7f9fc;
   --surface-muted: #f5f7fa;
@@ -46,6 +52,9 @@ body {
   --icon-bg: #262626;
   --icon-fg: #ffffff;
   --focus-ring: rgba(47, 128, 255, 0.35);
+  --overlay-backdrop: rgba(15, 23, 42, 0.42);
+  --elevation-card: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --elevation-modal: 0 16px 40px rgba(15, 23, 42, 0.2);
   --delete-bg: #e53e3e;
   --delete-bg-hover: #c53030;
   --delete-fg: #ffffff;
@@ -54,6 +63,8 @@ body {
 [data-theme="dark"] {
   --app-bg: #0f141a;
   --nav-bg: #111826;
+  --navbar-bg: #243247;
+  --navbar-fg: #f8fafc;
   --surface: #161f2e;
   --surface-alt: #1c2638;
   --surface-muted: #1f2a3d;
@@ -87,4 +98,7 @@ body {
   --icon-bg: #f1f5f9;
   --icon-fg: #111826;
   --focus-ring: rgba(129, 178, 255, 0.45);
+  --overlay-backdrop: rgba(5, 8, 14, 0.62);
+  --elevation-card: 0 8px 24px rgba(2, 6, 23, 0.35);
+  --elevation-modal: 0 16px 40px rgba(2, 6, 23, 0.55);
 }

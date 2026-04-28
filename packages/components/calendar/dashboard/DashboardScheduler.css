@@ -548,3 +548,52 @@
   align-items: center;
   justify-content: center;
 }
+
+[data-theme="dark"] .toggle-track {
+  background: var(--surface-strong);
+}
+
+[data-theme="dark"] .toggle-track--on {
+  background: var(--active-bg);
+}
+
+[data-theme="dark"] .toggle-thumb {
+  background: var(--surface);
+}
+
+[data-theme="dark"] .event-block {
+  background: var(--surface);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .event-block:not(.event-block--activity) {
+  border-color: var(--border-input);
+  border-left-color: var(--border-strong);
+  background: var(--surface-alt);
+  box-shadow: var(--elevation-card);
+}
+
+[data-theme="dark"] .event-title,
+[data-theme="dark"] .event-subtitle,
+[data-theme="dark"] .event-subtitle--inline::before {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .month-cell--focus-day {
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+}
+
+[data-theme="dark"] .month-event-pill--activity {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .month-event-pill--non-activity {
+  border-color: var(--border-input);
+  border-left-color: var(--border-strong);
+  background: var(--surface-alt);
+  box-shadow: var(--elevation-card);
+}
+
+[data-theme="dark"] .month-event-pill--non-activity.is-start {
+  background: var(--surface);
+}

@@ -75,3 +75,46 @@
 .quick-message-send:hover:not(:disabled) {
   background: #1742a0;
 }
+
+[data-theme="dark"] .quick-message-modal-backdrop {
+  background: var(--overlay-backdrop);
+}
+
+[data-theme="dark"] .quick-message-modal {
+  background: var(--surface);
+  box-shadow: var(--elevation-modal);
+}
+
+[data-theme="dark"] .quick-message-modal h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .quick-message-textarea {
+  background: var(--surface-alt);
+  border-color: var(--border-input);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .quick-message-cancel {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .quick-message-cancel:hover {
+  background: var(--surface-strong);
+}
+
+[data-theme="dark"] .quick-message-send {
+  background: var(--action-bg);
+  color: var(--action-fg);
+}
+
+[data-theme="dark"] .quick-message-send:disabled {
+  background: var(--surface-strong);
+  color: var(--text-subtle);
+}
+
+[data-theme="dark"] .quick-message-send:hover:not(:disabled) {
+  background: var(--action-bg-hover);
+}

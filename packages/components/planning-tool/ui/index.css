@@ -106,7 +106,6 @@
   padding: 0;
 }
 
-
 /* =========================================================
    📅 2. KALENDER (PlannerMonthView.jsx)
    ========================================================= */
@@ -533,7 +532,6 @@
   color: #666;
 }
 
-
 /* =========================================================
    📊 5. COURSE SUMMARY (CourseSummary.jsx)
    ========================================================= */
@@ -637,7 +635,6 @@
   border-radius: 8px;
   border: 1px solid #ccc;
 }
-
 
 /* =========================================================
    🔘 7. BUTTON (PlannerWorkspace.jsx)
@@ -948,4 +945,207 @@
 
 .assignment-summary-card__button--secondary:hover {
   background: #e5e5e5;
+}
+
+[data-theme="dark"] .planner-workspace__header {
+  border-bottom-color: var(--border-subtle);
+}
+
+[data-theme="dark"] .planner-workspace__header h1,
+[data-theme="dark"] .planner-workspace__header-month,
+[data-theme="dark"] .planner-month-weeknumber-header,
+[data-theme="dark"] .planner-month-weeknumber-cell,
+[data-theme="dark"] .assignment-summary-card__title,
+[data-theme="dark"] .assignment-summary-card__value {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .planner-workspace__main,
+[data-theme="dark"] .planner-workspace__panel,
+[data-theme="dark"] .scheduler-modal-content,
+[data-theme="dark"] .assignment-summary-card {
+  background: var(--surface);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .planner-workspace__header-month,
+[data-theme="dark"] .planner-btn-primary:disabled,
+[data-theme="dark"] .consultant-match-panel__back,
+[data-theme="dark"] .consultant-match-panel__field select,
+[data-theme="dark"] .scheduler-form-group input,
+[data-theme="dark"] .scheduler-form-group select,
+[data-theme="dark"] .assignment-summary-card__button--secondary {
+  background: var(--surface-alt);
+  border-color: var(--border-input);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .planner-month-cell {
+  border-color: var(--border-subtle);
+}
+
+[data-theme="dark"] .planner-month-cell:hover {
+  background: var(--surface-alt);
+}
+
+[data-theme="dark"] .planner-month-cell--weekend {
+  background: var(--surface-muted);
+}
+
+[data-theme="dark"] .planner-month-event-pill--assignment-session {
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+  border-left-color: var(--accent);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .planner-month-event-pill--consultant-activity {
+  background: color-mix(in srgb, #16a34a 18%, var(--surface));
+  border-left-color: #16a34a;
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .scheduler-modal-overlay {
+  background: var(--overlay-backdrop);
+}
+
+[data-theme="dark"] .assignment-summary-card {
+  box-shadow: var(--elevation-card);
+}
+
+[data-theme="dark"] .assignment-summary-card__eyebrow,
+[data-theme="dark"] .assignment-summary-card__label,
+[data-theme="dark"] .consultant-match-panel__meta,
+[data-theme="dark"] .course-summary__comment {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .assignment-summary-card__button--primary {
+  background: var(--action-bg);
+  color: var(--action-fg);
+}
+
+[data-theme="dark"] .assignment-summary-card__button--primary:hover {
+  background: var(--action-bg-hover);
+}
+
+/* Planera visual polish in Admin dark mode */
+[data-theme="dark"] .planner-workspace,
+[data-theme="dark"] .planner-workspace__layout,
+[data-theme="dark"] .planner-workspace__sidebar {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .planner-workspace__panel--form {
+  padding: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--elevation-card);
+}
+
+[data-theme="dark"] .course-setup-field label,
+[data-theme="dark"] .course-setup-days__title,
+[data-theme="dark"] .course-setup-day-label,
+[data-theme="dark"] .course-summary__title,
+[data-theme="dark"] .course-summary__time,
+[data-theme="dark"] .draft-main,
+[data-theme="dark"] .consultant-match-panel__title,
+[data-theme="dark"] .planner-match-actions__status {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .course-setup-hint,
+[data-theme="dark"] .course-summary__meta,
+[data-theme="dark"] .draft-meta,
+[data-theme="dark"] .consultant-match-panel__empty,
+[data-theme="dark"] .consultant-match-panel__field label,
+[data-theme="dark"] .consultant-match-panel__checkbox,
+[data-theme="dark"] .consultant-match-panel__stats,
+[data-theme="dark"] .consultant-match-panel__subject,
+[data-theme="dark"] .planner-month-period-year {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .course-setup-field input,
+[data-theme="dark"] .course-setup-field select,
+[data-theme="dark"] .course-setup-day-time,
+[data-theme="dark"] .course-summary,
+[data-theme="dark"] .consultant-match-panel__card,
+[data-theme="dark"] .request-modal,
+[data-theme="dark"] .planner-month-period-header {
+  background: var(--surface-alt);
+  border-color: var(--border-input);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .course-setup-form button,
+[data-theme="dark"] .consultant-match-panel__select,
+[data-theme="dark"] .planner-btn-primary {
+  background: var(--action-bg);
+  color: var(--action-fg);
+}
+
+[data-theme="dark"] .course-setup-form button:hover,
+[data-theme="dark"]
+  .consultant-match-panel__card--selected
+  .consultant-match-panel__select,
+[data-theme="dark"] .planner-btn-primary:hover:not(:disabled) {
+  background: var(--action-bg-hover);
+}
+
+[data-theme="dark"] .planner-month-period-header {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+[data-theme="dark"] .planner-month-period-months,
+[data-theme="dark"] .planner-month-weekday-cell,
+[data-theme="dark"] .planner-month-cell-header,
+[data-theme="dark"] .planner-month-holiday,
+[data-theme="dark"] .planner-month-event-time,
+[data-theme="dark"] .planner-month-event-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .planner-month-cell--holiday {
+  background: color-mix(in srgb, var(--delete-bg) 14%, var(--surface));
+}
+
+[data-theme="dark"] .planner-month-event-pill--consultant-request {
+  background: color-mix(in srgb, #f59e0b 24%, var(--surface));
+  border-color: #f59e0b;
+  color: #fde68a;
+}
+
+[data-theme="dark"] .planner-month-event-pill--consultant-request-accepted {
+  background: color-mix(in srgb, #22c55e 24%, var(--surface));
+  color: #86efac;
+}
+
+[data-theme="dark"] .planner-month-event-pill--consultant-request-declined {
+  background: color-mix(in srgb, var(--delete-bg) 24%, var(--surface));
+  color: #fecaca;
+}
+
+[data-theme="dark"] .planning-draft-item:hover {
+  background: var(--surface-muted);
+}
+
+[data-theme="dark"] .planning-draft-item.selected {
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border-color));
+}
+
+[data-theme="dark"] .consultant-match-panel__warning {
+  border-color: #f59e0b;
+  background: color-mix(in srgb, #f59e0b 14%, var(--surface));
+}
+
+[data-theme="dark"] .consultant-match-panel__warning-text,
+[data-theme="dark"] .consultant-match-panel__warning-list {
+  color: #fcd34d;
+}
+
+[data-theme="dark"] .consultant-match-panel__complete {
+  background: #d97706;
+  color: #fff;
 }

@@ -3,11 +3,11 @@
   align-items: center;
   min-height: 68px;
   padding: 8px 22px;
-  background-color: #9b9999;
-  color: var(--text-primary);
+  background-color: var(--navbar-bg);
+  color: var(--navbar-fg);
   font-family: "Poppins", sans-serif;
-  border-top: 1px solid rgba(255, 255, 255, 0.35);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  border-top: 1px solid color-mix(in srgb, var(--navbar-fg) 35%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--navbar-fg) 35%, transparent);
   position: relative;
   z-index: 20;
   overflow: visible;
@@ -67,14 +67,14 @@
   padding: 8px 12px;
   border-radius: 4px;
   transition: background-color 0.2s ease;
-  color: #ffffff;
+  color: var(--navbar-fg);
   white-space: nowrap;
 }
 .routes button:hover {
-  background-color: rgba(255, 255, 255, 0.12);
+  background-color: color-mix(in srgb, var(--navbar-fg) 12%, transparent);
 }
 .routes button.active {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: color-mix(in srgb, var(--navbar-fg) 20%, transparent);
 }
 
 .icon-group {
@@ -87,9 +87,9 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  border: 1px solid color-mix(in srgb, var(--navbar-fg) 55%, transparent);
+  background-color: color-mix(in srgb, var(--navbar-fg) 8%, transparent);
+  color: var(--navbar-fg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,8 +102,8 @@
 
 .icon:hover,
 .notification:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background-color: color-mix(in srgb, var(--navbar-fg) 20%, transparent);
+  color: var(--navbar-fg);
   transform: translateY(-1px);
 }
 
@@ -123,8 +123,8 @@
   position: absolute;
   top: -4px;
   right: -4px;
-  background-color: red;
-  color: white;
+  background-color: var(--delete-bg);
+  color: var(--delete-fg);
   font-size: 8px;
   line-height: 1;
   min-width: 12px;
@@ -149,7 +149,7 @@
   border: none;
   cursor: pointer;
   font-size: 11px;
-  color: #ffffff;
+  color: var(--navbar-fg);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   font-weight: 600;
@@ -187,7 +187,7 @@
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid var(--border-color);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--elevation-card);
   animation: dropdown 0.5s ease forwards;
   transition: all 0.8s ease;
   z-index: 999;
@@ -218,9 +218,9 @@
   font-size: 0;
   gap: 0;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  border: 1px solid color-mix(in srgb, var(--navbar-fg) 55%, transparent);
+  background-color: color-mix(in srgb, var(--navbar-fg) 8%, transparent);
+  color: var(--navbar-fg);
 }
 
 .navbar .dark-mode-button span {

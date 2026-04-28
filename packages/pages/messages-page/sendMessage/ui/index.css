@@ -4,7 +4,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--overlay-backdrop);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,7 +14,7 @@
 .sendOverlay-content {
   background-color: var(--surface);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--elevation-modal);
   width: 600px;
   max-width: 90%;
   display: flex;
@@ -61,7 +61,9 @@
   color: var(--text-primary);
   font-size: 0.95rem;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .sendOverlay-field input:focus,
@@ -85,7 +87,7 @@
   max-height: 150px;
   overflow-y: auto;
   width: 100%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--elevation-card);
   list-style: none;
   z-index: 10;
 }

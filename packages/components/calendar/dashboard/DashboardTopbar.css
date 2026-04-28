@@ -42,3 +42,16 @@
   align-items: center;
   gap: 16px;
 }
+
+[data-theme="dark"] .message-btn {
+  background: var(--segment-active-bg);
+  color: var(--segment-active-fg);
+  border-color: var(--segment-active-bg);
+  box-shadow: var(--elevation-card);
+}
+
+[data-theme="dark"] .message-btn:hover,
+[data-theme="dark"] .message-btn:focus {
+  background: var(--accent-hover);
+  box-shadow: var(--elevation-modal);
+}
