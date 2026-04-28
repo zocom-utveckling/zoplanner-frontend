@@ -145,8 +145,8 @@
 }
 
 .segment-btn.segment-active {
-  color: var(--active-fg);
-  background: var(--active-bg);
+  color: var(--segment-active-fg);
+  background: var(--segment-active-bg);
 }
 
 .segment-btn:hover:not(.segment-active) {
@@ -259,8 +259,8 @@
 }
 
 .topbar--all-schedules .segment-btn.segment-active {
-  color: #1f3a66;
-  background: #e8eefc;
+  color: var(--segment-active-fg);
+  background: var(--segment-active-bg);
 }
 
 @media (max-width: 900px) {
