@@ -67,7 +67,7 @@ export function AllSchedulesScheduler({ user }) {
   });
 
   if (isLoadingActor) {
-    return <main className="main">Laddar...</main>;
+    return <main className="all-schedules-scheduler">Laddar...</main>;
   }
 
   function isAddButtonActivity(eventItem) {
@@ -102,7 +102,7 @@ export function AllSchedulesScheduler({ user }) {
   }
 
   return (
-    <main className="main">
+    <main className="all-schedules-scheduler">
       <AllSchedulesTopbar
         focusDate={focusDate}
         view={view}
