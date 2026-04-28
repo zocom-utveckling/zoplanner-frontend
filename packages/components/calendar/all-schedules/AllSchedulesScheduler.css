@@ -748,7 +748,9 @@
 [data-theme="dark"] .all-schedules-topbar .all-schedules-topbar__today-btn,
 [data-theme="dark"] .all-schedules-topbar .all-schedules-topbar__segment,
 [data-theme="dark"] .all-schedules-topbar__filters,
-[data-theme="dark"] .all-schedules-topbar__filters .all-schedules-topbar__search,
+[data-theme="dark"]
+  .all-schedules-topbar__filters
+  .all-schedules-topbar__search,
 [data-theme="dark"]
   .all-schedules-topbar__filters
   .all-schedules-topbar__filter-select {
