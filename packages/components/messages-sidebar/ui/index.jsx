@@ -1,32 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./index.css"
-function MessagesSidebar({ onConsultantClick }) {
-    const [consultants,setConsultants]=useState([
-        {
-            username:"konsult1",
-            name:"Anna Svensson"
-        },
-        {
-            username:"konsult2",
-            name:"Erik Andersson"
-        },
-        {
-            username:"konsult3",
-            name:"Maria Bergström"
-        },
-        {
-            username:"konsult4",
-            name:"Johan Nilsson"
-        },
-        {
-            username:"konsult5",
-            name:"Lisa Eklund"
-        },
-        {
-            username:"konsult6",
-            name:"Per Lundgren"
+function MessagesSidebar({ user, onConsultantClick }) {
+    const [consultants, setConsultants] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        async function fetchUsers() {
+            setIsLoading(true);
+            try {
+                const res = await fetch(`http://localhost:5027/api/User`);
+                const data = await res.json();
+                if (res.ok) {
+                    // Filter out the logged-in user
+                    const filteredUsers = data.filter((u) => u.id !== user?.id);
+                    setConsultants(filteredUsers);
+                } else {
+                    console.log("Could not get users");
+                }
+            } catch (err) {
+                console.error("Error fetching users:", err);
+            } finally {
+                setIsLoading(false);
+            }
         }
-    ])
+        if (user?.id) {
+            fetchUsers();
+        }
+    }, [user?.id])
     return(
         <>
         <div className="sidebar-container">
