@@ -1,4 +1,4 @@
-.confirm-container{
+.confirm-popup__overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -10,6 +10,7 @@
     justify-content: center;
     z-index: 1000;
 }
+
 .confirm-popup {
     background-color: var(--surface-strong);
     padding: 24px;
@@ -20,7 +21,8 @@
     flex-direction: column;
     gap: 20px;
 }
-.buttons{
+
+.confirm-popup__actions {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
