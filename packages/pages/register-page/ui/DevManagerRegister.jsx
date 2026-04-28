@@ -161,6 +161,10 @@ function DevManagerRegister() {
               style="submit"
             />
           </div>
+          <p className="customer-registry__modal-future-note">
+            Gör det möjligt att skapa ett managerkonto i demo utan att sätta upp
+            data manuellt. Kommer inte att stödjas i kommande versioner.
+          </p>
         </form>
       </div>
     </>

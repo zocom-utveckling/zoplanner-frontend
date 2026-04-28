@@ -34,6 +34,11 @@ export function ConsultantInviteModal({ isOpen, onClose, onSubmit }) {
               Skicka
             </button>
           </div>
+          <p className="customer-registry__modal-future-note">
+            Tanken är att en inbjudningslänk skickas till konsulten, där kontot
+            skapas. Backendstöd saknas i dagsläget. För demo navigerar den här
+            till registreringssidan som konsulten ska nå med länken.
+          </p>
         </form>
       </div>
     </div>
