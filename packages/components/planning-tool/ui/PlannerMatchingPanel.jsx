@@ -82,10 +82,10 @@ export default function PlannerMatchingPanel({
         </p>
 
         {missingFinalInfo.length > 0 && (
-          <div className="planner-warning">
+          <div className="planner-match-actions__warning">
             Du måste ange {missingFinalInfo.join(", ")} innan du kan slutföra.
             <button
-              className="planner-btn-secondary"
+              className="planner-match-actions__info-btn"
               onClick={() => setPlannerMode("planning")}
             >
               Fyll i uppgifter

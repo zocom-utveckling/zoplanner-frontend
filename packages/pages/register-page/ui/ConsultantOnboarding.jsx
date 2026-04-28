@@ -108,7 +108,7 @@ export function ConsultantOnboarding() {
   };
 
   return (
-    <div className="container">
+    <div className="register-page__form-container">
       <h1>ZoPlanner</h1>
 
       <form onSubmit={handleSubmit}>

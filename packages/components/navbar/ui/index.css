@@ -17,18 +17,18 @@
   font-family: "Poppins", sans-serif;
 }
 
-.navbar-left {
+.navbar__left {
   flex-shrink: 0;
 }
 
-.navbar-right {
+.navbar__right {
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-.logo {
+.navbar__logo {
   margin-left: 4px;
   width: 170px;
   height: 42px;
@@ -42,20 +42,20 @@
   cursor: pointer;
 }
 
-.logo-image {
+.navbar__logo-image {
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
 }
 
-.routes {
+.navbar__routes {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.routes button {
+.navbar__route-btn {
   background: none;
   border: none;
   font-size: 12px;
@@ -70,20 +70,22 @@
   color: var(--navbar-fg);
   white-space: nowrap;
 }
-.routes button:hover {
+
+.navbar__route-btn:hover {
   background-color: color-mix(in srgb, var(--navbar-fg) 12%, transparent);
 }
-.routes button.active {
+
+.navbar__route-btn--active {
   background-color: color-mix(in srgb, var(--navbar-fg) 20%, transparent);
 }
 
-.icon-group {
+.navbar__icon-group {
   display: flex;
   gap: 6px;
 }
 
-.icon,
-.notification {
+.navbar__icon,
+.navbar__notification {
   width: 22px;
   height: 22px;
   border-radius: 50%;
@@ -100,26 +102,26 @@
     background-color 0.2s ease;
 }
 
-.icon:hover,
-.notification:hover {
+.navbar__icon:hover,
+.navbar__notification:hover {
   background-color: color-mix(in srgb, var(--navbar-fg) 20%, transparent);
   color: var(--navbar-fg);
   transform: translateY(-1px);
 }
 
-.notification svg,
-.icon svg {
+.navbar__notification svg,
+.navbar__icon svg {
   width: 11px;
   height: 11px;
 }
 
-.locale-chip {
+.navbar__locale-chip {
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.04em;
 }
 
-.badge {
+.navbar__notification-badge {
   position: absolute;
   top: -4px;
   right: -4px;
@@ -136,12 +138,12 @@
   align-items: center;
 }
 
-.profile {
+.navbar__profile {
   position: relative;
   z-index: 30;
 }
 
-.profile-trigger {
+.navbar__profile-trigger {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -160,25 +162,25 @@
     color 0.2s ease;
 }
 
-.profile-trigger span {
+.navbar__profile-trigger span {
   max-width: 145px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.profile-trigger:hover,
-.profile-trigger:focus-visible {
+.navbar__profile-trigger:hover,
+.navbar__profile-trigger:focus-visible {
   background-color: transparent;
   outline: none;
 }
 
-.profile-trigger svg {
+.navbar__profile-trigger svg {
   width: 11px;
   height: 11px;
 }
 
-.dropdown {
+.navbar__dropdown {
   position: absolute;
   right: 0;
   top: 120%;
@@ -193,7 +195,7 @@
   z-index: 999;
 }
 
-.dropdown a {
+.navbar__dropdown a {
   padding: 12px;
   text-decoration: none;
   color: var(--text-primary);
