@@ -68,11 +68,6 @@
   justify-content: flex-end;
 }
 
-.dashboard-topbar__controls button,
-.dashboard-topbar__controls input {
-  font-family: "Poppins", sans-serif;
-}
-
 .dashboard-topbar__today-btn {
   padding: 8px 14px;
   border: none;
@@ -80,7 +75,6 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
-  font-family: "Poppins", sans-serif;
   color: var(--text-primary);
   background: var(--surface);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -166,7 +160,6 @@
   display: inline-flex;
   overflow: hidden;
   border-radius: 8px;
-  font-family: "Poppins", sans-serif;
   background: var(--surface);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
@@ -178,7 +171,6 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
-  font-family: "Poppins", sans-serif;
   color: var(--text-primary);
   background: var(--surface);
   transition: all 0.2s;

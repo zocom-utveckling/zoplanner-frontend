@@ -76,12 +76,6 @@
   justify-content: flex-end;
 }
 
-.all-schedules-topbar__actions button,
-.all-schedules-topbar__filters input,
-.all-schedules-topbar__filters select {
-  font-family: "Poppins", sans-serif;
-}
-
 .all-schedules-topbar__today-btn {
   padding: 8px 14px;
   border: none;
@@ -141,7 +135,6 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
-  font-family: "Poppins", sans-serif;
   color: var(--text-primary);
   background: var(--surface);
   transition: all 0.2s;
@@ -451,7 +444,6 @@
   color: #6b7280;
   font-size: 14px;
   font-weight: 500;
-  font-family: "Poppins", sans-serif;
   letter-spacing: 0;
   text-align: center;
   cursor: pointer;
@@ -510,7 +502,6 @@
   border: none;
   border-top: 3px solid transparent;
   border-radius: 10px 10px 0 0;
-  font-family: "Poppins", sans-serif;
   font-weight: 500;
   letter-spacing: 0;
   color: #6b7280;
