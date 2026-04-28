@@ -523,16 +523,16 @@
   background: #f5f5f5;
 }
 
-.planning-draft-item.selected {
+.planning-draft-item.planning-draft-item--selected {
   background: #e8f0ff;
   font-weight: 500;
 }
 
-.draft-main {
+.planning-draft-item__main {
   font-size: 14px;
 }
 
-.draft-meta {
+.planning-draft-item__meta {
   font-size: 12px;
   color: #666;
 }
@@ -1053,7 +1053,7 @@
 [data-theme="dark"] .course-setup-day-label,
 [data-theme="dark"] .course-summary__title,
 [data-theme="dark"] .course-summary__time,
-[data-theme="dark"] .draft-main,
+[data-theme="dark"] .planning-draft-item__main,
 [data-theme="dark"] .consultant-match-panel__title,
 [data-theme="dark"] .planner-match-actions__status {
   color: var(--text-primary);
@@ -1061,7 +1061,7 @@
 
 [data-theme="dark"] .course-setup-hint,
 [data-theme="dark"] .course-summary__meta,
-[data-theme="dark"] .draft-meta,
+[data-theme="dark"] .planning-draft-item__meta,
 [data-theme="dark"] .consultant-match-panel__empty,
 [data-theme="dark"] .consultant-match-panel__field label,
 [data-theme="dark"] .consultant-match-panel__checkbox,

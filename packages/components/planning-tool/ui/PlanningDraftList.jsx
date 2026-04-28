@@ -16,14 +16,14 @@ export default function PlanningDraftList({
         return (
           <div
             key={draft.id}
-            className={`planning-draft-item ${isSelected ? "selected" : ""}`}
+            className={`planning-draft-item ${isSelected ? "planning-draft-item--selected" : ""}`}
             onClick={() => onSelect(draft)}
           >
-            <div className="draft-main">
+            <div className="planning-draft-item__main">
               {draft.courseName || "Namnlös kurs"}
             </div>
 
-            <div className="draft-meta">
+            <div className="planning-draft-item__meta">
               {draft.startDate}
               {draft.endDate ? ` - ${draft.endDate}` : ""}
             </div>

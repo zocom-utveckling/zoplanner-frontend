@@ -1278,7 +1278,7 @@
    Fil: CustomerRegistry.jsx / CourseRegistry.jsx
    ========================================================= */
 
-.chip {
+.registry-search-filter__chip {
   display: inline-flex;
   align-items: center;
   gap: 4px;

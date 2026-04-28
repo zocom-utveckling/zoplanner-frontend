@@ -266,7 +266,7 @@ export function RegistrySearchFilter({
             <button
               key={chip.key}
               type="button"
-              className="chip"
+              className="registry-search-filter__chip"
               onClick={chip.onRemove}
             >
               {chip.label} ✕
