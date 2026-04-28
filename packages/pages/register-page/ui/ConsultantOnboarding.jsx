@@ -114,15 +114,15 @@ export function ConsultantOnboarding() {
       <form onSubmit={handleSubmit}>
         <button
           type="button"
-          className="close-button"
+          className="register-page__close-button"
           onClick={handleClose}
           aria-label="Stäng"
         >
           ×
         </button>
         <h2>Skapa ditt konto</h2>
-        <div className="field">
-          <div className="label">
+        <div className="register-page__field">
+          <div className="register-page__label">
             <FaUser /> <span>Förnamn</span>
           </div>
           <input
@@ -134,8 +134,8 @@ export function ConsultantOnboarding() {
           />
         </div>
 
-        <div className="field">
-          <div className="label">
+        <div className="register-page__field">
+          <div className="register-page__label">
             <FaUser /> <span>Efternamn</span>
           </div>
           <input
@@ -147,8 +147,8 @@ export function ConsultantOnboarding() {
           />
         </div>
 
-        <div className="field">
-          <div className="label">
+        <div className="register-page__field">
+          <div className="register-page__label">
             <FaUser /> <span>Användarnamn</span>
           </div>
           <input
@@ -160,8 +160,8 @@ export function ConsultantOnboarding() {
           />
         </div>
 
-        <div className="field">
-          <div className="label">
+        <div className="register-page__field">
+          <div className="register-page__label">
             <FaEnvelope /> <span>E-post</span>
           </div>
           <input
@@ -169,12 +169,12 @@ export function ConsultantOnboarding() {
             type="email"
             value={formData.email}
             disabled
-            className="input--disabled"
+            className="register-page__input--disabled"
           />
         </div>
 
-        <div className="field">
-          <div className="label">
+        <div className="register-page__field">
+          <div className="register-page__label">
             <FaLock /> <span>Lösenord</span>
           </div>
           <input
@@ -187,8 +187,8 @@ export function ConsultantOnboarding() {
           />
         </div>
 
-        <div className="field">
-          <div className="label">
+        <div className="register-page__field">
+          <div className="register-page__label">
             <FaLock /> <span>Upprepa lösenord</span>
           </div>
           <input

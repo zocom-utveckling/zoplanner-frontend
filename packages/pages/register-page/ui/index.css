@@ -32,7 +32,7 @@
   letter-spacing: 1px;
 }
 
-.label {
+.register-page__label {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -40,11 +40,11 @@
   font-weight: 600;
   color: var(--text-primary);
 }
-.label span {
+.register-page__label span {
   letter-spacing: 0.7px;
 }
-.field input,
-.field select {
+.register-page__field input,
+.register-page__field select {
   padding: 0 5px;
   justify-content: center;
   height: 40px;
@@ -67,13 +67,14 @@
 .register-page__button-group p {
   margin: 0;
 }
-.field input:disabled {
+.register-page__field input:disabled,
+.register-page__input--disabled {
   color: var(--text-muted);
   -webkit-text-fill-color: var(--text-muted);
   background-color: var(--surface-muted);
   cursor: not-allowed;
 }
-.close-button {
+.register-page__close-button {
   position: absolute;
   top: -10px;
   right: -10px;
@@ -97,6 +98,6 @@
   opacity: 0.8;
 }
 
-.close-button:hover {
+.register-page__close-button:hover {
   opacity: 1;
 }
