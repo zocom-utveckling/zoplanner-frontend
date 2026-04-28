@@ -15,6 +15,7 @@ export default function PlannerMatchingPanel({
   onSelectConsultant,
   onBack,
   onConfirmConsultant,
+  onFillInDetails,
   assignedConsultantName,
   scheduleSummary,
   onExportPdf,
@@ -50,14 +51,11 @@ export default function PlannerMatchingPanel({
     <>
       <div className="consultant-match-panel__header">
         <div className="consultant-match-panel__header-main">
-          <p className="consultant-match-panel__eyebrow">Nästa steg</p>
-          <h2 className="consultant-match-panel__title">Hitta konsult</h2>
+          <h2 className="consultant-match-panel__title">
+            {courseDraft?.courseName || "Kursschema"}
+          </h2>
           <p className="consultant-match-panel__meta">
-            <strong>{courseDraft?.courseName || "Kursschema"}</strong>
-          </p>
-          <p className="consultant-match-panel__meta">
-            Period: {courseDraft?.startDate || ""} –{" "}
-            {courseDraft?.endDate || ""}
+            {courseDraft?.startDate || ""} – {courseDraft?.endDate || ""}
           </p>
         </div>
 
@@ -67,7 +65,7 @@ export default function PlannerMatchingPanel({
             className="consultant-match-panel__back"
             onClick={onBack}
           >
-            Tillbaka till planering
+            Redigera
           </button>
         )}
       </div>
@@ -81,13 +79,10 @@ export default function PlannerMatchingPanel({
               : "Välj en konsult för att förhandsvisa schemat."}
         </p>
 
-        {missingFinalInfo.length > 0 && (
-          <div className="planner-match-actions__warning">
+        {selectedConsultant && missingFinalInfo.length > 0 && (
+          <div className="planner-warning">
             Du måste ange {missingFinalInfo.join(", ")} innan du kan slutföra.
-            <button
-              className="planner-match-actions__info-btn"
-              onClick={() => setPlannerMode("planning")}
-            >
+            <button className="planner-btn-secondary" onClick={onFillInDetails}>
               Fyll i uppgifter
             </button>
           </div>
@@ -102,6 +97,7 @@ export default function PlannerMatchingPanel({
         selectedConsultantId={selectedConsultant?.id}
         onSelectConsultant={onSelectConsultant}
         onConfirmConsultant={onConfirmConsultant}
+        confirmDisabled={missingFinalInfo.length > 0}
       />
     </>
   );

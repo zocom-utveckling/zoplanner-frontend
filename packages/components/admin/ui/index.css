@@ -1685,6 +1685,12 @@
 .course-details-modal__actions {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  padding-top: 8px;
+  background: #fff;
 }
 
 .course-details-modal__secondary {
@@ -1703,6 +1709,60 @@
 .course-details-modal__secondary:hover {
   background: #f9fafb;
   transform: translateY(-1px);
+}
+
+.course-details-modal__delete {
+  padding: 10px 16px;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  background: #fff;
+  color: #dc2626;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    transform 0.14s ease;
+}
+
+.course-details-modal__delete:hover {
+  background: #fef2f2;
+  transform: translateY(-1px);
+}
+
+.course-details-modal__delete:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.course-details-modal__consultant--assigned {
+  color: #065f46;
+  font-weight: 500;
+}
+
+.course-details-modal__consultant--unassigned {
+  color: #991b1b;
+  font-weight: 500;
+}
+
+.confirm-modal__content {
+  width: min(560px, calc(100vw - 32px));
+}
+
+.confirm-modal__body {
+  padding: 4px 2px 12px;
+}
+
+.confirm-modal__message {
+  margin: 0;
+  font-size: 15px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.confirm-modal__actions {
+  margin-top: 8px;
+  position: static;
 }
 
 @media (max-width: 960px) {

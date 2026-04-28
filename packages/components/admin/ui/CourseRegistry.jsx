@@ -4,7 +4,11 @@ import { useCurrentActor } from "@zoplanner/app-hooks";
 import { assignmentService } from "@zoplanner/api";
 import { dev } from "@zoplanner/admin";
 import CourseDetailsModal from "./CourseDetailsModal";
-import { loadPlanningDrafts } from "@zoplanner/planning-tool";
+import ConfirmModal from "./ConfirmModal";
+import {
+  loadPlanningDrafts,
+  removePlanningDraft,
+} from "@zoplanner/planning-tool";
 import { RegistrySearchFilter } from "./RegistrySearchFilter";
 
 export function CourseRegistry({
@@ -18,7 +22,11 @@ export function CourseRegistry({
   const [loading, setLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
+  const [confirmDeleteCourse, setConfirmDeleteCourse] = useState(null);
+  const [draftsKey, setDraftsKey] = useState(0);
 
+  // draftsKey dependency ensures re-read from localStorage after deletion
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const drafts = loadPlanningDrafts();
 
   const [search, setSearch] = useState("");
@@ -54,7 +62,11 @@ export function CourseRegistry({
     const start = new Date(courseLike.startDate);
     const end = new Date(courseLike.endDate);
 
-    if (today >= start && today <= end) return "ongoing";
+    const withinDateRange = today >= start && today <= end;
+    const hasConsultant = Boolean(courseLike.consultantId);
+    const hasSessions = (courseLike.sessions?.length ?? 0) > 0;
+
+    if (withinDateRange && hasConsultant && hasSessions) return "ongoing";
     if (today > end) return "completed";
     return "upcoming";
   };
@@ -87,9 +99,12 @@ export function CourseRegistry({
       assignment.subject ||
       assignment.Subject ||
       "",
+    hasConsultant: Boolean(assignment.consultantId),
     status: getStatus({
       startDate: assignment.dateStart,
       endDate: assignment.dateEnd,
+      consultantId: assignment.consultantId,
+      sessions: assignment.sessions,
     }),
   }));
 
@@ -183,6 +198,31 @@ export function CourseRegistry({
     setSelectedCourse(null);
   }
 
+  function handleOpenDeleteConfirm(course) {
+    setConfirmDeleteCourse(course);
+  }
+
+  function handleCloseDeleteConfirm() {
+    setConfirmDeleteCourse(null);
+  }
+
+  async function handleDeleteCourse(course) {
+    try {
+      if (course.isDraft) {
+        removePlanningDraft(course.draftId);
+        setDraftsKey((k) => k + 1);
+      } else {
+        await assignmentService.remove(course.id);
+        setAssignments((prev) => prev.filter((a) => a.id !== course.id));
+      }
+      handleCloseDeleteConfirm();
+      handleCloseCourseModal();
+    } catch (error) {
+      console.error("Failed to delete course:", error);
+      alert("Kunde inte radera kursen. Försök igen.");
+    }
+  }
+
   if (loading || isLoadingActor) {
     return <p>Laddar kurser...</p>;
   }
@@ -265,6 +305,15 @@ export function CourseRegistry({
                       {c.startDate} → {c.endDate}
                     </span>
                     <span>{c.customer}</span>
+                    {!c.isDraft && (
+                      <span
+                        className={`course-item__consultant-badge course-item__consultant-badge--${c.hasConsultant ? "assigned" : "unassigned"}`}
+                      >
+                        {c.hasConsultant
+                          ? "Konsult tilldelad"
+                          : "Ingen konsult"}
+                      </span>
+                    )}
                   </div>
                 </li>
               ))
@@ -276,6 +325,7 @@ export function CourseRegistry({
           isOpen={isCourseModalOpen}
           course={selectedCourse}
           onClose={handleCloseCourseModal}
+          onDelete={handleOpenDeleteConfirm}
           onFindConsultant={(course) => {
             handleCloseCourseModal();
 
@@ -289,6 +339,16 @@ export function CourseRegistry({
               : course;
             onOpenConsultantMatching?.(assignmentForMatching);
           }}
+        />
+
+        <ConfirmModal
+          isOpen={Boolean(confirmDeleteCourse)}
+          title="Radera kurs"
+          message={`Är du säker på att du vill radera "${confirmDeleteCourse?.name}"? Åtgärden kan inte ångras.`}
+          onCancel={handleCloseDeleteConfirm}
+          onConfirm={() =>
+            confirmDeleteCourse && handleDeleteCourse(confirmDeleteCourse)
+          }
         />
       </div>
     </div>

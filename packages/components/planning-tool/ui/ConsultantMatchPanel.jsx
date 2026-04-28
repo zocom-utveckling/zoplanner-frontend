@@ -8,6 +8,7 @@ export default function ConsultantMatchPanel({
   onSelectConsultant,
   selectedConsultantId,
   onConfirmConsultant,
+  confirmDisabled = false,
 }) {
   const [subjectFilter, setSubjectFilter] = useState("");
   const [includeConflicts, setIncludeConflicts] = useState(false);
@@ -107,6 +108,14 @@ export default function ConsultantMatchPanel({
                 <button
                   type="button"
                   className="consultant-match-panel__select"
+                  disabled={
+                    selectedConsultantId === consultant.id && confirmDisabled
+                  }
+                  title={
+                    selectedConsultantId === consultant.id && confirmDisabled
+                      ? "Fyll i kund och klass innan du kan tilldela"
+                      : undefined
+                  }
                   onClick={() => {
                     if (selectedConsultantId === consultant.id) {
                       onConfirmConsultant?.(consultant);

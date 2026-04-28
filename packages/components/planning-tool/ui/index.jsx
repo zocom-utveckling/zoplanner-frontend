@@ -275,7 +275,7 @@ export function PlannerWorkspace({
         <div className="planner-workspace__layout">
           <aside className="planner-workspace__sidebar">
             <section className="planner-workspace__panel planner-workspace__panel--form">
-              <h2>{sidebarTitle}</h2>
+              {plannerMode === "planning" && <h2>{sidebarTitle}</h2>}
 
               {plannerMode === "planning" ? (
                 <PlannerPlanningPanel
@@ -314,6 +314,14 @@ export function PlannerWorkspace({
                     setShowBasicInfo(true);
                     setShowScheduleEditor(false);
                     setIsEditingBasicInfo(false);
+                  }}
+                  onFillInDetails={() => {
+                    setPlannerMode("planning");
+                    setSelectedConsultant(null);
+                    setConsultantAssignmentEvents([]);
+                    setShowBasicInfo(true);
+                    setShowScheduleEditor(false);
+                    setIsEditingBasicInfo(true);
                   }}
                   onConfirmConsultant={async (consultant) => {
                     setSelectedConsultant(consultant);
@@ -375,7 +383,7 @@ export function PlannerWorkspace({
               )}
             </section>
 
-            {summaryAssignment && !isAssigned ? (
+            {plannerMode === "planning" && summaryAssignment && !isAssigned ? (
               <section className="planner-workspace__panel">
                 <CourseSummary
                   assignment={summaryAssignment}

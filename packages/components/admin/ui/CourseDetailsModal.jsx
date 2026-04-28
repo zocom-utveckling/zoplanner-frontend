@@ -8,6 +8,7 @@ export default function CourseDetailsModal({
   onClose,
   course,
   onFindConsultant,
+  onDelete,
 }) {
   if (!isOpen || !course) return null;
 
@@ -90,6 +91,20 @@ export default function CourseDetailsModal({
               <p>
                 <strong>Status:</strong> {course.status || "Ej angiven"}
               </p>
+              {!course.isDraft && (
+                <p>
+                  <strong>Konsult:</strong>{" "}
+                  {course.hasConsultant ? (
+                    <span className="course-details-modal__consultant--assigned">
+                      Tilldelad
+                    </span>
+                  ) : (
+                    <span className="course-details-modal__consultant--unassigned">
+                      Ej tilldelad
+                    </span>
+                  )}
+                </p>
+              )}
               <p>
                 <strong>Antal lektionstillfällen:</strong> {sessions.length}
               </p>
@@ -134,6 +149,17 @@ export default function CourseDetailsModal({
                 onClick={() => onFindConsultant?.(course)}
               >
                 Hitta konsult
+              </button>
+              <button
+                type="button"
+                className="course-details-modal__delete"
+                onClick={() => onDelete?.(course)}
+                disabled={!onDelete}
+                title={
+                  !onDelete ? "Radering är inte tillgänglig här" : undefined
+                }
+              >
+                Radera kurs
               </button>
             </div>
           </aside>

@@ -20,6 +20,13 @@ export default function PlannerMonthView({
   onEventClick,
   onEventDrop,
 }) {
+  if (!monthGridDays || monthGridDays.length === 0) {
+    return (
+      <div className="planner-month-wrap">
+        <div className="planner-month-empty">Inget schema att visa</div>
+      </div>
+    );
+  }
   const weekdays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
   const visibleMonths = Array.from(
     new Set(
@@ -29,7 +36,9 @@ export default function PlannerMonthView({
     ),
   );
 
-  const visibleYear = format(monthGridDays[0], "yyyy");
+  const visibleYear = monthGridDays[0]
+    ? format(new Date(monthGridDays[0]), "yyyy")
+    : "";
   const hd = new Holidays("SE");
   const weeks = [];
   for (let i = 0; i < monthGridDays.length; i += 7) {
