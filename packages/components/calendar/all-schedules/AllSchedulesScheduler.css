@@ -283,19 +283,7 @@
   }
 }
 
-.title-with-nav {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.controls--all-schedules {
-  justify-content: flex-start;
-  width: 100%;
-  gap: 12px;
-}
-
-.controls--all-schedules-filters {
+.all-schedules-topbar__filters {
   align-items: center;
   gap: 12px;
   padding: 12px;
@@ -305,8 +293,8 @@
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
 }
 
-.controls--all-schedules-filters .search,
-.controls--all-schedules-filters .filter-select {
+.all-schedules-topbar__filters .all-schedules-topbar__search,
+.all-schedules-topbar__filters .all-schedules-topbar__filter-select {
   height: 44px;
   border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 12px;
@@ -315,44 +303,44 @@
   font-size: 15px;
 }
 
-.controls--all-schedules-filters .search {
+.all-schedules-topbar__filters .all-schedules-topbar__search {
   flex: 2 1 320px;
   min-width: 260px;
   padding: 0 14px;
 }
 
-.controls--all-schedules-filters .filter-select {
+.all-schedules-topbar__filters .all-schedules-topbar__filter-select {
   flex: 1 1 200px;
   min-width: 190px;
   padding: 0 12px;
 }
 
-.controls--all-schedules-filters .search:focus,
-.controls--all-schedules-filters .filter-select:focus {
+.all-schedules-topbar__filters .all-schedules-topbar__search:focus,
+.all-schedules-topbar__filters .all-schedules-topbar__filter-select:focus {
   border-color: rgba(79, 124, 255, 0.7);
   box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.14);
 }
 
 @media (max-width: 1100px) {
-  .controls--all-schedules-filters .search {
+  .all-schedules-topbar__filters .all-schedules-topbar__search {
     min-width: 220px;
   }
 
-  .controls--all-schedules-filters .filter-select {
+  .all-schedules-topbar__filters .all-schedules-topbar__filter-select {
     min-width: 170px;
   }
 }
 
 @media (max-width: 900px) {
-  .controls--all-schedules-filters {
+  .all-schedules-topbar__filters {
     padding: 10px;
     gap: 10px;
   }
 }
 
 @media (max-width: 680px) {
-  .controls--all-schedules-filters .search,
-  .controls--all-schedules-filters .filter-select {
+  .all-schedules-topbar__filters .all-schedules-topbar__search,
+  .all-schedules-topbar__filters .all-schedules-topbar__filter-select {
     flex: 1 1 100%;
     min-width: 100%;
   }
@@ -378,12 +366,12 @@
 }
 
 @media (max-width: 900px) {
-  .main {
+  .all-schedules-scheduler {
     padding: 14px;
     border-radius: 14px;
   }
 
-  .content-card {
+  .all-schedules-scheduler__content-card {
     padding: 10px;
     border-radius: 14px;
   }
@@ -756,18 +744,20 @@
   color: var(--text-muted);
 }
 
-[data-theme="dark"] .topbar--all-schedules .nav-btn,
-[data-theme="dark"] .topbar--all-schedules .small-btn,
-[data-theme="dark"] .topbar--all-schedules .segment,
-[data-theme="dark"] .controls--all-schedules-filters,
-[data-theme="dark"] .controls--all-schedules-filters .search,
-[data-theme="dark"] .controls--all-schedules-filters .filter-select {
+[data-theme="dark"] .all-schedules-topbar .all-schedules-topbar__nav-btn,
+[data-theme="dark"] .all-schedules-topbar .all-schedules-topbar__today-btn,
+[data-theme="dark"] .all-schedules-topbar .all-schedules-topbar__segment,
+[data-theme="dark"] .all-schedules-topbar__filters,
+[data-theme="dark"] .all-schedules-topbar__filters .all-schedules-topbar__search,
+[data-theme="dark"]
+  .all-schedules-topbar__filters
+  .all-schedules-topbar__filter-select {
   background: var(--surface);
   border-color: var(--border-color);
   color: var(--text-primary);
 }
 
-[data-theme="dark"] .main {
+[data-theme="dark"] .all-schedules-scheduler {
   border-color: var(--border-color);
   background:
     radial-gradient(
@@ -784,8 +774,8 @@
   box-shadow: var(--elevation-card);
 }
 
-[data-theme="dark"] .content-card,
-[data-theme="dark"] .topbar-all-schedules-row,
+[data-theme="dark"] .all-schedules-scheduler__content-card,
+[data-theme="dark"] .all-schedules-topbar__summary-row,
 [data-theme="dark"] .all-schedules-layout,
 [data-theme="dark"] .all-schedules-unassigned,
 [data-theme="dark"] .all-schedules-board,
