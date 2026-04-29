@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCustomers, useCurrentActor } from "@zoplanner/app-hooks";
 import { createPlanningOrder } from "@zoplanner/admin";
-import { classService } from "@zoplanner/api";
+import { classService, consultantService, userService } from "@zoplanner/api";
 
 export const emptyOrder = {
   customerId: "",
@@ -23,6 +23,9 @@ export function useCustomerRegistry({ user }) {
   } = useCustomers();
 
   const { managerId, isLoadingActor } = useCurrentActor(user);
+
+  const [consultants, setConsultants] = useState([]);
+  const [users, setUsers] = useState([]);
 
   const [newCustomerName, setNewCustomerName] = useState("");
   const [newCustomerCity, setNewCustomerCity] = useState("");
@@ -47,6 +50,24 @@ export function useCustomerRegistry({ user }) {
     useState(false);
 
   const [modalCustomer, setModalCustomer] = useState(null);
+
+  useEffect(() => {
+    async function loadExtraData() {
+      try {
+        const [consultantsData, usersData] = await Promise.all([
+          consultantService.getAll(),
+          userService.getAll(),
+        ]);
+
+        setConsultants(consultantsData ?? []);
+        setUsers(usersData ?? []);
+      } catch (err) {
+        console.error("Failed to load extra city data", err);
+      }
+    }
+
+    loadExtraData();
+  }, []);
 
   const resetNewCustomerForm = () => {
     setNewCustomerName("");
@@ -106,118 +127,121 @@ export function useCustomerRegistry({ user }) {
   };
 
   async function handleCreateCustomer({ nextStep = null } = {}) {
-  if (!managerId) return;
+    if (!managerId) return;
 
-  try {
-    const customer = await createCustomer({
-      name: newCustomerName,
-      city: newCustomerCity,
-      managerId,
-    });
+    try {
+      const customer = await createCustomer({
+        name: newCustomerName,
+        city: newCustomerCity,
+        managerId,
+      });
 
-    resetNewCustomerForm();
-    setIsCreating(false);
+      resetNewCustomerForm();
+      setIsCreating(false);
 
-    if (nextStep === "order" || nextStep === "planning") {
-      setNewOrder((prev) => ({
-        ...emptyOrder,
-        ...prev,
-        customerId: String(customer.id),
-      }));
-      setStartPlanningOnOrderSave(nextStep === "planning");
-      setIsCreatingOrder(true);
+      if (nextStep === "order" || nextStep === "planning") {
+        setNewOrder((prev) => ({
+          ...emptyOrder,
+          ...prev,
+          customerId: String(customer.id),
+        }));
+        setStartPlanningOnOrderSave(nextStep === "planning");
+        setIsCreatingOrder(true);
+      }
+
+      return customer;
+    } catch (error) {
+      console.error("❌ Failed to create customer:", error);
+      alert("Kunde inte skapa kund.");
+      return null;
     }
-
-    return customer;
-  } catch (error) {
-    console.error("❌ Failed to create customer:", error);
-    alert("Kunde inte skapa kund.");
-    return null;
-  }
-}
-
-async function handleCreateOrder({ startPlanning = false, onStartPlanning } = {}) {
-  const selectedOrderCustomer = customers.find(
-    (customer) => customer.id === Number(newOrder.customerId),
-  );
-
-  if (!selectedOrderCustomer) {
-    alert("Välj kund.");
-    return;
   }
 
-  if (
-    !newOrder.courseName ||
-    !newOrder.startDate ||
-    !newOrder.endDate ||
-    !newOrder.className ||
-    !newOrder.totalHours
-  ) {
-    alert("Fyll i kursnamn, klass, datum och antal timmar.");
-    return;
-  }
+  async function handleCreateOrder({
+    startPlanning = false,
+    onStartPlanning,
+  } = {}) {
+    const selectedOrderCustomer = customers.find(
+      (customer) => customer.id === Number(newOrder.customerId),
+    );
 
-  const shouldStartPlanning = startPlanning || startPlanningOnOrderSave;
-
-  try {
-    const order = await createPlanningOrder({
-      customerId: selectedOrderCustomer.id,
-      customerName: selectedOrderCustomer.name,
-      className: newOrder.className,
-      courseName: newOrder.courseName,
-      startDate: newOrder.startDate,
-      endDate: newOrder.endDate,
-      totalHours: newOrder.totalHours,
-      managerId,
-    });
-
-    setOrders((prev) => [...prev, order]);
-    setNewOrder(emptyOrder);
-    setIsCreatingOrder(false);
-    setStartPlanningOnOrderSave(false);
-
-    if (shouldStartPlanning) {
-      onStartPlanning?.(order);
-    }
-
-    return order;
-  } catch (error) {
-    console.error("❌ Failed to create planning order:", error);
-    alert("Kunde inte skapa beställning.");
-    return null;
-  }
-}
-
-async function handleDeleteCustomer() {
-  if (!modalCustomer) return;
-
-  try {
-    const classes = await classService.getByCustomerId(modalCustomer.id);
-
-    if (classes && classes.length > 0) {
-      alert(
-        `Kunden "${modalCustomer.name}" kan inte raderas eftersom det finns kurser kopplade till kunden.`,
-      );
+    if (!selectedOrderCustomer) {
+      alert("Välj kund.");
       return;
     }
-  } catch {
-    alert("Kunde inte kontrollera kundens kurser.");
-    return;
+
+    if (
+      !newOrder.courseName ||
+      !newOrder.startDate ||
+      !newOrder.endDate ||
+      !newOrder.className ||
+      !newOrder.totalHours
+    ) {
+      alert("Fyll i kursnamn, klass, datum och antal timmar.");
+      return;
+    }
+
+    const shouldStartPlanning = startPlanning || startPlanningOnOrderSave;
+
+    try {
+      const order = await createPlanningOrder({
+        customerId: selectedOrderCustomer.id,
+        customerName: selectedOrderCustomer.name,
+        className: newOrder.className,
+        courseName: newOrder.courseName,
+        startDate: newOrder.startDate,
+        endDate: newOrder.endDate,
+        totalHours: newOrder.totalHours,
+        managerId,
+      });
+
+      setOrders((prev) => [...prev, order]);
+      setNewOrder(emptyOrder);
+      setIsCreatingOrder(false);
+      setStartPlanningOnOrderSave(false);
+
+      if (shouldStartPlanning) {
+        onStartPlanning?.(order);
+      }
+
+      return order;
+    } catch (error) {
+      console.error("❌ Failed to create planning order:", error);
+      alert("Kunde inte skapa beställning.");
+      return null;
+    }
   }
-  if (
-    !confirm(
-      `Radera kunden "${modalCustomer.name}"? Detta kan inte ångras.`,
-    )
-  ) {
-    return;
+
+  async function handleDeleteCustomer() {
+    if (!modalCustomer) return;
+
+    try {
+      const classes = await classService.getByCustomerId(modalCustomer.id);
+
+      if (classes && classes.length > 0) {
+        alert(
+          `Kunden "${modalCustomer.name}" kan inte raderas eftersom det finns kurser kopplade till kunden.`,
+        );
+        return;
+      }
+    } catch {
+      alert("Kunde inte kontrollera kundens kurser.");
+      return;
+    }
+
+    if (
+      !confirm(`Radera kunden "${modalCustomer.name}"? Detta kan inte ångras.`)
+    ) {
+      return;
+    }
+
+    try {
+      await removeCustomer(modalCustomer.id);
+      setModalCustomer(null);
+    } catch {
+      alert("Kunde inte radera kunden.");
+    }
   }
-  try {
-    await removeCustomer(modalCustomer.id);
-    setModalCustomer(null);
-  } catch {
-    alert("Kunde inte radera kunden.");
-  }
-}
 
   const resetFilters = () => {
     setFilters({
@@ -226,22 +250,29 @@ async function handleDeleteCustomer() {
     });
   };
 
-const filteredCustomers = customers
-  .filter((c) => {
-    const name = (c.name || "").trim().toUpperCase();
-    return name && !name.startsWith("UTKAST");
-  })
-  .filter((c) =>
-    (c.name || "").toLowerCase().startsWith(search.trim().toLowerCase()),
-  )
-  .filter((c) => {
-    if (!filters.mine) return true;
-    return Number(c.managerId) === Number(managerId);
-  })
-  .filter((c) => {
-    if (filters.cities.length > 0) return filters.cities.includes(c.city);
-    return true;
-  });
+  const filteredCustomers = customers
+    .filter((customer) => {
+      const name = (customer.name || "").trim().toUpperCase();
+      return name && !name.startsWith("UTKAST");
+    })
+    .filter((customer) =>
+      (customer.name || "")
+        .toLowerCase()
+        .startsWith(search.trim().toLowerCase()),
+    )
+    .filter((customer) => {
+      if (!filters.mine) return true;
+      return Number(customer.managerId) === Number(managerId);
+    })
+    .filter((customer) => {
+      if (filters.cities.length > 0) {
+        return filters.cities.includes(customer.city);
+      }
+
+      return true;
+    });
+
+  const citySourceRecords = [...customers, ...consultants, ...users];
 
   return {
     customers,
@@ -250,6 +281,7 @@ const filteredCustomers = customers
     selectedCustomer,
     setSelectedCustomerId,
     removeCustomer,
+    citySourceRecords,
 
     managerId,
     isLoadingActor,

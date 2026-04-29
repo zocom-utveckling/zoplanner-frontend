@@ -6,3 +6,6 @@ export { CourseRegistry } from "./CourseRegistry";
 export { AdminOverview } from "./AdminOverview";
 export { ConsultantInviteModal } from "./ConsultantInviteModal";
 export { RegistrySearchFilter } from "./RegistrySearchFilter";
+export { CustomerDetailsModal } from "./CustomerDetailsModal";
+export { CustomerCreateForm } from "./CustomerCreateForm";
+export { CustomerOrderCreateForm } from "./CustomerOrderCreateForm";
