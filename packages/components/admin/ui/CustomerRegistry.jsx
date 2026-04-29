@@ -1,18 +1,13 @@
 import "./index.css";
-import { createPlanningOrder } from "@zoplanner/admin";
-import { classService } from "@zoplanner/api";
-import { emptyOrder, useCustomerRegistry } from "../hooks/useCustomerRegistry";
+import { useCustomerRegistry } from "../hooks/useCustomerRegistry";
 import { RegistrySearchFilter } from "./RegistrySearchFilter";
 
 export function CustomerRegistry({ user, onStartPlanning }) {
   const {
     customers,
     loading,
-    createCustomer,
     setSelectedCustomerId,
     removeCustomer,
-
-    managerId,
     isLoadingActor,
 
     newCustomerName,
@@ -28,7 +23,7 @@ export function CustomerRegistry({ user, onStartPlanning }) {
     newCustomerAddress,
     setNewCustomerAddress,
     isCreating,
-    setIsCreating,
+    handleDeleteCustomer,
 
     search,
     setSearch,
@@ -41,109 +36,22 @@ export function CustomerRegistry({ user, onStartPlanning }) {
     resetFilters,
 
     orders,
-    setOrders,
     isCreatingOrder,
-    setIsCreatingOrder,
     newOrder,
     setNewOrder,
-    startPlanningOnOrderSave,
-    setStartPlanningOnOrderSave,
 
     modalCustomer,
     setModalCustomer,
 
-    resetNewCustomerForm,
     closeCreateCustomer,
     closeCreateOrder,
     openCreateCustomerFromOrder,
     handleToggleCreateCustomer,
     handleToggleCreateOrder,
+    handleCreateCustomer,
+    handleCreateOrder,
     filteredCustomers,
   } = useCustomerRegistry({ user });
-
-  const handleCreateCustomer = async ({ nextStep = null } = {}) => {
-    if (!managerId) return;
-
-    try {
-      const customer = await createCustomer({
-        name: newCustomerName,
-        city: newCustomerCity,
-        managerId,
-      });
-
-      resetNewCustomerForm();
-      setIsCreating(false);
-
-      if (nextStep === "order" || nextStep === "planning") {
-        setNewOrder((prev) => ({
-          ...emptyOrder,
-          ...prev,
-          customerId: String(customer.id),
-        }));
-        setStartPlanningOnOrderSave(nextStep === "planning");
-        setIsCreatingOrder(true);
-      }
-
-      return customer;
-    } catch (error) {
-      console.error("❌ Failed to create customer:", error);
-      alert("Kunde inte skapa kund.");
-      return null;
-    }
-  };
-
-  const handleCreateOrder = async ({ startPlanning = false } = {}) => {
-    const selectedOrderCustomer = customers.find(
-      (customer) => customer.id === Number(newOrder.customerId),
-    );
-
-    if (!selectedOrderCustomer) {
-      alert("Välj kund.");
-      return;
-    }
-
-    if (
-      !newOrder.courseName ||
-      !newOrder.startDate ||
-      !newOrder.endDate ||
-      !newOrder.className ||
-      !newOrder.totalHours
-    ) {
-      alert("Fyll i kursnamn, klass, datum och antal timmar.");
-      return;
-    }
-
-    const shouldStartPlanning = startPlanning || startPlanningOnOrderSave;
-
-    try {
-      const order = await createPlanningOrder({
-        customerId: selectedOrderCustomer.id,
-        customerName: selectedOrderCustomer.name,
-        className: newOrder.className,
-        courseName: newOrder.courseName,
-        startDate: newOrder.startDate,
-        endDate: newOrder.endDate,
-        totalHours: newOrder.totalHours,
-        managerId,
-      });
-
-      setOrders((prev) => [...prev, order]);
-      setNewOrder(emptyOrder);
-      setIsCreatingOrder(false);
-      setStartPlanningOnOrderSave(false);
-
-      if (shouldStartPlanning) {
-        onStartPlanning?.(order);
-      }
-
-      return order;
-    } catch (error) {
-      console.error("❌ Failed to create planning order:", error);
-      alert("Kunde inte skapa beställning.");
-      return null;
-    }
-  };
-
   if (loading || isLoadingActor) return <p>Laddar kunder...</p>;
 
   return (
@@ -401,7 +309,9 @@ export function CustomerRegistry({ user, onStartPlanning }) {
               <button
                 className="customer-registry__order-form-plan"
                 type="button"
-                onClick={() => handleCreateOrder({ startPlanning: true })}
+                onClick={() =>
+                  handleCreateOrder({ startPlanning: true, onStartPlanning })
+                }
               >
                 Till planeringen
               </button>
@@ -536,34 +446,7 @@ export function CustomerRegistry({ user, onStartPlanning }) {
                 <button
                   className="customer-registry__modal-delete-btn"
                   type="button"
-                  onClick={async () => {
-                    try {
-                      const classes = await classService.getByCustomerId(
-                        modalCustomer.id,
-                      );
-                      if (classes && classes.length > 0) {
-                        alert(
-                          `Kunden "${modalCustomer.name}" kan inte raderas eftersom det finns kurser kopplade till kunden.`,
-                        );
-                        return;
-                      }
-                    } catch {
-                      alert("Kunde inte kontrollera kundens kurser.");
-                      return;
-                    }
-                    if (
-                      !confirm(
-                        `Radera kunden "${modalCustomer.name}"? Detta kan inte ångras.`,
-                      )
-                    )
-                      return;
-                    try {
-                      await removeCustomer(modalCustomer.id);
-                      setModalCustomer(null);
-                    } catch {
-                      alert("Kunde inte radera kunden.");
-                    }
-                  }}
+                  onClick={handleDeleteCustomer}
                 >
                   Radera kund
                 </button>
