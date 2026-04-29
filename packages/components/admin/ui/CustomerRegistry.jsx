@@ -121,14 +121,26 @@ export function CustomerRegistry({ user, onStartPlanning }) {
     });
   };
 
+  // 👇 lägg här
+
+  console.log("managerId (actor):", managerId);
+
+  console.log(
+    "customers:",
+    customers.map((c) => c.managerId),
+  );
+
   const filteredCustomers = customers
-    .filter((c) => (c.name || "").trim().toUpperCase() !== "UTKAST")
+    .filter((c) => {
+      const name = (c.name || "").trim().toUpperCase();
+      return name && !name.startsWith("UTKAST");
+    })
     .filter((c) =>
       (c.name || "").toLowerCase().startsWith(search.trim().toLowerCase()),
     )
     .filter((c) => {
-      if (filters.mine) return c.managerId === managerId;
-      return true;
+      if (!filters.mine) return true;
+      return Number(c.managerId) === Number(managerId);
     })
     .filter((c) => {
       if (filters.cities.length > 0) return filters.cities.includes(c.city);
@@ -198,6 +210,7 @@ export function CustomerRegistry({ user, onStartPlanning }) {
         startDate: newOrder.startDate,
         endDate: newOrder.endDate,
         totalHours: newOrder.totalHours,
+        managerId,
       });
 
       setOrders((prev) => [...prev, order]);
@@ -648,71 +661,6 @@ export function CustomerRegistry({ user, onStartPlanning }) {
                   Stäng
                 </button>
               </div>
-            </div>
-          </div>
-        )}
-
-        {selectedCustomer && (
-          <div className="customer-registry__detail">
-            <div className="customer-registry__detail-header">
-              <h2 className="customer-registry__detail-title">
-                {selectedCustomer.name}
-              </h2>
-              <p className="customer-registry__detail-meta">
-                Stad: {selectedCustomer.city}
-              </p>
-            </div>
-
-            <div className="customer-registry__section">
-              <h3 className="customer-registry__section-title">
-                Beställningar
-              </h3>
-
-              <ul className="customer-registry__orders-list">
-                {orders
-                  .filter((o) => o.customerId === selectedCustomer.id)
-                  .map((o) => (
-                    <li key={o.id} className="customer-registry__order-item">
-                      <div className="customer-registry__order-content">
-                        <p className="customer-registry__order-title">
-                          {o.courseName}
-                        </p>
-                        <p className="customer-registry__order-meta">
-                          {o.startDate} - {o.endDate}
-                        </p>
-                        <p className="customer-registry__order-note">
-                          {o.totalHours}h
-                        </p>
-                      </div>
-
-                      <button
-                        className="customer-registry__order-btn"
-                        onClick={() => {
-                          console.log("👉 Starta planering", o);
-                          onStartPlanning?.(o);
-                        }}
-                      >
-                        Planera
-                      </button>
-                    </li>
-                  ))}
-              </ul>
-
-              {orders.filter((o) => o.customerId === selectedCustomer.id)
-                .length === 0 ? (
-                <p className="customer-registry__empty">
-                  Inga beställningar ännu.
-                </p>
-              ) : null}
-            </div>
-
-            <div className="customer-registry__detail-actions">
-              <button
-                className="customer-registry__detail-close"
-                onClick={() => setSelectedCustomerId(null)}
-              >
-                Stäng
-              </button>
             </div>
           </div>
         )}

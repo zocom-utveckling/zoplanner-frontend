@@ -1,5 +1,5 @@
 import "./index.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useCurrentActor } from "@zoplanner/app-hooks";
 import { assignmentService } from "@zoplanner/api";
 import { dev } from "@zoplanner/admin";
@@ -27,7 +27,7 @@ export function CourseRegistry({
 
   // draftsKey dependency ensures re-read from localStorage after deletion
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const drafts = loadPlanningDrafts();
+  const drafts = useMemo(() => loadPlanningDrafts(), [draftsKey]);
 
   const [search, setSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);

@@ -106,6 +106,13 @@ export function useCourseSetupForm(onSave, initialValues) {
     }
   }
 
+  function handleSelectCustomer(customer) {
+    if (customer) {
+      setCustomerId(String(customer.id));
+      setCustomerName(customer.name);
+    }
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -115,9 +122,21 @@ export function useCourseSetupForm(onSave, initialValues) {
     const safeClassName = className.trim() || "UTKAST – ange klass";
 
     const parsedTotalHours = Number(totalHours);
+    const parsedCustomerId = Number(customerId);
+    const parsedClassId = Number(classId);
 
     if (!courseName.trim()) {
       alert("Ange kursnamn.");
+      return;
+    }
+
+    if (!customerId) {
+      alert("Välj en kund.");
+      return;
+    }
+
+    if (Number.isNaN(parsedCustomerId) || parsedCustomerId < 1) {
+      alert("Välj en giltig kund.");
       return;
     }
 
@@ -154,11 +173,14 @@ export function useCourseSetupForm(onSave, initialValues) {
       courseName: safeCourseName,
       isDraftCourse: !courseName.trim(),
 
-      customerId: customerId || null,
+      customerId: parsedCustomerId,
       customerName: safeCustomerName,
       isDraftCustomer: !customerId,
 
-      classId: classId || null,
+      classId:
+        !Number.isNaN(parsedClassId) && parsedClassId > 0
+          ? parsedClassId
+          : null,
       className: safeClassName,
       isDraftClass: !classId,
 
@@ -194,6 +216,7 @@ export function useCourseSetupForm(onSave, initialValues) {
     handleSubmit,
     handleWeekdayToggle,
     handleWeekdayTimeChange,
+    handleSelectCustomer,
     getStartTimeForDay,
     isSelected,
   };

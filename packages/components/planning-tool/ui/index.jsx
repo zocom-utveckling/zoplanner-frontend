@@ -73,6 +73,7 @@ export function PlannerWorkspace({
       managerId,
       courseDraft,
       setActiveAssignment,
+      setCourseDraft,
       setPlannerMode,
     });
 
@@ -144,16 +145,18 @@ export function PlannerWorkspace({
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [hasUnsavedPlanning]);
-
-  const calendarSource = courseDraft?.sessionsDraft?.length
-    ? courseDraft
-    : activeAssignment
+  const assignmentView = activeAssignment?.consultantId
+    ? activeAssignment
+    : (courseDraft ?? activeAssignment);
+  const calendarSource = assignmentView?.sessionsDraft?.length
+    ? assignmentView
+    : assignmentView
       ? {
-          startDate: activeAssignment.dateStart,
-          endDate: activeAssignment.dateEnd,
-          sessionsDraft: activeAssignment.sessions ?? [],
+          startDate: assignmentView.dateStart,
+          endDate: assignmentView.dateEnd,
+          sessionsDraft: assignmentView.sessions ?? [],
         }
-      : courseDraft;
+      : assignmentView;
 
   const calendarGridDays = useMemo(() => {
     if (calendarSource?.startDate && calendarSource?.endDate) {
@@ -197,22 +200,25 @@ export function PlannerWorkspace({
     [assignmentEvents, consultantActivityEvents, consultantAssignmentEvents],
   );
 
-  const summaryAssignment =
-    plannerMode === "planning"
-      ? courseDraft
-        ? {
-            dateStart: courseDraft.startDate,
-            dateEnd: courseDraft.endDate,
-            course: {
-              name: courseDraft.courseName || "Kursschema",
-            },
-            sessions: courseDraft.sessionsDraft ?? [],
-          }
-        : null
-      : activeAssignment;
+  const summaryAssignment = assignmentView
+    ? {
+        dateStart: assignmentView.startDate || assignmentView.dateStart,
+        dateEnd: assignmentView.endDate || assignmentView.dateEnd,
+        course: {
+          name:
+            assignmentView?.course?.name ||
+            assignmentView?.courseName ||
+            "Kursschema",
+        },
+        sessions:
+          assignmentView?.sessions ?? assignmentView?.sessionsDraft ?? [],
+      }
+    : null;
 
   const sidebarTitle =
-    activeAssignment?.course?.name || courseDraft?.courseName || "Ny planering";
+    assignmentView?.course?.name ||
+    assignmentView?.courseName ||
+    "Ny planering";
 
   const plannerModeLabel =
     plannerMode === "planning" ? "Planering" : "Matchning";
@@ -223,10 +229,10 @@ export function PlannerWorkspace({
     })
     .replace(/^./, (char) => char.toUpperCase());
 
-  const assignedConsultantName = activeAssignment?.consultant?.name || "";
-  const isAssigned = Number(activeAssignment?.consultantId) > 0;
+  const assignedConsultantName = assignmentView?.consultant?.name || "";
+  const isAssigned = Number(assignmentView?.consultantId) > 0;
   const scheduleSummary = buildScheduleSummary(
-    activeAssignment?.sessions ?? courseDraft?.sessionsDraft ?? [],
+    assignmentView?.sessions ?? assignmentView?.sessionsDraft ?? [],
   );
 
   const isDraftValue = (value) => {
@@ -315,6 +321,15 @@ export function PlannerWorkspace({
                     setShowScheduleEditor(false);
                     setIsEditingBasicInfo(false);
                   }}
+                  onEditFromFinal={() => {
+                    // Go back from final step while keeping selected consultant
+                    // This allows user to make changes and re-confirm
+                    // Clear the active assignment to show the matching panel again
+                    setActiveAssignment(null);
+                    setShowBasicInfo(true);
+                    setShowScheduleEditor(false);
+                    setIsEditingBasicInfo(false);
+                  }}
                   onFillInDetails={() => {
                     setPlannerMode("planning");
                     setSelectedConsultant(null);
@@ -324,17 +339,30 @@ export function PlannerWorkspace({
                     setIsEditingBasicInfo(true);
                   }}
                   onConfirmConsultant={async (consultant) => {
+                    console.log("🔥 ON CONFIRM CONSULTANT", consultant);
+
                     setSelectedConsultant(consultant);
 
-                    if (missingFinalInfo.length > 0) {
+                    // if (!courseDraft?.customerId || !courseDraft?.classId) {
+                    // console.log("⛔ missing customer or class");
+                    //  return;
+                    // }
+
+                    let assignment = activeAssignment;
+
+                    if (!assignment?.id) {
+                      console.log("⚠️ No assignment id → publishing");
+
+                      assignment = await handlePublishDraft();
+
+                      console.log("📦 AFTER PUBLISH", assignment);
+                    }
+                    if (!assignment?.id) {
+                      console.error("❌ No assignment id after publish");
                       return;
                     }
 
-                    const publishedAssignment = await handlePublishDraft();
-                    await handleAssignConsultant(
-                      publishedAssignment,
-                      consultant,
-                    );
+                    await handleAssignConsultant(assignment, consultant);
                   }}
                   assignedConsultantName={assignedConsultantName}
                   scheduleSummary={scheduleSummary}

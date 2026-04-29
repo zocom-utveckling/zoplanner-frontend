@@ -16,6 +16,7 @@ export default function PlannerMatchingPanel({
   onBack,
   onConfirmConsultant,
   onFillInDetails,
+  onEditFromFinal,
   assignedConsultantName,
   scheduleSummary,
   onExportPdf,
@@ -35,6 +36,7 @@ export default function PlannerMatchingPanel({
         startDate={courseDraft?.startDate}
         endDate={courseDraft?.endDate}
         scheduleSummary={scheduleSummary}
+        onEditFromFinal={onEditFromFinal}
         onExportPdf={() => {
           console.log("PDF BUTTON CLICKED");
           onExportPdf?.();

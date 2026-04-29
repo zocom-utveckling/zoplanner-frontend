@@ -23,6 +23,11 @@ export function useDraftRelationSync() {
 
     const nextDraft = {
       ...draft,
+      assignmentId: draft.assignmentId ?? previousDraft?.assignmentId ?? null,
+      courseId: draft.courseId ?? previousDraft?.courseId ?? null,
+      existingSessionIds:
+        draft.existingSessionIds ?? previousDraft?.existingSessionIds ?? [],
+      consultantId: draft.consultantId ?? previousDraft?.consultantId ?? null,
       customerId: draft.customerId ?? previousDraft?.customerId ?? null,
       classId: draft.classId ?? previousDraft?.classId ?? null,
       customerName: draft.customerName ?? previousDraft?.customerName ?? "",
@@ -43,6 +48,11 @@ export function useDraftRelationSync() {
       previousDraft.customerId !== nextDraft.customerId
     ) {
       nextDraft.isDraftCustomerEntity = false;
+      // Customer changed: class must be recreated/relinked for the new customer.
+      nextDraft.classId = null;
+      nextDraft.courseId = null;
+      nextDraft.assignmentId = null;
+      nextDraft.existingSessionIds = [];
     }
 
     if (
@@ -61,6 +71,23 @@ export function useDraftRelationSync() {
       fallbackCustomerName,
     );
     const desiredClassName = normalizeName(nextDraft.className, fallbackClassName);
+
+    const numericCustomerId =
+      nextDraft.customerId != null && nextDraft.customerId !== ""
+        ? Number(nextDraft.customerId)
+        : null;
+    const numericClassId =
+      nextDraft.classId != null && nextDraft.classId !== ""
+        ? Number(nextDraft.classId)
+        : null;
+
+    if (numericCustomerId != null && Number.isFinite(numericCustomerId)) {
+      nextDraft.customerId = numericCustomerId;
+    }
+
+    if (numericClassId != null && Number.isFinite(numericClassId)) {
+      nextDraft.classId = numericClassId;
+    }
 
     setIsPreparingDraft(true);
 

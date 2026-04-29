@@ -10,14 +10,28 @@ export default function AssignmentSummaryCard({
   scheduleSummary,
   onExportPdf,
   onSendMessage,
+  onEditFromFinal,
 }) {
   return (
     <section className="assignment-summary-card">
       <div className="assignment-summary-card__header">
-        <p className="assignment-summary-card__eyebrow">Uppdrag tilldelat</p>
-        <h2 className="assignment-summary-card__title">
-          {courseName || "Kursschema"}
-        </h2>
+        <div className="assignment-summary-card__header-main">
+          <p className="assignment-summary-card__eyebrow">Uppdrag tilldelat</p>
+          <h2 className="assignment-summary-card__title">
+            {courseName || "Kursschema"}
+          </h2>
+        </div>
+
+        {onEditFromFinal && (
+          <button
+            type="button"
+            className="assignment-summary-card__edit-btn"
+            onClick={onEditFromFinal}
+            title="Gå tillbaka för att redigera uppgiften"
+          >
+            Redigera uppdraget
+          </button>
+        )}
       </div>
 
       <div className="assignment-summary-card__content">
