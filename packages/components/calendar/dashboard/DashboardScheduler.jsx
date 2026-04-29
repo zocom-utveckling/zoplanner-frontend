@@ -251,39 +251,76 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
 
   async function handleUpdateEventForBothUsers(updatedEvent) {
     const linkedMeta = getLinkedMeta(updatedEvent?.id);
+    const resolvedLinkedMeta =
+      linkedMeta || (await resolveLinkedMeta(updatedEvent?.id));
 
-    if (!linkedMeta) {
+    if (!resolvedLinkedMeta) {
       updateEvent(updatedEvent);
       return;
     }
 
+    const currentUserId = calendarUser?.id || user?.id;
+    const fallbackLabels =
+      String(resolvedLinkedMeta.linkedUserId) === String(managerUser?.id)
+        ? {
+            selfLabel: managerName,
+            linkedLabel: calendarUserName,
+          }
+        : {
+            selfLabel: calendarUserName,
+            linkedLabel: managerName,
+          };
+    const normalizedMeta = {
+      ...resolvedLinkedMeta,
+      selfLabel: linkedMeta?.selfLabel || fallbackLabels.selfLabel,
+      linkedLabel: linkedMeta?.linkedLabel || fallbackLabels.linkedLabel,
+    };
+
+    if (!linkedMeta && normalizedMeta?.linkedId && updatedEvent?.id) {
+      crossCalendarMapRef.current[String(updatedEvent.id)] = {
+        linkedId: String(normalizedMeta.linkedId),
+        linkedUserId: normalizedMeta.linkedUserId,
+        selfLabel: normalizedMeta.selfLabel,
+        linkedLabel: normalizedMeta.linkedLabel,
+      };
+
+      if (currentUserId) {
+        crossCalendarMapRef.current[String(normalizedMeta.linkedId)] = {
+          linkedId: String(updatedEvent.id),
+          linkedUserId: currentUserId,
+          selfLabel: normalizedMeta.linkedLabel,
+          linkedLabel: normalizedMeta.selfLabel,
+        };
+      }
+    }
+
     const baseTitle = stripLabelSuffix(updatedEvent?.title, [
-      linkedMeta.selfLabel,
-      linkedMeta.linkedLabel,
+      normalizedMeta.selfLabel,
+      normalizedMeta.linkedLabel,
     ]);
     const normalizedCurrentEvent = {
       ...updatedEvent,
-      title: `${baseTitle} - ${linkedMeta.selfLabel}`,
+      title: `${baseTitle} - ${normalizedMeta.selfLabel}`,
     };
     const normalizedLinkedEvent = {
       ...updatedEvent,
-      id: linkedMeta.linkedId,
-      title: `${baseTitle} - ${linkedMeta.linkedLabel}`,
+      id: normalizedMeta.linkedId,
+      title: `${baseTitle} - ${normalizedMeta.linkedLabel}`,
     };
 
     updateEvent(normalizedCurrentEvent);
 
-    if (String(linkedMeta.linkedUserId) === String(managerUser?.id)) {
+    if (String(normalizedMeta.linkedUserId) === String(managerUser?.id)) {
       managerUpdateEvent(normalizedLinkedEvent);
       return;
     }
 
     try {
       await activityService.update(
-        Number(linkedMeta.linkedId),
-        toActivityPayload(normalizedLinkedEvent, linkedMeta.linkedUserId),
+        Number(normalizedMeta.linkedId),
+        toActivityPayload(normalizedLinkedEvent, normalizedMeta.linkedUserId),
       );
-      emitActivitiesUpdated(linkedMeta.linkedUserId);
+      emitActivitiesUpdated(normalizedMeta.linkedUserId);
     } catch {
       // no-op
     }
