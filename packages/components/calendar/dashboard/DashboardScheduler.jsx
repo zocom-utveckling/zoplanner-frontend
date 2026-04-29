@@ -101,6 +101,61 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
     return crossCalendarMapRef.current[String(eventId)] || null;
   }
 
+  function toArray(response) {
+    if (Array.isArray(response)) return response;
+    if (Array.isArray(response?.data)) return response.data;
+    return [];
+  }
+
+  async function resolveLinkedMeta(eventId) {
+    if (!isManagerManagingOther) return null;
+
+    const currentUserId = calendarUser?.id || user?.id;
+    const linkedUserId = managerUser?.id;
+
+    if (!currentUserId || !linkedUserId) return null;
+
+    try {
+      const allActivities = toArray(await activityService.getAll());
+      const currentActivity = allActivities.find(
+        (activity) => String(activity?.id) === String(eventId),
+      );
+
+      if (!currentActivity) return null;
+
+      const currentBaseTitle = stripLabelSuffix(currentActivity?.title, [
+        managerName,
+        calendarUserName,
+      ]);
+
+      const linkedActivity = allActivities.find((activity) => {
+        if (String(activity?.userId) !== String(linkedUserId)) return false;
+        if (String(activity?.id) === String(currentActivity?.id)) return false;
+
+        const linkedBaseTitle = stripLabelSuffix(activity?.title, [
+          managerName,
+          calendarUserName,
+        ]);
+
+        return (
+          linkedBaseTitle === currentBaseTitle &&
+          activity?.date === currentActivity?.date &&
+          activity?.startTime === currentActivity?.startTime &&
+          activity?.endTime === currentActivity?.endTime
+        );
+      });
+
+      if (!linkedActivity?.id) return null;
+
+      return {
+        linkedId: String(linkedActivity.id),
+        linkedUserId,
+      };
+    } catch {
+      return null;
+    }
+  }
+
   const { filteredEvents } = useSchedulerFilters(events, {
     defaultPeriod: "all",
     defaultSortBy: "name-asc",
@@ -192,26 +247,27 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
 
   async function handleDeleteEventForBothUsers(eventId) {
     const linkedMeta = getLinkedMeta(eventId);
+    const resolvedLinkedMeta = linkedMeta || (await resolveLinkedMeta(eventId));
 
-    removeEvent(eventId);
+    await removeEvent(eventId);
 
-    if (!linkedMeta) {
+    if (!resolvedLinkedMeta) {
       return;
     }
 
-    if (String(linkedMeta.linkedUserId) === String(managerUser?.id)) {
-      managerRemoveEvent(linkedMeta.linkedId);
+    if (String(resolvedLinkedMeta.linkedUserId) === String(managerUser?.id)) {
+      await managerRemoveEvent(resolvedLinkedMeta.linkedId);
     } else {
       try {
-        await activityService.remove(Number(linkedMeta.linkedId));
-        emitActivitiesUpdated(linkedMeta.linkedUserId);
+        await activityService.remove(Number(resolvedLinkedMeta.linkedId));
+        emitActivitiesUpdated(resolvedLinkedMeta.linkedUserId);
       } catch {
         // no-op
       }
     }
 
     delete crossCalendarMapRef.current[String(eventId)];
-    delete crossCalendarMapRef.current[String(linkedMeta.linkedId)];
+    delete crossCalendarMapRef.current[String(resolvedLinkedMeta.linkedId)];
   }
 
   const {
