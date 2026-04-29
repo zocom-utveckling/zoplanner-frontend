@@ -170,9 +170,7 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
         onChange={handleActivityChange}
         onSubmit={handleActivitySubmit}
         targetUserName={
-          managerUser &&
-          calendarUser &&
-          managerUser.id !== calendarUser.id
+          managerUser && calendarUser && managerUser.id !== calendarUser.id
             ? calendarUser.name || calendarUser.username
             : undefined
         }
