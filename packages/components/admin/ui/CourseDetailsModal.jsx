@@ -1,6 +1,11 @@
 import { useMemo } from "react";
 import { format, startOfWeek, endOfWeek, eachDayOfInterval } from "date-fns";
-import { PlannerMonthView } from "@zoplanner/planning-tool";
+import {
+  PlannerMonthView,
+  getEndDate,
+  getSessionTitle,
+  getStartDate,
+} from "@zoplanner/planning-tool";
 import "./index.css";
 
 export default function CourseDetailsModal({
@@ -13,12 +18,14 @@ export default function CourseDetailsModal({
   if (!isOpen || !course) return null;
 
   const sessions = course.sessions ?? [];
-  const focusDate = course?.startDate ? new Date(course.startDate) : new Date();
+  const startDate = getStartDate(course);
+  const endDate = getEndDate(course);
+  const focusDate = startDate ? new Date(startDate) : new Date();
 
   const monthGridDays = useMemo(() => {
-    if (course?.startDate && course?.endDate) {
-      const [sy, sm, sd] = course.startDate.split("-").map(Number);
-      const [ey, em, ed] = course.endDate.split("-").map(Number);
+    if (startDate && endDate) {
+      const [sy, sm, sd] = startDate.split("-").map(Number);
+      const [ey, em, ed] = endDate.split("-").map(Number);
 
       const courseStart = new Date(sy, sm - 1, sd);
       const courseEnd = new Date(ey, em - 1, ed);
@@ -30,14 +37,14 @@ export default function CourseDetailsModal({
     }
 
     return [];
-  }, [course]);
+  }, [startDate, endDate]);
 
   const events = useMemo(() => {
     return sessions
       .filter((session) => session.timeStart && session.timeEnd)
       .map((session, index) => ({
         id: session.id ?? String(index + 1),
-        title: session.comment || session.title || `Pass ${index + 1}`,
+        title: getSessionTitle(session, index),
         type: "session",
         start: new Date(session.timeStart),
         end: new Date(session.timeEnd),
@@ -62,8 +69,7 @@ export default function CourseDetailsModal({
               {course.name || "Kursschema"}
             </h2>
             <p className="course-details-modal__meta">
-              {course.customer || "Okänd kund"} · {course.startDate} –{" "}
-              {course.endDate}
+              {course.customer || "Okänd kund"} · {startDate} – {endDate}
             </p>
           </div>
 
@@ -125,9 +131,7 @@ export default function CourseDetailsModal({
                       className="course-details-modal__session-item"
                     >
                       <div className="course-details-modal__session-title">
-                        {session.comment ||
-                          session.title ||
-                          `Pass ${index + 1}`}
+                        {getSessionTitle(session, index)}
                       </div>
                       <div className="course-details-modal__session-time">
                         {formatSessionDateTime(session.timeStart)} –{" "}
