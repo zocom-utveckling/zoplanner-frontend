@@ -365,6 +365,46 @@
   box-shadow: 0 16px 28px rgba(201, 31, 31, 0.28);
 }
 
+[data-theme="dark"] .profile-page-camera-btn {
+  background: var(--surface-alt);
+  color: var(--text-muted);
+  border-color: var(--border-input);
+}
+
+[data-theme="dark"] .profile-page-about-label,
+[data-theme="dark"] .profile-page-list-subtitle {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .profile-page-input {
+  background: var(--surface-alt);
+  border-color: var(--border-input);
+}
+
+[data-theme="dark"] .profile-page-competency-note {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-color));
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .profile-page-competency-note::before {
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--accent) 35%,
+    var(--border-color)
+  );
+}
+
+[data-theme="dark"] .profile-page-competency-note::after {
+  border-bottom-color: color-mix(in srgb, var(--accent) 14%, var(--surface));
+}
+
+[data-theme="dark"] .profile-page-action-btn--ghost {
+  border-color: var(--border-input);
+  background: var(--surface-alt);
+  color: var(--text-primary);
+}
+
 @media (max-width: 1240px) {
   .profile-page-layout {
     grid-template-columns: 280px minmax(0, 1fr);

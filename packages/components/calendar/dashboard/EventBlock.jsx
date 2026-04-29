@@ -47,11 +47,13 @@ export default function EventBlock({
         height,
         ...activityColorStyle,
         ...style,
-        cursor: draggable ? "grab" : undefined,
       }}
       draggable={draggable}
       onDragStart={onDragStart}
-      onClick={() => onClick?.(event)}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.(event);
+      }}
     >
       {isShortDurationEvent && event.subtitle ? (
         <div className="event-inline-row">

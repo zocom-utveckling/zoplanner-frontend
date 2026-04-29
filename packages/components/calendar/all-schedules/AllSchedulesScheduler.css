@@ -856,3 +856,12 @@
   border-left-color: var(--border-strong);
   background: var(--surface-muted);
 }
+
+[data-theme="dark"] .all-schedules-event--activity {
+  background: color-mix(
+    in srgb,
+    var(--event-bg, var(--accent)) 34%,
+    var(--surface)
+  );
+  border-left-color: var(--event-border, var(--accent));
+}

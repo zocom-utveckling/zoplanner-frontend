@@ -22,9 +22,22 @@
 
 .scheduler-modal-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+
+.scheduler-modal-header__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scheduler-modal-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-subtle);
+  font-weight: 500;
 }
 
 .scheduler-modal-header h2 {

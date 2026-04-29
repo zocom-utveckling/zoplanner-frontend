@@ -1111,6 +1111,29 @@
   color: var(--text-primary);
 }
 
+[data-theme="dark"] .request-modal {
+  box-shadow: var(--elevation-modal);
+}
+
+[data-theme="dark"] .request-modal__title,
+[data-theme="dark"] .request-modal__text,
+[data-theme="dark"] .request-modal__time {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .request-modal__button--accept,
+[data-theme="dark"] .request-modal__button--decline,
+[data-theme="dark"] .request-modal__button--close {
+  background: var(--action-bg);
+  color: var(--action-fg);
+}
+
+[data-theme="dark"] .request-modal__button--accept:hover,
+[data-theme="dark"] .request-modal__button--decline:hover,
+[data-theme="dark"] .request-modal__button--close:hover {
+  background: var(--action-bg-hover);
+}
+
 [data-theme="dark"] .course-setup-form button,
 [data-theme="dark"] .consultant-match-panel__select,
 [data-theme="dark"] .planner-planning-panel__action-btn {

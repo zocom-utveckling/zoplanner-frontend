@@ -13,6 +13,7 @@ export default function ActivityModal({
   colorDirty = false,
   onStartEdit,
   onDelete,
+  targetUserName,
 }) {
   if (!isOpen) return null;
 
@@ -40,7 +41,12 @@ export default function ActivityModal({
         onClick={(event) => event.stopPropagation()}
       >
         <div className="scheduler-modal-header">
-          <h2>{title}</h2>
+          <div className="scheduler-modal-header__titles">
+            <h2>{title}</h2>
+            {targetUserName && mode === "create" ? (
+              <p className="scheduler-modal-subtitle">för {targetUserName}</p>
+            ) : null}
+          </div>
           <button className="scheduler-close-btn" onClick={onClose}>
             ×
           </button>
