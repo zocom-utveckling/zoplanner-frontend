@@ -1,151 +1,65 @@
 import "./index.css";
-import { useCustomers, useCurrentActor } from "@zoplanner/app-hooks";
-import { useState } from "react";
 import { createPlanningOrder } from "@zoplanner/admin";
 import { classService } from "@zoplanner/api";
+import { emptyOrder, useCustomerRegistry } from "../hooks/useCustomerRegistry";
 import { RegistrySearchFilter } from "./RegistrySearchFilter";
-
-const emptyOrder = {
-  customerId: "",
-  courseName: "",
-  startDate: "",
-  endDate: "",
-  totalHours: "",
-  className: "",
-};
 
 export function CustomerRegistry({ user, onStartPlanning }) {
   const {
     customers,
     loading,
     createCustomer,
-    selectedCustomer,
     setSelectedCustomerId,
     removeCustomer,
-  } = useCustomers();
 
-  const { managerId, isLoadingActor } = useCurrentActor(user);
+    managerId,
+    isLoadingActor,
 
-  const [newCustomerName, setNewCustomerName] = useState("");
-  const [newCustomerCity, setNewCustomerCity] = useState("");
-  const [newCustomerContactName, setNewCustomerContactName] = useState("");
-  const [newCustomerPhone, setNewCustomerPhone] = useState("");
-  const [newCustomerEmail, setNewCustomerEmail] = useState("");
-  const [newCustomerAddress, setNewCustomerAddress] = useState("");
-  const [isCreating, setIsCreating] = useState(false);
+    newCustomerName,
+    setNewCustomerName,
+    newCustomerCity,
+    setNewCustomerCity,
+    newCustomerContactName,
+    setNewCustomerContactName,
+    newCustomerPhone,
+    setNewCustomerPhone,
+    newCustomerEmail,
+    setNewCustomerEmail,
+    newCustomerAddress,
+    setNewCustomerAddress,
+    isCreating,
+    setIsCreating,
 
-  const [search, setSearch] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
+    search,
+    setSearch,
+    showFilters,
+    setShowFilters,
 
-  const [filters, setFilters] = useState({
-    mine: false,
-    cities: [],
-  });
+    filters,
+    setFilters,
+    toggleMultiFilter,
+    resetFilters,
 
-  const [orders, setOrders] = useState([]);
-  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
-  const [newOrder, setNewOrder] = useState(emptyOrder);
-  const [startPlanningOnOrderSave, setStartPlanningOnOrderSave] =
-    useState(false);
+    orders,
+    setOrders,
+    isCreatingOrder,
+    setIsCreatingOrder,
+    newOrder,
+    setNewOrder,
+    startPlanningOnOrderSave,
+    setStartPlanningOnOrderSave,
 
-  const [modalCustomer, setModalCustomer] = useState(null);
+    modalCustomer,
+    setModalCustomer,
 
-  const resetNewCustomerForm = () => {
-    setNewCustomerName("");
-    setNewCustomerCity("");
-    setNewCustomerContactName("");
-    setNewCustomerPhone("");
-    setNewCustomerEmail("");
-    setNewCustomerAddress("");
-  };
-
-  const closeCreateCustomer = () => {
-    setIsCreating(false);
-    resetNewCustomerForm();
-  };
-
-  const closeCreateOrder = () => {
-    setIsCreatingOrder(false);
-    setNewOrder(emptyOrder);
-    setStartPlanningOnOrderSave(false);
-  };
-
-  const openCreateCustomerFromOrder = () => {
-    setIsCreatingOrder(false);
-    setIsCreating(true);
-  };
-
-  const handleToggleCreateCustomer = () => {
-    setIsCreating((prev) => !prev);
-    setIsCreatingOrder(false);
-    setStartPlanningOnOrderSave(false);
-    setShowFilters(false);
-    setSearch("");
-    setModalCustomer(null);
-    setSelectedCustomerId(null);
-  };
-
-  const handleToggleCreateOrder = () => {
-    setIsCreatingOrder((prev) => !prev);
-    setIsCreating(false);
-    setShowFilters(false);
-    setSearch("");
-    setModalCustomer(null);
-    setSelectedCustomerId(null);
-  };
-
-  const toggleMine = () => {
-    setFilters((prev) => ({
-      ...prev,
-      mine: !prev.mine,
-    }));
-  };
-
-  const toggleMultiFilter = (key, value) => {
-    setFilters((prev) => {
-      const exists = prev[key].includes(value);
-
-      return {
-        ...prev,
-        [key]: exists
-          ? prev[key].filter((v) => v !== value)
-          : [...prev[key], value],
-      };
-    });
-  };
-
-  const resetFilters = () => {
-    setFilters({
-      mine: false,
-      cities: [],
-    });
-  };
-
-  // 👇 lägg här
-
-  console.log("managerId (actor):", managerId);
-
-  console.log(
-    "customers:",
-    customers.map((c) => c.managerId),
-  );
-
-  const filteredCustomers = customers
-    .filter((c) => {
-      const name = (c.name || "").trim().toUpperCase();
-      return name && !name.startsWith("UTKAST");
-    })
-    .filter((c) =>
-      (c.name || "").toLowerCase().startsWith(search.trim().toLowerCase()),
-    )
-    .filter((c) => {
-      if (!filters.mine) return true;
-      return Number(c.managerId) === Number(managerId);
-    })
-    .filter((c) => {
-      if (filters.cities.length > 0) return filters.cities.includes(c.city);
-      return true;
-    });
+    resetNewCustomerForm,
+    closeCreateCustomer,
+    closeCreateOrder,
+    openCreateCustomerFromOrder,
+    handleToggleCreateCustomer,
+    handleToggleCreateOrder,
+    filteredCustomers,
+  } = useCustomerRegistry({ user });
 
   const handleCreateCustomer = async ({ nextStep = null } = {}) => {
     if (!managerId) return;

@@ -1,6 +1,11 @@
 import {
   ConsultantMatchPanel,
   AssignmentSummaryCard,
+  getClassName,
+  getCourseName,
+  getCustomerName,
+  getEndDate,
+  getStartDate,
 } from "@zoplanner/planning-tool";
 
 export default function PlannerMatchingPanel({
@@ -26,15 +31,21 @@ export default function PlannerMatchingPanel({
     return <p>Laddar konsulter...</p>;
   }
 
+  const courseName = getCourseName(courseDraft, "Kursschema");
+  const customerName = getCustomerName(courseDraft);
+  const className = getClassName(courseDraft);
+  const startDate = getStartDate(courseDraft);
+  const endDate = getEndDate(courseDraft);
+
   if (isAssigned) {
     return (
       <AssignmentSummaryCard
-        customerName={courseDraft?.customerName}
-        courseName={courseDraft?.courseName}
-        className={courseDraft?.className}
+        customerName={customerName}
+        courseName={courseName}
+        className={className}
         consultantName={assignedConsultantName}
-        startDate={courseDraft?.startDate}
-        endDate={courseDraft?.endDate}
+        startDate={startDate}
+        endDate={endDate}
         scheduleSummary={scheduleSummary}
         onEditFromFinal={onEditFromFinal}
         onExportPdf={() => {
@@ -53,11 +64,9 @@ export default function PlannerMatchingPanel({
     <>
       <div className="consultant-match-panel__header">
         <div className="consultant-match-panel__header-main">
-          <h2 className="consultant-match-panel__title">
-            {courseDraft?.courseName || "Kursschema"}
-          </h2>
+          <h2 className="consultant-match-panel__title">{courseName}</h2>
           <p className="consultant-match-panel__meta">
-            {courseDraft?.startDate || ""} – {courseDraft?.endDate || ""}
+            {startDate || ""} – {endDate || ""}
           </p>
         </div>
 

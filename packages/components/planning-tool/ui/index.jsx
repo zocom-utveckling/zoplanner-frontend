@@ -5,9 +5,10 @@ import { useSessionEditor } from "../hooks/useSessionEditor";
 import { useAssignmentPublishFlow } from "../hooks/useAssignmentPublishFlow";
 import { usePlannerEventClick } from "../hooks/usePlannerEventClick";
 import { useDraftRelationSync } from "../hooks/useDraftRelationSync";
+import { usePlannerActions } from "../hooks/usePlannerActions";
 import PlannerPlanningPanel from "./PlannerPlanningPanel";
 import PlannerMatchingPanel from "./PlannerMatchingPanel";
-import { notificationService } from "@zoplanner/api";
+
 import {
   PlannerMonthView,
   CourseSummary,
@@ -287,6 +288,7 @@ export function PlannerWorkspace({
 
               {plannerMode === "planning" ? (
                 <PlannerPlanningPanel
+                  managerId={managerId}
                   courseDraft={courseDraft}
                   selectedAssignmentForMatching={selectedAssignmentForMatching}
                   isEditingBasicInfo={isEditingBasicInfo}
