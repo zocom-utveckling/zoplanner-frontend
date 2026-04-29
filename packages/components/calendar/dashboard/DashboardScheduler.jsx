@@ -47,9 +47,24 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
 
   // Wrapper för att skapa aktivitet på båda användare om manager lägger till på annan
   function handleCreateEventForBothUsers(eventData) {
-    addEvent(eventData);
-    if (managerUser && calendarUser && managerUser.id !== calendarUser.id) {
-      managerEventsApi.addEvent(eventData);
+    const isManagerCreatingForOther =
+      managerUser && calendarUser && managerUser.id !== calendarUser.id;
+
+    if (isManagerCreatingForOther) {
+      const calendarUserName =
+        calendarUser?.name || calendarUser?.username || "Medarbetare";
+      const managerName =
+        managerUser?.name || managerUser?.username || "Manager";
+
+      // Medarbetarens kalender: "Titel - Managerns namn"
+      addEvent({ ...eventData, title: `${eventData.title} - ${managerName}` });
+      // Managerns kalender: "Titel - Medarbetarens namn"
+      managerEventsApi.addEvent({
+        ...eventData,
+        title: `${eventData.title} - ${calendarUserName}`,
+      });
+    } else {
+      addEvent(eventData);
     }
   }
 
@@ -154,6 +169,13 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
         onDelete={handleDeleteActivity}
         onChange={handleActivityChange}
         onSubmit={handleActivitySubmit}
+        targetUserName={
+          managerUser &&
+          calendarUser &&
+          managerUser.id !== calendarUser.id
+            ? calendarUser.name || calendarUser.username
+            : undefined
+        }
       />
 
       <EventDetailsModal
