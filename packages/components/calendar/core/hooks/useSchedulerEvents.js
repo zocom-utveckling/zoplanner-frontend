@@ -88,16 +88,12 @@ function toEventFromActivity(activity, fallbackEvent) {
       ? toLocalDateTime(`${activity.date} ${activity.endTime}:00`)
       : null;
 
-  const baseTitle =
-    activity?.title ||
-    fallbackEvent?.title ||
-    "Aktivitet";
+  const baseTitle = activity?.title || fallbackEvent?.title || "Aktivitet";
 
   const cleanTitle = baseTitle.replace(/^Godkänd: |^Avböjd: /, "");
 
   const isRequest =
-    typeof baseTitle === "string" &&
-    cleanTitle === "Förfrågan om ändring";
+    typeof baseTitle === "string" && cleanTitle === "Förfrågan om ändring";
 
   return {
     ...fallbackEvent,
@@ -202,7 +198,7 @@ export default function useSchedulerEvents(user, options = {}) {
             color: nextColor,
           },
         ]);
-        return;
+        return { ...createdEvent, color: nextColor };
       } catch {
         return;
       }
