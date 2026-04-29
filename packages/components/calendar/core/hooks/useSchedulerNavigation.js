@@ -24,7 +24,7 @@ export default function useSchedulerNavigation({
   );
 
   const weekDays = useMemo(
-    () => Array.from({ length: 5 }, (_, index) => addDays(weekStart, index)),
+    () => Array.from({ length: 7 }, (_, index) => addDays(weekStart, index)),
     [weekStart],
   );
 

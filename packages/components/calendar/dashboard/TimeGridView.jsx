@@ -1,5 +1,12 @@
 import { useMemo } from "react";
-import { format, startOfDay, isSameDay, differenceInMinutes } from "date-fns";
+import Holidays from "date-holidays";
+import {
+  format,
+  getDay,
+  startOfDay,
+  isSameDay,
+  differenceInMinutes,
+} from "date-fns";
 import sv from "date-fns/locale/sv";
 import EventBlock from "./EventBlock";
 
@@ -99,6 +106,8 @@ export default function TimeGridView({
   bookingWeekColors,
   onDayClick,
 }) {
+  const hd = new Holidays("SE");
+
   const timeSlots = useMemo(() => {
     const slots = [];
     for (let h = HOURS_START; h <= HOURS_END; h++) {
@@ -126,13 +135,37 @@ export default function TimeGridView({
             gridTemplateColumns: `repeat(${days.length}, 1fr)`,
           }}
         >
-          {days.map((d) => (
-            <div key={d.toISOString()} className="day-header-cell">
-              <div style={{ fontWeight: 600 }}>
-                {format(d, "EEEE d MMM", { locale: sv })}
+          {days.map((d) => {
+            const dayOfWeek = getDay(d);
+            const isSat = dayOfWeek === 6;
+            const isSun = dayOfWeek === 0;
+            const holiday = hd.isHoliday(d);
+            const isHoliday = Boolean(holiday);
+            return (
+              <div
+                key={d.toISOString()}
+                className={[
+                  "day-header-cell",
+                  isSat ? "day-header-cell--saturday" : "",
+                  isSun ? "day-header-cell--sunday" : "",
+                  isHoliday ? "day-header-cell--holiday" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <div>
+                  <div style={{ fontWeight: 600 }}>
+                    {format(d, "EEEE d MMM", { locale: sv })}
+                  </div>
+                  {holiday?.[0]?.name && (
+                    <div className="day-header-cell__holiday-name">
+                      {holiday[0].name}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -171,11 +204,22 @@ export default function TimeGridView({
           {days.map((day) => {
             const dayEvents = events.filter((e) => isSameDay(e.start, day));
             const positionedDayEvents = buildEventLayout(dayEvents);
+            const colDow = getDay(day);
+            const colIsSat = colDow === 6;
+            const colIsSun = colDow === 0;
+            const colIsHoliday = Boolean(hd.isHoliday(day));
 
             return (
               <div
                 key={day.toISOString()}
-                className="day-col"
+                className={[
+                  "day-col",
+                  colIsSat ? "day-col--saturday" : "",
+                  colIsSun ? "day-col--sunday" : "",
+                  colIsHoliday ? "day-col--holiday" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 style={{ height: dayColumnHeight }}
                 onDragOver={(evt) => {
                   if (onEventDrop) evt.preventDefault();
