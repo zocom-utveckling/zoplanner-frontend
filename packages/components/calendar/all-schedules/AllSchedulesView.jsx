@@ -138,7 +138,7 @@ export default function AllSchedulesView({
         {unassignedEvents.length > 0 ? (
           <p>{unassignedEvents.length} pass saknar lärare i vald period.</p>
         ) : (
-          <p>Det finns inga ej tilldelade pass i vald period.</p>
+          <p>Kommer inom kort.</p>
         )}
       </aside>
 
