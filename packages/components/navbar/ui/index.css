@@ -184,32 +184,41 @@
   position: absolute;
   right: 0;
   top: 120%;
-  width: 160px;
+  min-width: max-content;
+  padding: 4px 0;
   background-color: var(--surface);
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border-color);
-  box-shadow: var(--elevation-card);
-  animation: dropdown 0.5s ease forwards;
-  transition: all 0.8s ease;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: dropdown 0.3s ease forwards;
   z-index: 999;
 }
 
 .navbar__dropdown a {
-  padding: 12px;
+  padding: 10px 14px;
   text-decoration: none;
   color: var(--text-primary);
   display: flex;
+  align-items: center;
   justify-content: center;
   border-bottom: 1px solid var(--border-color);
+  transition:
+    background-color 0.18s ease,
+    transform 0.18s ease;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Poppins", sans-serif;
+  white-space: nowrap;
 }
 
-.dropdown a:last-child {
+.navbar__dropdown a:last-child {
   border-bottom: none;
 }
 
-.dropdown a:hover {
-  background-color: var(--hover-bg);
+.navbar__dropdown a:hover {
+  background-color: var(--surface-muted);
+ 
 }
 
 .navbar .dark-mode-button {
