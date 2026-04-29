@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useEffect } from "react";
 import { useCourseSetupForm } from "../hooks/useCourseSetupForm";
 import ZoTimePicker from "@zoplanner/time-picker";
 
@@ -52,11 +53,6 @@ export default function CourseSetupForm({
       handleSelectCustomer(selectedCustomer);
     }
   }, [customerId, customers, customerName, handleSelectCustomer]);
-
-  const weekdaySummarySource =
-    selectedWeekdays?.length > 0
-      ? selectedWeekdays
-      : (initialValues?.selectedWeekdays ?? []);
 
   const sessions = initialValues?.sessionsDraft ?? [];
 

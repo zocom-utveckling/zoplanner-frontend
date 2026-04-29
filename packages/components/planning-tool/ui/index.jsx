@@ -5,15 +5,20 @@ import { useSessionEditor } from "../hooks/useSessionEditor";
 import { useAssignmentPublishFlow } from "../hooks/useAssignmentPublishFlow";
 import { usePlannerEventClick } from "../hooks/usePlannerEventClick";
 import { useDraftRelationSync } from "../hooks/useDraftRelationSync";
+import { usePlannerActions } from "../hooks/usePlannerActions";
 import PlannerPlanningPanel from "./PlannerPlanningPanel";
 import PlannerMatchingPanel from "./PlannerMatchingPanel";
-import { notificationService } from "@zoplanner/api";
+
 import {
   PlannerMonthView,
   CourseSummary,
   SessionModal,
   upsertPlanningDraft,
   toPlanningDraftFromAssignment,
+  getCourseName,
+  getEndDate,
+  getSessionTitle,
+  getStartDate,
 } from "@zoplanner/planning-tool";
 import {
   startOfMonth,
@@ -40,6 +45,7 @@ export function PlannerWorkspace({
   const [activeAssignment, setActiveAssignment] = useState(null);
   const [selectedConsultant, setSelectedConsultant] = useState(null);
   const { consultants, loading: consultantsLoading } = useConsultantMatching();
+
   const {
     consultantAssignmentEvents,
     setConsultantAssignmentEvents,
@@ -48,6 +54,7 @@ export function PlannerWorkspace({
     isLoadingConsultantSchedule,
     consultantActivityEvents,
   } = useConsultantSchedule(selectedConsultant);
+
   const {
     isModalOpen,
     formData,
@@ -62,12 +69,15 @@ export function PlannerWorkspace({
     selectedConsultant,
     setConsultantActivities,
   });
+
   const { handleEventClick } = usePlannerEventClick({
     handleSessionClick,
     consultantActivities,
     setConsultantActivities,
   });
+
   const { isPreparingDraft, prepareDraftRelations } = useDraftRelationSync();
+
   const { isSaving, handleAssignConsultant, handlePublishDraft } =
     useAssignmentPublishFlow({
       managerId,
@@ -103,13 +113,8 @@ export function PlannerWorkspace({
   useEffect(() => {
     if (!selectedAssignmentForMatching) return;
 
-    const normalizedStartDate =
-      selectedAssignmentForMatching.startDate ??
-      selectedAssignmentForMatching.dateStart;
-
-    const normalizedEndDate =
-      selectedAssignmentForMatching.endDate ??
-      selectedAssignmentForMatching.dateEnd;
+    const normalizedStartDate = getStartDate(selectedAssignmentForMatching);
+    const normalizedEndDate = getEndDate(selectedAssignmentForMatching);
 
     setCourseDraft(
       toPlanningDraftFromAssignment(selectedAssignmentForMatching),
@@ -120,10 +125,7 @@ export function PlannerWorkspace({
       dateStart: normalizedStartDate,
       dateEnd: normalizedEndDate,
       course: {
-        name:
-          selectedAssignmentForMatching?.course?.name ||
-          selectedAssignmentForMatching.name ||
-          "Kursschema",
+        name: getCourseName(selectedAssignmentForMatching, "Kursschema"),
       },
       sessions: selectedAssignmentForMatching.sessions ?? [],
     });
@@ -145,15 +147,17 @@ export function PlannerWorkspace({
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [hasUnsavedPlanning]);
+
   const assignmentView = activeAssignment?.consultantId
     ? activeAssignment
     : (courseDraft ?? activeAssignment);
+
   const calendarSource = assignmentView?.sessionsDraft?.length
     ? assignmentView
     : assignmentView
       ? {
-          startDate: assignmentView.dateStart,
-          endDate: assignmentView.dateEnd,
+          startDate: getStartDate(assignmentView),
+          endDate: getEndDate(assignmentView),
           sessionsDraft: assignmentView.sessions ?? [],
         }
       : assignmentView;
@@ -180,13 +184,13 @@ export function PlannerWorkspace({
   const assignmentEvents = useMemo(() => {
     if (!calendarSource?.sessionsDraft?.length) return [];
 
-    return calendarSource.sessionsDraft.map((s, i) => ({
-      id: `assignment-${i + 1}`,
-      sessionIndex: i,
-      title: s.title || s.comment || `Pass ${i + 1}`,
+    return calendarSource.sessionsDraft.map((session, index) => ({
+      id: `assignment-${index + 1}`,
+      sessionIndex: index,
+      title: getSessionTitle(session, index),
       type: "assignment-session",
-      start: new Date(s.timeStart),
-      end: new Date(s.timeEnd),
+      start: new Date(session.timeStart),
+      end: new Date(session.timeEnd),
       draggable: true,
     }));
   }, [calendarSource]);
@@ -202,26 +206,21 @@ export function PlannerWorkspace({
 
   const summaryAssignment = assignmentView
     ? {
-        dateStart: assignmentView.startDate || assignmentView.dateStart,
-        dateEnd: assignmentView.endDate || assignmentView.dateEnd,
+        dateStart: getStartDate(assignmentView),
+        dateEnd: getEndDate(assignmentView),
         course: {
-          name:
-            assignmentView?.course?.name ||
-            assignmentView?.courseName ||
-            "Kursschema",
+          name: getCourseName(assignmentView, "Kursschema"),
         },
         sessions:
           assignmentView?.sessions ?? assignmentView?.sessionsDraft ?? [],
       }
     : null;
 
-  const sidebarTitle =
-    assignmentView?.course?.name ||
-    assignmentView?.courseName ||
-    "Ny planering";
+  const sidebarTitle = getCourseName(assignmentView, "Ny planering");
 
   const plannerModeLabel =
     plannerMode === "planning" ? "Planering" : "Matchning";
+
   const focusMonthLabel = focusDate
     .toLocaleDateString("sv-SE", {
       month: "long",
@@ -231,6 +230,7 @@ export function PlannerWorkspace({
 
   const assignedConsultantName = assignmentView?.consultant?.name || "";
   const isAssigned = Number(assignmentView?.consultantId) > 0;
+
   const scheduleSummary = buildScheduleSummary(
     assignmentView?.sessions ?? assignmentView?.sessionsDraft ?? [],
   );
@@ -245,10 +245,12 @@ export function PlannerWorkspace({
   const isDraftCourse =
     Boolean(courseDraft?.isDraftCourse) ||
     isDraftValue(courseDraft?.courseName);
+
   const isDraftCustomer =
     Boolean(courseDraft?.isDraftCustomer) ||
     Boolean(courseDraft?.isDraftCustomerEntity) ||
     isDraftValue(courseDraft?.customerName);
+
   const isDraftClass =
     Boolean(courseDraft?.isDraftClass) ||
     Boolean(courseDraft?.isDraftClassEntity) ||
@@ -277,6 +279,7 @@ export function PlannerWorkspace({
           </span>
         </div>
       </div>
+
       <div className="planner-workspace__content">
         <div className="planner-workspace__layout">
           <aside className="planner-workspace__sidebar">
@@ -285,6 +288,7 @@ export function PlannerWorkspace({
 
               {plannerMode === "planning" ? (
                 <PlannerPlanningPanel
+                  managerId={managerId}
                   courseDraft={courseDraft}
                   selectedAssignmentForMatching={selectedAssignmentForMatching}
                   isEditingBasicInfo={isEditingBasicInfo}
@@ -322,9 +326,6 @@ export function PlannerWorkspace({
                     setIsEditingBasicInfo(false);
                   }}
                   onEditFromFinal={() => {
-                    // Go back from final step while keeping selected consultant
-                    // This allows user to make changes and re-confirm
-                    // Clear the active assignment to show the matching panel again
                     setActiveAssignment(null);
                     setShowBasicInfo(true);
                     setShowScheduleEditor(false);
@@ -343,11 +344,6 @@ export function PlannerWorkspace({
 
                     setSelectedConsultant(consultant);
 
-                    // if (!courseDraft?.customerId || !courseDraft?.classId) {
-                    // console.log("⛔ missing customer or class");
-                    //  return;
-                    // }
-
                     let assignment = activeAssignment;
 
                     if (!assignment?.id) {
@@ -357,6 +353,7 @@ export function PlannerWorkspace({
 
                       console.log("📦 AFTER PUBLISH", assignment);
                     }
+
                     if (!assignment?.id) {
                       console.error("❌ No assignment id after publish");
                       return;
@@ -397,9 +394,12 @@ export function PlannerWorkspace({
                         await notificationService.sendDirectMessage({
                           recipientEmail,
                           subject: "Nytt uppdrag",
-                          message: `Du har fått ett nytt uppdrag:\n\n${
-                            courseDraft?.courseName || "Kursschema"
-                          }\n${courseDraft?.startDate} - ${courseDraft?.endDate}`,
+                          message: `Du har fått ett nytt uppdrag:\n\n${getCourseName(
+                            courseDraft,
+                            "Kursschema",
+                          )}\n${getStartDate(courseDraft)} - ${getEndDate(
+                            courseDraft,
+                          )}`,
                         });
 
                       console.log("Message sent", result);

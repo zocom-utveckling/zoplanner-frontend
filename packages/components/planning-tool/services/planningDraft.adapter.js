@@ -1,3 +1,12 @@
+import {
+  getClassName,
+  getCourseName,
+  getCustomerName,
+  getEndDate,
+  getSessionTitle,
+  getStartDate,
+} from "../utils/normalize.helpers";
+
 export function toPlanningDraft(courseDraft) {
   return {
     id: courseDraft.id,
@@ -10,28 +19,22 @@ export function toPlanningDraft(courseDraft) {
     courseName: courseDraft.courseName ?? "UTKAST – ange kursnamn",
     isDraftCourse:
       courseDraft.isDraftCourse ??
-      (
-        !courseDraft.courseName ||
-        String(courseDraft.courseName).startsWith("UTKAST")
-      ),
+      (!courseDraft.courseName ||
+        String(courseDraft.courseName).startsWith("UTKAST")),
 
     customerId: courseDraft.customerId ?? null,
     customerName: courseDraft.customerName ?? "UTKAST – ange kund",
     isDraftCustomer:
       courseDraft.isDraftCustomer ??
-      (
-        !courseDraft.customerName ||
-        String(courseDraft.customerName).startsWith("UTKAST")
-      ),
+      (!courseDraft.customerName ||
+        String(courseDraft.customerName).startsWith("UTKAST")),
 
     classId: courseDraft.classId ?? null,
     className: courseDraft.className ?? "UTKAST – ange klass",
     isDraftClass:
       courseDraft.isDraftClass ??
-      (
-        !courseDraft.className ||
-        String(courseDraft.className).startsWith("UTKAST")
-      ),
+      (!courseDraft.className ||
+        String(courseDraft.className).startsWith("UTKAST")),
 
     startDate: courseDraft.startDate,
     endDate: courseDraft.endDate,
@@ -72,13 +75,12 @@ function isDraftName(value, fallbackPrefix = "UTKAST") {
 
 export function toPlanningDraftFromAssignment(assignment) {
   const assignmentId = assignment?.id ?? null;
-  const sessions = Array.isArray(assignment?.sessions) ? assignment.sessions : [];
-  const startDate = toDateOnlyString(
-    assignment?.startDate ?? assignment?.dateStart,
-  );
-  const endDate = toDateOnlyString(
-    assignment?.endDate ?? assignment?.dateEnd,
-  );
+  const sessions = Array.isArray(assignment?.sessions)
+    ? assignment.sessions
+    : [];
+
+  const startDate = toDateOnlyString(getStartDate(assignment));
+  const endDate = toDateOnlyString(getEndDate(assignment));
 
   const sessionsDraft = sessions
     .filter((session) => session?.timeStart && session?.timeEnd)
@@ -90,10 +92,12 @@ export function toPlanningDraftFromAssignment(assignment) {
         session?.timeEnd || sessionStartDate,
       );
 
+      const title = getSessionTitle(session, index);
+
       return {
         id: session?.id ?? `session-${index + 1}`,
-        title: session?.comment || session?.title || `Pass ${index + 1}`,
-        comment: session?.comment || session?.title || "",
+        title,
+        comment: title,
         dateStart: sessionStartDate,
         dateEnd: sessionEndDate,
         timeStart: session.timeStart,
@@ -102,28 +106,24 @@ export function toPlanningDraftFromAssignment(assignment) {
       };
     });
 
-  const courseName =
-    assignment?.course?.name ||
-    assignment?.courseName ||
-    assignment?.name ||
-    "UTKAST – ange kursnamn";
-
-  const className =
-    assignment?.className ||
-    assignment?.class?.name ||
-    assignment?.schoolClass?.name ||
-    "UTKAST – ange klass";
-
-  const customerName =
-    assignment?.customerName ||
-    assignment?.customer?.name ||
-    assignment?.client?.name ||
-    "UTKAST – ange kund";
+  const courseName = getCourseName(
+    assignment,
+    "UTKAST – ange kursnamn",
+  );
+  const className = getClassName(
+    assignment,
+    "UTKAST – ange klass",
+  );
+  const customerName = getCustomerName(
+    assignment,
+    "UTKAST – ange kund",
+  );
 
   const totalHours =
-  assignment?.totalHours != null
-    ? Number(assignment.totalHours)
-    : inferTotalHoursFromSessions(sessionsDraft);
+    assignment?.totalHours != null
+      ? Number(assignment.totalHours)
+      : inferTotalHoursFromSessions(sessionsDraft);
+
   return toPlanningDraft({
     id: assignmentId,
     assignmentId,
@@ -135,7 +135,8 @@ export function toPlanningDraftFromAssignment(assignment) {
     courseName,
     isDraftCourse: isDraftName(courseName),
 
-    customerId: assignment?.customerId ?? assignment?.customer?.id ?? null,
+    customerId:
+      assignment?.customerId ?? assignment?.customer?.id ?? null,
     customerName,
     isDraftCustomer: isDraftName(customerName),
 
@@ -153,7 +154,9 @@ export function toPlanningDraftFromAssignment(assignment) {
     selectedWeekdays: [],
     sessionCount: sessionsDraft.length,
     hoursPerSession:
-      sessionsDraft.length > 0 ? totalHours / sessionsDraft.length : 0,
+      sessionsDraft.length > 0
+        ? totalHours / sessionsDraft.length
+        : 0,
     sessionsDraft,
     consultantId: assignment?.consultantId ?? null,
     existingSessionIds: sessions

@@ -1,6 +1,5 @@
 import "./index.css";
 import { useEffect, useState } from "react";
-import { consultantService, userService } from "@zoplanner/api";
 
 export function RegistrySearchFilter({
   search,
@@ -25,60 +24,18 @@ export function RegistrySearchFilter({
   }, [showFilters]);
 
   useEffect(() => {
-    const hasCityFilter = filters.some(
-      (filter) => filter.type === "multi" && filter.key === "cities",
+    const cities = (citySourceRecords ?? [])
+      .map((record) => record.city)
+      .filter(Boolean)
+      .map((city) => city.trim())
+      .filter((city) => city.length > 0);
+
+    const uniqueCities = [...new Set(cities)].sort((a, b) =>
+      a.localeCompare(b, "sv"),
     );
 
-    if (!hasCityFilter) {
-      return;
-    }
-
-    const loadCityOptions = async () => {
-      try {
-        const [consultants, users] = await Promise.all([
-          consultantService.getAll(),
-          userService.getAll(),
-        ]);
-
-        const sourceCities = (citySourceRecords ?? []).map(
-          (record) => record.city,
-        );
-        const consultantCities = (consultants ?? []).map(
-          (consultant) => consultant.city,
-        );
-        const userCities = (users ?? []).map((userItem) => userItem.city);
-
-        const mergedCities = [
-          ...sourceCities,
-          ...consultantCities,
-          ...userCities,
-        ]
-          .filter(Boolean)
-          .map((city) => city.trim())
-          .filter((city) => city.length > 0);
-
-        const uniqueCities = [...new Set(mergedCities)].sort((a, b) =>
-          a.localeCompare(b, "sv"),
-        );
-
-        setCityOptions(uniqueCities);
-      } catch (error) {
-        console.error("Failed to load city options", error);
-
-        const fallbackCities = [
-          ...new Set((citySourceRecords ?? []).map((record) => record.city)),
-        ]
-          .filter(Boolean)
-          .map((city) => city.trim())
-          .filter((city) => city.length > 0)
-          .sort((a, b) => a.localeCompare(b, "sv"));
-
-        setCityOptions(fallbackCities);
-      }
-    };
-
-    loadCityOptions();
-  }, [citySourceRecords, filters]);
+    setCityOptions(uniqueCities);
+  }, [citySourceRecords]);
 
   const resolvedFilters = filters.map((filter) => {
     if (filter.type === "multi" && filter.key === "cities") {
@@ -150,6 +107,7 @@ export function RegistrySearchFilter({
           >
             {showFilters ? "Filter ×" : "Filtrera"}
           </button>
+
           {showFilters ? (
             <div className="registry-search-filter__controls">
               <button
@@ -208,7 +166,7 @@ export function RegistrySearchFilter({
                             type="button"
                             className="registry-search-filter__dropdown-close"
                             onClick={() => setOpenFilter(null)}
-                            aria-label="Stäng stadfilter"
+                            aria-label="Stäng filter"
                           >
                             ×
                           </button>

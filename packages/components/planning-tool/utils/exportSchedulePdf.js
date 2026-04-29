@@ -1,5 +1,13 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import {
+  getClassName,
+  getCourseName,
+  getCustomerName,
+  getEndDate,
+  getSessionTitle,
+  getStartDate,
+} from "./normalize.helpers";
 
 function formatDate(dateValue) {
   if (!dateValue) return "-";
@@ -19,13 +27,12 @@ function formatTime(dateValue) {
 export function exportSchedulePdf(schedule) {
   const sessions = schedule?.sessionsDraft ?? schedule?.sessions ?? [];
 
-  const courseName = schedule?.courseName ?? schedule?.course?.name ?? "Schema";
+  const courseName = getCourseName(schedule, "Schema");
+  const customerName = getCustomerName(schedule);
+  const className = getClassName(schedule);
 
-  const customerName = schedule?.customerName ?? "-";
-  const className = schedule?.className ?? "-";
-
-  const startDate = schedule?.startDate ?? schedule?.dateStart;
-  const endDate = schedule?.endDate ?? schedule?.dateEnd;
+  const startDate = getStartDate(schedule);
+  const endDate = getEndDate(schedule);
 
   const doc = new jsPDF();
 
@@ -42,7 +49,7 @@ export function exportSchedulePdf(schedule) {
     formatDate(session.timeStart),
     formatTime(session.timeStart),
     formatTime(session.timeEnd),
-    session.title || session.comment || `Pass ${index + 1}`,
+    getSessionTitle(session, index),
     session.location || "-",
   ]);
 
