@@ -388,8 +388,7 @@ export async function fetchSchedulerEvents(user, options = {}) {
       const baseTitle = firstNonEmptyString(activity?.title) || "Aktivitet";
       const cleanTitle = baseTitle.replace(/^Godkänd: |^Avböjd: /, "");
       const isRequest =
-        typeof baseTitle === "string" &&
-        cleanTitle === "Förfrågan om ändring";
+        typeof baseTitle === "string" && cleanTitle === "Förfrågan om ändring";
 
       nextEvents.push({
         id: activity?.id,
@@ -457,15 +456,15 @@ export async function fetchSchedulerEvents(user, options = {}) {
           session?.LocationType,
         );
         const city = firstNonEmptyString(
+          assignment?.customer?.city,
+          assignment?.customer?.City,
+          assignment?.customerCity,
           session?.city,
           session?.City,
           session?.locationCity,
           session?.LocationCity,
           assignment?.city,
           assignment?.City,
-          assignment?.customer?.city,
-          assignment?.customer?.City,
-          assignment?.customerCity,
         );
 
         nextEvents.push({
@@ -546,13 +545,13 @@ export async function fetchSchedulerEvents(user, options = {}) {
         assignment?.LocationType,
       ),
       city: firstNonEmptyString(
+        assignment?.customer?.city,
+        assignment?.customer?.City,
+        assignment?.customerCity,
         assignment?.city,
         assignment?.City,
         assignment?.locationCity,
         assignment?.LocationCity,
-        assignment?.customer?.city,
-        assignment?.customer?.City,
-        assignment?.customerCity,
       ),
       context: {
         course: courseName,
@@ -578,13 +577,13 @@ export async function fetchSchedulerEvents(user, options = {}) {
           assignment?.LocationType,
         ),
         city: firstNonEmptyString(
+          assignment?.customer?.city,
+          assignment?.customer?.City,
+          assignment?.customerCity,
           assignment?.city,
           assignment?.City,
           assignment?.locationCity,
           assignment?.LocationCity,
-          assignment?.customer?.city,
-          assignment?.customer?.City,
-          assignment?.customerCity,
         ),
         customerCity: firstNonEmptyString(
           assignment?.customer?.city,

@@ -9,15 +9,13 @@ function resolveStatus(start, end) {
   return { label: "Pågående", tone: "ongoing" };
 }
 
-function normalizeLocationType(locationTypeValue) {
+function formatDeliveryType(value) {
   const normalized =
-    typeof locationTypeValue === "string"
-      ? locationTypeValue.trim().toUpperCase()
-      : "";
+    typeof value === "string" ? value.trim().toUpperCase() : "";
 
-  if (normalized === "REMOTE") return "REMOTE";
-  if (normalized === "ONSITE") return "ONSITE";
-  if (normalized === "HYBRID") return "HYBRID";
+  if (normalized === "ONSITE") return "På plats";
+  if (normalized === "REMOTE") return "Distans";
+  if (normalized === "HYBRID") return "Hybrid";
   return "-";
 }
 
@@ -70,7 +68,10 @@ export default function EventDetailsModal({
   const endDate = event?.end ? new Date(event.end) : null;
 
   const status = resolveStatus(startDate, endDate);
-  const locationType = normalizeLocationType(event?.locationType);
+  const placeCity = event?.context?.customerCity || event?.city || "-";
+  const deliveryType = formatDeliveryType(
+    event?.locationType || event?.context?.availability,
+  );
 
   const description =
     event?.description || event?.subtitle || "Ingen beskrivning";
@@ -147,8 +148,9 @@ export default function EventDetailsModal({
           <Section title="Plats">
             <div className="scheduler-event-row">
               <span className="scheduler-event-label">Stad</span>
-              <span className="scheduler-location-badge">{locationType}</span>
+              <span className="scheduler-location-badge">{placeCity}</span>
             </div>
+            <InfoRow label="Format" value={deliveryType} />
           </Section>
 
           <Section title="Uppdraget">
