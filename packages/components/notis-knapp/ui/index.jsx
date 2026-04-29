@@ -18,7 +18,8 @@ function SendAssignmentNotification() {
         teacherName: "Amir",
         assignmentDescription: "New assignment created",
         assignmentDueDate: "2026-05-15T17:00:00.000Z",
-        assignmentId:"1"
+        assignmentId:"1",
+        timestamp:"2026-04-12T13:00:00.000Z",
       });
       alert(data.message);
     } catch (error) {
@@ -28,15 +29,16 @@ function SendAssignmentNotification() {
   };
 
   const handleSendDirectMessage = async () => {
-    const email = prompt("Ange mottagarens e-postadress:");
-    const message = prompt("Ange meddelandetext:");
-    if (!email || !message) {
+    const RecipientEmail = prompt("Ange mottagarens e-postadress:");
+    const Message = prompt("Ange meddelandetext:");
+    const Subject = prompt("Ange ämne:");
+    if (!RecipientEmail || !Message || !Subject) {
       alert("E-postadress och meddelande krävs");
       return;
     }
 
     try {
-      const data = await SendDirectMessage({ RecipientEmail: email, Message: message });
+      const data = await SendDirectMessage({ RecipientEmail, Message,Subject});
       alert(data.message);
     } catch (error) {
       console.log("notification error:", error.message);
@@ -45,16 +47,21 @@ function SendAssignmentNotification() {
   };
 
   const handleSendScheduleUpdated = async () => {
-    const email = prompt("Ange mottagarens e-postadress:");
-    if (!email) {
+    const recipient = prompt("Ange mottagarens e-postadress:");
+    if (!recipient) {
       alert("E-postadress krävs");
       return;
     }
 
     try {
       const data = await sendScheduleUpdated({
-         email,
+         recipient,
         message: "Your schedule has been updated.",
+        
+  teacherEmail: recipient,
+  subject: "Schedule update – week 12",
+  
+  eventTime: "2026-03-15T09:00:00.000Z",
       });
       alert(data.message);
     } catch (error) {
