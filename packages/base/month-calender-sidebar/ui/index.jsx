@@ -5,6 +5,7 @@ import {
   DEFAULT_ACTIVITY_COLOR,
 } from "../../../components/calendar/core/utils/eventColors";
 import "./index.css";
+import ZoTimePicker from "@zoplanner/time-picker";
 
 function MonthCalendar({ variant = "sidebar", onSubmit, openRequestKey = 0 }) {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -262,29 +263,20 @@ function MonthCalendar({ variant = "sidebar", onSubmit, openRequestKey = 0 }) {
           </div>
 
           <div className="month-calendar-modal__row">
-            <div className="month-calendar-modal__field-group">
-              <label htmlFor="startTime">Starttid *</label>
-              <input
-                type="time"
-                id="startTime"
-                name="startTime"
-                value={formData.startTime}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="month-calendar-modal__field-group">
-              <label htmlFor="endTime">Sluttid *</label>
-              <input
-                type="time"
-                id="endTime"
-                name="endTime"
-                value={formData.endTime}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <ZoTimePicker
+              label="Starttid *"
+              name="startTime"
+              value={formData.startTime}
+              onChange={handleChange}
+              required
+            />
+            <ZoTimePicker
+              label="Sluttid *"
+              name="endTime"
+              value={formData.endTime}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="month-calendar-modal__field-group">
@@ -326,7 +318,6 @@ function MonthCalendar({ variant = "sidebar", onSubmit, openRequestKey = 0 }) {
       </div>
     </div>
   ) : null;
-
   return (
     <>
       <div

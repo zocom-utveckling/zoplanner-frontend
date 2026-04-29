@@ -1,4 +1,5 @@
 import "./index.css";
+import ZoTimePicker from "@zoplanner/time-picker";
 
 export default function SessionModal({
   isOpen,
@@ -56,29 +57,20 @@ export default function SessionModal({
           </div>
 
           <div className="scheduler-form-row">
-            <div className="scheduler-form-group">
-              <label htmlFor="startTime">Starttid *</label>
-              <input
-                type="time"
-                id="startTime"
-                name="startTime"
-                value={formData.startTime}
-                onChange={onChange}
-                required
-              />
-            </div>
-
-            <div className="scheduler-form-group">
-              <label htmlFor="endTime">Sluttid *</label>
-              <input
-                type="time"
-                id="endTime"
-                name="endTime"
-                value={formData.endTime}
-                onChange={onChange}
-                required
-              />
-            </div>
+            <ZoTimePicker
+              label="Starttid *"
+              name="startTime"
+              value={formData.startTime}
+              onChange={onChange}
+              required
+            />
+            <ZoTimePicker
+              label="Sluttid *"
+              name="endTime"
+              value={formData.endTime}
+              onChange={onChange}
+              required
+            />
           </div>
 
           <div className="scheduler-form-group">

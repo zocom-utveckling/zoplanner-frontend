@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import ZoTimePicker from "@zoplanner/time-picker";
 
 const initialForm = {
   date: "",
@@ -93,29 +94,20 @@ export default function BookingEditModal({
           </div>
 
           <div className="scheduler-form-row">
-            <div className="scheduler-form-group">
-              <label htmlFor="booking-start-time">Starttid *</label>
-              <input
-                id="booking-start-time"
-                type="time"
-                name="startTime"
-                value={formData.startTime}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="scheduler-form-group">
-              <label htmlFor="booking-end-time">Sluttid *</label>
-              <input
-                id="booking-end-time"
-                type="time"
-                name="endTime"
-                value={formData.endTime}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <ZoTimePicker
+              label="Starttid *"
+              name="startTime"
+              value={formData.startTime}
+              onChange={handleChange}
+              required
+            />
+            <ZoTimePicker
+              label="Sluttid *"
+              name="endTime"
+              value={formData.endTime}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="scheduler-form-group">
