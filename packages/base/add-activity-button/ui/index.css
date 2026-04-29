@@ -2,10 +2,10 @@
   width: 100%;
   padding: 12px 16px;
   margin-top: 16px;
-  background-color: var(--action-bg);
+  background-color: var(--segment-active-bg);
   color: var(--action-fg);
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   font-family: "Poppins", sans-serif;
@@ -21,34 +21,34 @@
   background-color: var(--action-bg-hover);
 }
 
-.plus-icon {
+.add-activity-btn__icon {
   font-size: 18px;
   font-weight: 600;
 }
 
-.modal-overlay {
+.add-activity-modal {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--overlay-backdrop);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
 
-.modal-content {
+.add-activity-modal__content {
   background: var(--surface);
   border-radius: 8px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--elevation-modal);
   font-family: "Poppins", sans-serif;
 }
 
-.modal-header {
+.add-activity-modal__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -56,14 +56,14 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-.modal-header h2 {
+.add-activity-modal__header h2 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.close-btn {
+.add-activity-modal__close-btn {
   background: none;
   border: none;
   font-size: 28px;
@@ -79,19 +79,19 @@
   transition: background-color 0.2s;
 }
 
-.close-btn:hover {
+.add-activity-modal__close-btn:hover {
   background-color: var(--surface-muted);
 }
 
-.activity-form {
+.add-activity-modal__form {
   padding: 24px;
 }
 
-.form-group {
+.add-activity-modal__field-group {
   margin-bottom: 20px;
 }
 
-.form-group label {
+.add-activity-modal__field-group label {
   display: block;
   margin-bottom: 6px;
   font-size: 14px;
@@ -99,9 +99,9 @@
   color: var(--text-muted);
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
+.add-activity-modal__field-group input,
+.add-activity-modal__field-group select,
+.add-activity-modal__field-group textarea {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid var(--border-input);
@@ -113,28 +113,28 @@
   color: var(--text-primary);
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.add-activity-modal__field-group input:focus,
+.add-activity-modal__field-group select:focus,
+.add-activity-modal__field-group textarea:focus {
   outline: none;
   border-color: var(--action-bg);
 }
 
-.form-group textarea {
+.add-activity-modal__field-group textarea {
   resize: vertical;
   min-height: 80px;
 }
 
-.form-row {
+.add-activity-modal__row {
   display: flex;
   gap: 16px;
 }
 
-.form-row .form-group {
+.add-activity-modal__row .add-activity-modal__field-group {
   flex: 1;
 }
 
-.modal-actions {
+.add-activity-modal__actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
@@ -143,8 +143,8 @@
   border-top: 1px solid var(--border-color);
 }
 
-.btn-cancel,
-.btn-submit {
+.add-activity-modal__cancel-btn,
+.add-activity-modal__submit-btn {
   padding: 10px 20px;
   border-radius: 6px;
   font-size: 14px;
@@ -154,20 +154,26 @@
   border: none;
 }
 
-.btn-cancel {
+.add-activity-modal__cancel-btn {
   background-color: var(--surface-muted);
   color: var(--text-primary);
 }
 
-.btn-cancel:hover {
+.add-activity-modal__cancel-btn:hover {
   background-color: var(--surface-strong);
 }
 
-.btn-submit {
+.add-activity-modal__submit-btn {
   background-color: var(--action-bg);
   color: var(--action-fg);
 }
 
-.btn-submit:hover {
+.add-activity-modal__submit-btn:hover {
   background-color: var(--action-bg-hover);
+}
+
+.add-activity-modal__error {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--status-error);
 }

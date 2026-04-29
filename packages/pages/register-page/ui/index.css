@@ -1,5 +1,4 @@
-.container {
-
+.register-page__form-container {
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -9,7 +8,8 @@
   background-color: var(--app-bg);
   gap: 30px;
 }
-.container form {
+
+.register-page__form-container form {
   position: relative;
   display: flex;
   align-items: center;
@@ -20,23 +20,19 @@
   background-color: var(--surface);
   padding: 12px 22px 20px;
   border-radius: 8px;
-  box-shadow: 0px 0px 2cqi rgb(167, 166, 166);
+  box-shadow: var(--elevation-card);
 }
-.field {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 5px;
-}
-.container h1 {
+
+.register-page__form-container h1 {
   letter-spacing: 5px;
 }
-.container h2 {
-  color: rgb(59, 117, 210);
+
+.register-page__form-container h2 {
+  color: var(--accent);
   letter-spacing: 1px;
 }
 
-.label {
+.register-page__label {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -44,11 +40,11 @@
   font-weight: 600;
   color: var(--text-primary);
 }
-.label span {
+.register-page__label span {
   letter-spacing: 0.7px;
 }
-.field input,
-.field select {
+.register-page__field input,
+.register-page__field select {
   padding: 0 5px;
   justify-content: center;
   height: 40px;
@@ -59,7 +55,7 @@
   background-color: var(--surface);
   color: var(--text-primary);
 }
-.button {
+.register-page__button-group {
   margin-top: 10px;
   width: 100%;
   display: flex;
@@ -68,16 +64,17 @@
   justify-content: center;
   gap: 5px;
 }
-.button p {
+.register-page__button-group p {
   margin: 0;
 }
-.field input:disabled {
-  color: #4a6fa5;
-  -webkit-text-fill-color: #4a6fa5;
-  background-color: #f5f7fb;
+.register-page__field input:disabled,
+.register-page__input--disabled {
+  color: var(--text-muted);
+  -webkit-text-fill-color: var(--text-muted);
+  background-color: var(--surface-muted);
   cursor: not-allowed;
 }
-.close-button {
+.register-page__close-button {
   position: absolute;
   top: -10px;
   right: -10px;
@@ -87,9 +84,9 @@
 
   border-radius: 50%;
   border: none;
-  background: white;
+  background: var(--surface);
 
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: var(--elevation-card);
 
   font-size: 1.2rem;
   cursor: pointer;
@@ -101,6 +98,6 @@
   opacity: 0.8;
 }
 
-.close-button:hover {
+.register-page__close-button:hover {
   opacity: 1;
 }

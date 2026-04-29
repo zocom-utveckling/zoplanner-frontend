@@ -39,7 +39,8 @@ function AdminPage() {
   }
 
   if (loading) return <div>Laddar användare...</div>;
-  if (isLoadingActor) return <main className="main">Laddar...</main>;
+  if (isLoadingActor)
+    return <main className="admin-page__loading">Laddar...</main>;
 
   const canOpenAdminPage = canAccess(access.ADMIN);
 

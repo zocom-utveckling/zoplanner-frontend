@@ -25,7 +25,7 @@ function DashboardLayout({
         activePage={"dashboard"}
         onResetCalendarUser={onResetCalendarUser}
       />
-      <div className="app">
+      <div className="home-page__root">
         <Sidebar user={user} onSelectCalendarUser={onSelectCalendarUser} />
         {children}
       </div>

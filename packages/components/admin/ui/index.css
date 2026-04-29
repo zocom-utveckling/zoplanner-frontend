@@ -1,4 +1,6 @@
-.main {
+.admin-overview__main,
+.course-registry__main,
+.customer-registry__main {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -10,15 +12,13 @@
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
 }
 
-
-.controls--all-schedules {
+.registry-search-filter {
   justify-content: flex-start;
   width: 100%;
   gap: 12px;
 }
 
-
-.controls--all-schedules-filters {
+.registry-search-filter__bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -30,8 +30,8 @@
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
 }
 
-.controls--all-schedules-filters .search,
-.controls--all-schedules-filters .filter-select {
+.registry-search-filter__bar .registry-search-filter__search,
+.registry-search-filter__bar .registry-search-filter__toggle {
   height: 44px;
   border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 12px;
@@ -40,7 +40,7 @@
   font-size: 15px;
 }
 
-.controls--all-schedules-filters .search {
+.registry-search-filter__bar .registry-search-filter__search {
   flex: 0 0 280px;
   width: 280px;
   min-width: 0;
@@ -49,7 +49,7 @@
   margin-left: auto;
 }
 
-.controls--all-schedules-filters .filter-select {
+.registry-search-filter__bar .registry-search-filter__toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -60,7 +60,7 @@
   white-space: nowrap;
 }
 
-.controls--all-schedules-filters .registry-search-filter__toggle {
+.registry-search-filter__bar .registry-search-filter__toggle {
   width: 104px;
   min-width: 104px;
   max-width: 104px;
@@ -183,7 +183,8 @@
   cursor: pointer;
 }
 
-.registry-search-filter__cities-panel .registry-search-filter__dropdown-close:hover {
+.registry-search-filter__cities-panel
+  .registry-search-filter__dropdown-close:hover {
   background: rgba(15, 23, 42, 0.06);
 }
 
@@ -199,14 +200,11 @@
   color: #1f4d84;
 }
 
-.controls--all-schedules-filters .search:focus,
-.controls--all-schedules-filters .filter-select:focus {
+.registry-search-filter__bar .registry-search-filter__search:focus,
+.registry-search-filter__bar .registry-search-filter__toggle:focus {
   border-color: rgba(79, 124, 255, 0.7);
   box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.14);
 }
-
-
-
 
 /* =========================================================
    ADMIN TABS
@@ -453,7 +451,8 @@
 }
 
 .overview-list-item--clickable:hover {
-  background: var(--action-bg-hover, #f0f4ff);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-color));
 }
 
 .overview-list-item__time {
@@ -756,7 +755,6 @@
   color: #0f1a2a;
 }
 
-
 .customer-registry__add-button {
   display: inline-flex;
   align-items: center;
@@ -776,7 +774,6 @@
     box-shadow 0.16s ease,
     filter 0.16s ease;
 }
-
 
 .customer-registry__form,
 .customer-registry__order-form {
@@ -977,7 +974,8 @@
 }
 
 .customer-registry__item:hover {
-  background: var(--action-bg-hover, #f0f4ff);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-color));
 }
 
 .customer-registry__item-content {
@@ -1107,16 +1105,96 @@
   font-size: 14px;
 }
 
-/* ---- Customer info modal ---- */
-.customer-registry__modal-backdrop {
+/* =========================================================
+   🔲 7. CONSULTANT INVITE MODAL
+   Fil: ConsultantInviteModal.jsx
+   ========================================================= */
+
+.consultant-invite-modal__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.35);
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.25);
 }
+
+.consultant-invite-modal__content {
+  width: 100%;
+  min-width: 360px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.consultant-invite-modal__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.consultant-invite-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.consultant-invite-modal__input {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 14px;
+  outline: none;
+}
+
+.consultant-invite-modal__input::placeholder {
+  color: var(--text-subtle);
+}
+
+.consultant-invite-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.consultant-invite-modal__btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s;
+}
+
+.consultant-invite-modal__btn:hover {
+  background: var(--surface-muted);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.consultant-invite-modal__btn--primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.consultant-invite-modal__btn--primary:hover {
+  background: var(--accent-hover);
+}
+
+/* ---- Old .modal classes (removed - use consultant-invite-modal__ instead) ---- */
 
 .customer-registry__modal {
   background: #ffffff;
@@ -1280,7 +1358,7 @@
    Fil: CustomerRegistry.jsx / CourseRegistry.jsx
    ========================================================= */
 
-.chip {
+.registry-search-filter__chip {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -1290,95 +1368,6 @@
   color: #374151;
   font-size: 12px;
   cursor: pointer;
-}
-
-/* =========================================================
-   GENERIC MODAL
-   Fil: ConsultantInviteModal.jsx (eller annan enkel modal)
-   ========================================================= */
-
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.25);
-}
-
-.modal__content {
-  width: 100%;
-  min-width: 360px;
-  max-width: 480px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 20px;
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-
-.modal__title {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.modal__body {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.modal__input {
-  padding: 10px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--surface);
-  font-size: 14px;
-  outline: none;
-}
-
-.modal__input::placeholder {
-  color: var(--text-subtle);
-}
-
-.modal__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.modal__btn {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s;
-}
-
-.modal__btn:hover {
-  background: var(--surface-muted);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
-}
-
-.modal__btn--primary {
-  background: var(--active-bg);
-  color: var(--active-fg);
-}
-
-.modal__btn--primary:hover {
-  opacity: 0.9;
 }
 
 /* =========================================================
@@ -1554,13 +1543,13 @@
   padding: 10px;
   border: none;
   border-radius: 6px;
-   background: var(--action-bg);
+  background: var(--action-bg);
   color: #fff;
   cursor: pointer;
 }
 
 .quick-dev-register__continue:hover {
-    background: var(--action-bg-hover);
+  background: var(--action-bg-hover);
 }
 
 .quick-dev-register__continue:disabled {
@@ -1852,7 +1841,8 @@
 }
 
 .course-registry__item:hover {
-  background: var(--action-bg-hover, #f0f4ff);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-color));
 }
 
 .course-registry__empty {
@@ -1912,4 +1902,311 @@
 .course-item__status--completed {
   background: #f3f4f6;
   color: #374151;
+}
+
+[data-theme="dark"] .admin-overview__main,
+[data-theme="dark"] .course-registry__main,
+[data-theme="dark"] .customer-registry__main,
+[data-theme="dark"] .registry-search-filter__bar,
+[data-theme="dark"] .overview-list-panel,
+[data-theme="dark"] .customer-registry__list-container,
+[data-theme="dark"] .course-registry__list-container,
+[data-theme="dark"] .registry-search-filter__cities-panel {
+  background: var(--surface);
+  border-color: var(--border-color);
+  box-shadow: var(--elevation-card);
+}
+
+[data-theme="dark"]
+  .registry-search-filter__bar
+  .registry-search-filter__search,
+[data-theme="dark"]
+  .registry-search-filter__bar
+  .registry-search-filter__toggle,
+[data-theme="dark"] .registry-search-filter__controls > button,
+[data-theme="dark"] .registry-search-filter__dropdown-trigger > button,
+[data-theme="dark"] .registry-search-filter__cities-list button,
+[data-theme="dark"] .customer-registry__form input,
+[data-theme="dark"] .customer-registry__form select,
+[data-theme="dark"] .customer-registry__order-form input,
+[data-theme="dark"] .customer-registry__order-form select,
+[data-theme="dark"] .course-registry__search,
+[data-theme="dark"] .course-registry__filter-toggle,
+[data-theme="dark"] .course-registry__filters span,
+[data-theme="dark"] .course-registry__filters button {
+  background: var(--surface-alt);
+  border-color: var(--border-input);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .registry-search-filter__controls > button:hover,
+[data-theme="dark"] .registry-search-filter__dropdown-trigger > button:hover,
+[data-theme="dark"] .registry-search-filter__cities-list button:hover,
+[data-theme="dark"] .course-registry__filter-toggle:hover,
+[data-theme="dark"] .course-registry__filters span:hover,
+[data-theme="dark"] .course-registry__filters button:hover {
+  background: var(--surface-muted);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .admin-tabs {
+  --admin-tab-content-bg: color-mix(in srgb, var(--surface) 92%, #000 8%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface-alt) 92%, transparent) 0%,
+    color-mix(in srgb, var(--surface-muted) 76%, transparent) 60%,
+    transparent 100%
+  );
+}
+
+[data-theme="dark"] .admin-tabs__item {
+  border-color: var(--border-color);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface-alt) 88%, #000 12%) 0%,
+    color-mix(in srgb, var(--surface-muted) 90%, #000 10%) 100%
+  );
+  color: var(--text-muted);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 8%, transparent),
+    0 5px 12px rgba(2, 6, 23, 0.3);
+}
+
+[data-theme="dark"] .admin-tabs__item:hover,
+[data-theme="dark"] .admin-tabs__item.active {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .overview-list-item__time,
+[data-theme="dark"] .overview-list-item__meta,
+[data-theme="dark"] .customer-registry__item-subtitle,
+[data-theme="dark"] .customer-registry__order-meta,
+[data-theme="dark"] .course-item__meta,
+[data-theme="dark"]
+  .registry-search-filter__cities-panel
+  .registry-search-filter__dropdown-close {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .course-item__name,
+[data-theme="dark"] .course-registry__header h1 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .admin-tab-panel,
+[data-theme="dark"] .overview-primary-container,
+[data-theme="dark"] .overview-card,
+[data-theme="dark"] .quick-dev-register,
+[data-theme="dark"] .customer-registry__modal,
+[data-theme="dark"] .course-details-modal__content,
+[data-theme="dark"] .course-details-modal__section {
+  background: var(--surface);
+  border-color: var(--border-color);
+  box-shadow: var(--elevation-card);
+}
+
+[data-theme="dark"] .admin-overview__header,
+[data-theme="dark"] .course-registry__header {
+  border-bottom-color: var(--border-subtle);
+}
+
+[data-theme="dark"] .admin-overview__header h1,
+[data-theme="dark"] .admin-overview__time,
+[data-theme="dark"] .course-details-modal__title,
+[data-theme="dark"] .course-details-modal__session-title,
+[data-theme="dark"] .course-details-modal__session-time,
+[data-theme="dark"] .course-details-modal__secondary,
+[data-theme="dark"] .quick-dev-register__close,
+[data-theme="dark"] .quick-dev-register__x,
+[data-theme="dark"] .quick-dev-register__input,
+[data-theme="dark"] .customer-registry__filters span,
+[data-theme="dark"] .customer-registry__dropdown div,
+[data-theme="dark"] .customer-registry__dropdown,
+[data-theme="dark"] .customer-registry__modal-title,
+[data-theme="dark"] .customer-registry__modal-subtitle {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .course-details-modal__meta,
+[data-theme="dark"] .course-details-modal__close,
+[data-theme="dark"] .course-details-modal__empty,
+[data-theme="dark"] .course-details-modal__session-location,
+[data-theme="dark"] .quick-dev-register__hint,
+[data-theme="dark"] .quick-dev-register__label,
+[data-theme="dark"] .customer-registry__modal-detail {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .course-details-modal__overlay,
+[data-theme="dark"] .customer-registry__modal-backdrop,
+[data-theme="dark"] .quick-dev-register__overlay {
+  background: var(--overlay-backdrop);
+}
+
+[data-theme="dark"] .course-details-modal__session-item,
+[data-theme="dark"] .quick-dev-register__list button,
+[data-theme="dark"] .quick-dev-register__close,
+[data-theme="dark"] .quick-dev-register__x,
+[data-theme="dark"] .quick-dev-register__input,
+[data-theme="dark"] .customer-registry__filters span,
+[data-theme="dark"] .customer-registry__dropdown,
+[data-theme="dark"] .customer-registry__dropdown .active,
+[data-theme="dark"] .course-details-modal__secondary {
+  background: var(--surface-alt);
+  border-color: var(--border-input);
+}
+
+[data-theme="dark"] .quick-dev-register__list button:hover,
+[data-theme="dark"] .quick-dev-register__close:hover,
+[data-theme="dark"] .course-details-modal__secondary:hover,
+[data-theme="dark"] .customer-registry__filters span:hover,
+[data-theme="dark"] .customer-registry__dropdown div:hover {
+  background: var(--surface-muted);
+}
+
+[data-theme="dark"] .quick-dev-register__list button.selected,
+[data-theme="dark"] .quick-dev-register__list button.selected:hover,
+[data-theme="dark"] .customer-registry__filters span.active,
+[data-theme="dark"] .customer-registry__dropdown .active,
+[data-theme="dark"] .course-registry__filters .active {
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .quick-dev-register__continue {
+  background: var(--action-bg);
+  color: var(--action-fg);
+}
+
+[data-theme="dark"] .quick-dev-register__continue:hover {
+  background: var(--action-bg-hover);
+}
+
+[data-theme="dark"] .quick-dev-register__continue:disabled {
+  background: var(--surface-strong);
+  color: var(--text-subtle);
+}
+
+[data-theme="dark"] .course-item__status--draft {
+  background: color-mix(in srgb, #f59e0b 20%, var(--surface));
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .course-item__status--upcoming {
+  background: color-mix(in srgb, var(--accent) 20%, var(--surface));
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .course-item__status--ongoing {
+  background: color-mix(in srgb, #22c55e 20%, var(--surface));
+  color: #86efac;
+}
+
+[data-theme="dark"] .course-item__status--completed {
+  background: var(--surface-muted);
+  color: var(--text-muted);
+}
+
+/* Final visual polish for Admin dark mode */
+[data-theme="dark"] .admin-layout,
+[data-theme="dark"] .admin-layout__content {
+  background: var(--app-bg);
+}
+
+[data-theme="dark"] .admin-workspace {
+  background: color-mix(in srgb, var(--surface-alt) 88%, var(--app-bg));
+  border-radius: 0 0 14px 14px;
+}
+
+[data-theme="dark"] .admin-tabs {
+  --admin-tab-content-bg: var(--surface);
+  padding-top: 0;
+  background: transparent;
+}
+
+[data-theme="dark"] .admin-tabs__nav {
+  gap: 8px;
+  padding: 0;
+}
+
+[data-theme="dark"] .admin-tabs__item {
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-color);
+  border-bottom-color: var(--border-color);
+  border-radius: 10px 10px 0 0;
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  opacity: 1;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .admin-tabs__item::before,
+[data-theme="dark"] .admin-tabs__item::after {
+  display: none;
+}
+
+[data-theme="dark"] .admin-tabs__item:hover {
+  background: var(--surface-alt);
+  color: var(--text-primary);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .admin-tabs__item.active {
+  min-height: 42px;
+  margin-bottom: 0;
+  padding: 10px 16px;
+  border-color: var(--border-color);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+[data-theme="dark"] .admin-tab-panel {
+  margin-top: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 0 12px 12px 12px;
+  background: var(--surface);
+  box-shadow: var(--elevation-card);
+}
+
+[data-theme="dark"] .admin-overview__main,
+[data-theme="dark"] .course-registry__main,
+[data-theme="dark"] .customer-registry__main {
+  border-color: var(--border-color);
+  background: var(--surface-alt);
+  box-shadow: var(--elevation-card);
+}
+
+[data-theme="dark"] .overview-primary-container,
+[data-theme="dark"] .overview-list-panel,
+[data-theme="dark"] .customer-registry__form,
+[data-theme="dark"] .customer-registry__order-form,
+[data-theme="dark"] .customer-registry__list-container,
+[data-theme="dark"] .course-registry__list-container {
+  background: var(--surface);
+  border-color: var(--border-color);
+  box-shadow: var(--elevation-card);
+}
+
+[data-theme="dark"] .admin-overview__header h1,
+[data-theme="dark"] .admin-overview__time,
+[data-theme="dark"] .customer-registry__header h1,
+[data-theme="dark"] .consultant-registry__header h1,
+[data-theme="dark"] .course-registry__header h1 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .consultant-registry__add-button,
+[data-theme="dark"] .customer-registry__add-button {
+  background: var(--segment-active-bg);
+  color: var(--segment-active-fg);
+  box-shadow: var(--elevation-card);
+}
+
+[data-theme="dark"] .consultant-registry__add-button:hover,
+[data-theme="dark"] .customer-registry__add-button:hover {
+  background: var(--accent-hover);
+  box-shadow: var(--elevation-modal);
 }

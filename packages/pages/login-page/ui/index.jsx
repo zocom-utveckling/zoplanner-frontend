@@ -99,21 +99,21 @@ function LoginPage() {
   };
 
   return (
-    <div className="login-root">
+    <div className="login-page__root">
       <dev.QuickDevRegisterEntry managers={managers} />
 
-      <div className="login-page">
+      <div className="login-page__form-wrapper">
         <img
           src="/zoplanner-logo-navbar.png"
           alt="ZoPlanner Logo"
-          className="login-logo"
+          className="login-page__logo"
         />
 
         <form onSubmit={handleSubmit}>
           <h2>Logga in</h2>
 
-          <div className="field">
-            <div className="label">
+          <div className="login-page__field">
+            <div className="login-page__label">
               <FaUser /> <span>Användarnamn</span>
             </div>
             <input
@@ -125,8 +125,8 @@ function LoginPage() {
             />
           </div>
 
-          <div className="field">
-            <div className="label">
+          <div className="login-page__field">
+            <div className="login-page__label">
               <FaLock /> <span>Lösenord</span>
             </div>
             <input
@@ -139,7 +139,7 @@ function LoginPage() {
             />
           </div>
 
-          <div className="button">
+          <div className="login-page__button-group">
             <Button
               text={loading ? "Loading..." : "Login"}
               type="submit"
@@ -148,9 +148,9 @@ function LoginPage() {
             <p>Registrering sker via inbjudan. Använd länken i mejlet.</p>
           </div>
         </form>
-
-        <p className="login-footer">ZoPlanner is a product of ZoCom</p>
       </div>
+
+      <p className="login-page__footer">ZoPlanner is a product of ZoCom</p>
     </div>
   );
 }

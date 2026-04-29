@@ -103,11 +103,17 @@ function UserProfile({ user, variant = "default" }) {
 
   return (
     <div className={wrapperClassName}>
-      <div className="profile-avatar">
+      <div className="user-profile__avatar-wrap">
         {profilePicture ? (
-          <img src={profilePicture} alt={user.name} className="avatar-image" />
+          <img
+            src={profilePicture}
+            alt={user.name}
+            className="user-profile__avatar-image"
+          />
         ) : (
-          <div className="avatar-placeholder">{getInitials(user.name)}</div>
+          <div className="user-profile__avatar-fallback">
+            {getInitials(user.name)}
+          </div>
         )}
       </div>
 

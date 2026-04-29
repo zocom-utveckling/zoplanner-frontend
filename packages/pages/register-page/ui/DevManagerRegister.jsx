@@ -88,12 +88,12 @@ function DevManagerRegister() {
 
   return (
     <>
-      <div className="container">
+      <div className="register-page__form-container">
         <h1>ZoPlanner</h1>
         <form onSubmit={handleSubmit}>
           <button
             type="button"
-            className="close-button"
+            className="register-page__close-button"
             onClick={handleClose}
             aria-label="Stäng"
           >
@@ -101,8 +101,8 @@ function DevManagerRegister() {
           </button>
           <h2>Skapa managerkonto</h2>
 
-          <div className="field">
-            <div className="label">
+          <div className="register-page__field">
+            <div className="register-page__label">
               <FaUser /> <span>För- och efternamn</span>
             </div>
             <input
@@ -114,8 +114,8 @@ function DevManagerRegister() {
             />
           </div>
 
-          <div className="field">
-            <div className="label">
+          <div className="register-page__field">
+            <div className="register-page__label">
               <FaEnvelope /> <span>E-post</span>
             </div>
             <input
@@ -127,8 +127,8 @@ function DevManagerRegister() {
             />
           </div>
 
-          <div className="field">
-            <div className="label">
+          <div className="register-page__field">
+            <div className="register-page__label">
               <FaUser /> <span>Användarnamn</span>
             </div>
             <input
@@ -140,8 +140,8 @@ function DevManagerRegister() {
             />
           </div>
 
-          <div className="field">
-            <div className="label">
+          <div className="register-page__field">
+            <div className="register-page__label">
               <FaLock /> <span>Lösenord</span>
             </div>
             <input
@@ -154,7 +154,7 @@ function DevManagerRegister() {
             />
           </div>
 
-          <div className="button">
+          <div className="register-page__button-group">
             <Button
               text={loading ? "Loading..." : "Skapa managerkonto"}
               type="submit"

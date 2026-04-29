@@ -192,7 +192,7 @@ export function CourseRegistry({
       <div className="course-registry__header">
         <h1>Kurser</h1>
       </div>
-      <div className="main">
+      <div className="course-registry__main">
         <RegistrySearchFilter
           search={search}
           onSearchChange={setSearch}

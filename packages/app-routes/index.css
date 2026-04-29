@@ -1,10 +1,9 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* =========================================================
+   DASHBOARD LAYOUT
+   Fil: DashboardLayout.jsx
+   ========================================================= */
 
-.home-page__root {
+.dashboard-layout__container {
   display: flex;
   position: relative;
   align-items: stretch;
@@ -24,11 +23,11 @@
     );
 }
 
-.home-page__root > .sidebar__root {
+.dashboard-layout__container > .sidebar__root {
   flex-shrink: 0;
 }
 
-.home-page__root > :not(.sidebar__root) {
+.dashboard-layout__container > :not(.sidebar__root) {
   position: relative;
   min-width: 0;
   flex: 1;
@@ -40,7 +39,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
-.home-page__root > :not(.sidebar__root)::before {
+.dashboard-layout__container > :not(.sidebar__root)::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -48,30 +47,22 @@
   pointer-events: none;
   background: radial-gradient(
     120% 80% at 0% 0%,
-    color-mix(in srgb, var(--accent) 7%, transparent),
-    transparent 52%
+    color-mix(in srgb, var(--surface) 0%, transparent),
+    color-mix(in srgb, var(--surface-alt) 0%, transparent)
   );
 }
 
-@media (max-width: 1024px) {
-  .app {
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .app > :not(.sidebar) {
-    border-radius: 16px;
-  }
-}
-
-@media (max-width: 768px) {
-  .app {
-    flex-direction: column;
-    min-height: calc(100vh - 64px);
-    padding: 8px;
-  }
-
-  .app > :not(.sidebar) {
-    border-radius: 14px;
-  }
+/* Dark mode support */
+[data-theme="dark"] .dashboard-layout__container {
+  background:
+    radial-gradient(
+      140% 120% at 100% 0%,
+      color-mix(in srgb, var(--accent) 6%, transparent),
+      transparent 58%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--app-bg) 88%, #1a1a1a 12%),
+      var(--app-bg)
+    );
 }

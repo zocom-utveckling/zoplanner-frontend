@@ -1,21 +1,21 @@
-.recieved-container {
+.messages-recieved__container {
   width: 100%;
 }
 
-.recieved-container h2 {
+.messages-recieved__container h2 {
   text-align: center;
   color: var(--text-muted);
   font-weight: 500;
   margin-top: 40px;
 }
 
-.recieved-content {
+.messages-recieved__content {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.recieved-card {
+.messages-recieved__card {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,25 +28,25 @@
     box-shadow 0.2s ease;
 }
 
-.recieved-card:hover {
+.messages-recieved__card:hover {
   background-color: var(--surface-muted);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
-.recieved-left {
+.messages-recieved__left {
   display: flex;
   flex-direction: column;
   gap: 30px;
 }
 
-.recieved-left h3 {
+.messages-recieved__left h3 {
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.recieved-left p {
+.messages-recieved__left p {
   margin: 0;
   font-size: 0.95rem;
   color: var(--text-muted);
@@ -57,7 +57,7 @@
   margin-bottom: 10px;
 }
 
-.recieved-right {
+.messages-recieved__right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -67,30 +67,32 @@
   color: var(--text-subtle);
   height: 100%;
 }
-.recieved-header {
+
+.messages-recieved__header {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
-.recieved-header h4 {
+
+.messages-recieved__header h4 {
   margin: 0;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--accent);
 }
 
-.recieved-right span:last-child {
+.messages-recieved__right span:last-child {
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
 }
 
 @media (max-width: 600px) {
-  .recieved-card {
+  .messages-recieved__card {
     padding: 12px;
   }
 
-  .recieved-left p {
+  .messages-recieved__left p {
     max-width: 220px;
   }
 }

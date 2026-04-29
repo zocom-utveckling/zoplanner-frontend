@@ -19,7 +19,7 @@ function DashboardLayout() {
   return (
     <>
       <Navbar user={user} />
-      <div className="app">
+      <div className="dashboard-layout__container">
         <Sidebar user={user} />
         <Outlet context={{ user }} />
       </div>

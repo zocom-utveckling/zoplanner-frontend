@@ -28,10 +28,12 @@ function DashboardTopbar({
   return (
     <>
       {calendarUser && managerUser && calendarUser.id !== managerUser.id && (
-        <div className="calendar-user-name-with-btn">
-          <span className="calendar-user-name">{calendarUser.name}</span>
+        <div className="dashboard-topbar__calendar-user-row">
+          <span className="dashboard-topbar__calendar-user-name">
+            {calendarUser.name}
+          </span>
           <button
-            className="message-btn"
+            className="dashboard-topbar__message-btn"
             title={`Skicka meddelande till ${calendarUser.name}`}
             onClick={() => setShowMessageModal(true)}
           >
@@ -50,52 +52,55 @@ function DashboardTopbar({
           )}
         </div>
       )}
-      <div className="topbar topbar--dashboard">
-        <div className="title-with-nav">
-          <button className="nav-btn" onClick={onPrev}>
+      <div className="dashboard-topbar">
+        <div className="dashboard-topbar__title-nav">
+          <button className="dashboard-topbar__nav-btn" onClick={onPrev}>
             ←
           </button>
-          <div className="title">{title}</div>
-          <button className="nav-btn" onClick={onNext}>
+          <div className="dashboard-topbar__title">{title}</div>
+          <button className="dashboard-topbar__nav-btn" onClick={onNext}>
             →
           </button>
         </div>
 
-        <div className="controls controls--dashboard">
-          <label className="toggle-label" title="Visa bokningar i veckofärger">
-            <span className="toggle-text">Veckofärger</span>
+        <div className="dashboard-topbar__controls">
+          <label
+            className="dashboard-topbar__toggle-label"
+            title="Visa bokningar i veckofärger"
+          >
+            <span className="dashboard-topbar__toggle-text">Veckofärger</span>
             <span
-              className={`toggle-track ${bookingWeekColors ? "toggle-track--on" : ""}`}
+              className={`dashboard-topbar__toggle-track ${bookingWeekColors ? "dashboard-topbar__toggle-track--on" : ""}`}
             >
-              <span className="toggle-thumb" />
+              <span className="dashboard-topbar__toggle-thumb" />
             </span>
             <input
               type="checkbox"
-              className="toggle-input"
+              className="dashboard-topbar__toggle-input"
               checked={bookingWeekColors}
               onChange={onToggleBookingWeekColors}
             />
           </label>
-          <button className="small-btn" onClick={onGoToday}>
+          <button className="dashboard-topbar__today-btn" onClick={onGoToday}>
             Idag
           </button>
 
-          <div className="segment">
+          <div className="dashboard-topbar__segment">
             <button
-              className={`segment-btn ${view === "week" ? "segment-active" : ""}`}
+              className={`dashboard-topbar__segment-btn ${view === "week" ? "dashboard-topbar__segment-btn--active" : ""}`}
               onClick={() => setView("week")}
             >
               Veckovy
             </button>
             <button
-              className={`segment-btn ${view === "month" ? "segment-active" : ""}`}
+              className={`dashboard-topbar__segment-btn ${view === "month" ? "dashboard-topbar__segment-btn--active" : ""}`}
               onClick={() => setView("month")}
             >
               Månadsvy
             </button>
           </div>
 
-          <input className="search" placeholder="Sök..." />
+          <input className="dashboard-topbar__search" placeholder="Sök..." />
         </div>
       </div>
     </>

@@ -5,11 +5,7 @@ import { FaCamera } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { Navbar } from "@zoplanner/navbar";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  useCurrentActor,
-  useProfilePicture,
-  useUserById,
-} from "@zoplanner/app-hooks";
+import { useProfilePicture, useUserById } from "@zoplanner/app-hooks";
 import { ActivityModal, EventDetailsModal } from "@zoplanner/calendar";
 import { ConfirmPopup } from "../../../components/confirm-popup/ui";
 import { ProfileCard } from "@zoplanner/profile-card";
@@ -95,14 +91,13 @@ function Profile_Page({ user: initialUser }) {
   } = useUserById(id, initialUser);
 
   const userId = user?.id || initialUser?.id || id;
-  const { consultantId } = useCurrentActor(user);
   const { isUploadingPicture, handleImageChange } = useProfilePicture(
     userId,
     user?.profilePicture || user?.profilePictureUrl,
   );
 
   const { assignments, activities, setActivities, isLoadingSidebarData } =
-    useProfileData(user, consultantId);
+    useProfileData(user);
 
   const {
     isActivityModalOpen,

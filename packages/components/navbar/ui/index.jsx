@@ -54,43 +54,49 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
         />
       )}
       <nav className="navbar">
-        <div className="navbar-left">
+        <div className="navbar__left">
           <button
-            className="logo"
+            className="navbar__logo"
             onClick={() => {
               if (onResetCalendarUser) onResetCalendarUser();
               navigate(homeRoute);
             }}
           >
             <img
-              className="logo-image"
+              className="navbar__logo-image"
               src="/zoplanner-logo-navbar.png"
               alt="ZoPlanner"
             />
           </button>
         </div>
 
-        <div className="navbar-right">
-          <div className="icon-group">
-            <div className="notification">
+        <div className="navbar__right">
+          <div className="navbar__icon-group">
+            <div className="navbar__notification">
               <FaBell />
               {unreadnotification.length > 0 && (
-                <span className="badge">{unreadnotification.length}</span>
+                <span className="navbar__notification-badge">
+                  {unreadnotification.length}
+                </span>
               )}
             </div>
 
             <DarkModeButton />
 
-            <div className="icon locale-chip">SV</div>
+            <div className="navbar__icon navbar__locale-chip">SV</div>
           </div>
 
-          <div className="routes">
+          <div className="navbar__routes">
             <button
               onClick={() => {
                 if (onResetCalendarUser) onResetCalendarUser();
                 navigate(`/dashboard/${user.id}`);
               }}
-              className={activePage == "dashboard" ? "active" : ""}
+              className={
+                activePage == "dashboard"
+                  ? "navbar__route-btn navbar__route-btn--active"
+                  : "navbar__route-btn"
+              }
             >
               Skrivbord
             </button>
@@ -99,7 +105,11 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
                 onClick={() => {
                   navigate(`/admin-page/${user.id}`);
                 }}
-                className={activePage == "adminpanel" ? "active" : ""}
+                className={
+                  activePage == "adminpanel"
+                    ? "navbar__route-btn navbar__route-btn--active"
+                    : "navbar__route-btn"
+                }
               >
                 Admin
               </button>
@@ -108,7 +118,11 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
               onClick={() => {
                 navigate(`/messages/${user.id}`);
               }}
-              className={activePage == "messages" ? "active" : ""}
+              className={
+                activePage == "messages"
+                  ? "navbar__route-btn navbar__route-btn--active"
+                  : "navbar__route-btn"
+              }
             >
               Meddelande
             </button>
@@ -117,15 +131,19 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
               onClick={() => {
                 navigate(`/assignment-page/${user.id}`);
               }}
-              className={activePage == "assignments" ? "active" : ""}
+              className={
+                activePage == "assignments"
+                  ? "navbar__route-btn navbar__route-btn--active"
+                  : "navbar__route-btn"
+              }
             >
               Uppdrag
             </button>
           </div>
 
-          <div className="profile" ref={dropdownRef}>
+          <div className="navbar__profile" ref={dropdownRef}>
             <button
-              className="profile-trigger"
+              className="navbar__profile-trigger"
               onClick={() => setShowDropdown((prev) => !prev)}
             >
               <span>{user?.name || "Users Name"}</span>
@@ -133,7 +151,7 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
             </button>
 
             {showDropdown && (
-              <div className="dropdown">
+              <div className="navbar__dropdown">
                 <Link to={`/profile/${user.id}`}>Se profil</Link>
                 <Link to={"#"} onClick={() => setOpenConfirm(true)}>
                   Logga ut

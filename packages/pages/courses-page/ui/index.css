@@ -1,4 +1,4 @@
-.assignment-container {
+.courses-page__container {
   padding: 40px 32px;
   width: 100%;
   display: flex;
@@ -7,69 +7,73 @@
   background-color: var(--app-bg);
 }
 
-.course-container h2 {
+.courses-page__container h2 {
   font-size: 24px;
   font-weight: 600;
 }
 
-.assignment-content {
+.courses-page__content {
   border-top: 1px solid var(--border-color);
   padding-top: 32px;
 }
 
-.assignments-list {
+.courses-page__list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
 }
-.assignment-card{
+
+.courses-page__assignment-card {
   background-color: var(--surface);
   border-radius: 8px;
   padding: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
- 
   display: flex;
   flex-direction: column;
 }
-.assignment-upper{
+
+.courses-page__assignment-upper {
   display: flex;
   justify-content: space-between;
   flex: 1;
   padding: 10px;
   border-radius: 8px;
 }
-.assignment-under{
+
+.courses-page__assignment-under {
   flex: 8;
   display: flex;
   flex-direction: column;
   padding: 10px;
-   background-color: var(--surface-strong);
-   gap: 10px;
-   border-radius: 8px;
+  background-color: var(--surface-strong);
+  gap: 10px;
+  border-radius: 8px;
 }
-.sessions{
-  display:flex ;
+
+.courses-page__sessions {
+  display: flex;
   flex-direction: column;
   gap: 15px;
-  
 }
-.session-card{
+
+.courses-page__session-card {
   background-color: var(--accent);
-   flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    border-radius: 8px;
-    gap: 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 8px;
+  gap: 10px;
 }
-.session-upper{
+
+.courses-page__session-upper {
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
 }
-.session-under{
+
+.courses-page__session-under {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-
 }

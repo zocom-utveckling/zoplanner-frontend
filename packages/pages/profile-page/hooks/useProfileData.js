@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
-import { activityService, assignmentService } from "@zoplanner/api";
+import {
+  activityService,
+  assignmentService,
+  consultantService,
+} from "@zoplanner/api";
 
-function useProfileData(user, consultantId) {
+function useProfileData(user) {
   const [assignments, setAssignments] = useState([]);
   const [activities, setActivities] = useState([]);
   const [isLoadingSidebarData, setIsLoadingSidebarData] = useState(false);
@@ -19,9 +23,19 @@ function useProfileData(user, consultantId) {
       setIsLoadingSidebarData(true);
 
       try {
+        let resolvedConsultantId = user?.consultantId || user?.consultant?.id;
+
+        if (!resolvedConsultantId) {
+          const consultants = await consultantService.getAll();
+          const matchedConsultant = Array.isArray(consultants)
+            ? consultants.find((consultant) => consultant?.userId === user?.id)
+            : null;
+          resolvedConsultantId = matchedConsultant?.id ?? null;
+        }
+
         const activitiesPromise = activityService.getAll();
-        const assignmentsPromise = consultantId
-          ? assignmentService.getByConsultantId(consultantId)
+        const assignmentsPromise = resolvedConsultantId
+          ? assignmentService.getByConsultantId(resolvedConsultantId)
           : Promise.resolve([]);
 
         const [allActivities, consultantAssignments] = await Promise.all([
@@ -57,7 +71,7 @@ function useProfileData(user, consultantId) {
     return () => {
       isCancelled = true;
     };
-  }, [user?.id, consultantId]);
+  }, [user?.id, user?.consultantId, user?.consultant?.id]);
 
   return {
     assignments,

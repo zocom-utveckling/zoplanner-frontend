@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
-import "./index.css"
-import { sendNewAssignmentNotification, SendDirectMessage, sendScheduleCalendar, sendScheduleUpdated } from "../hooks/notisHook";
+import "./index.css";
+import {
+  sendNewAssignmentNotification,
+  SendDirectMessage,
+  sendScheduleCalendar,
+  sendScheduleUpdated,
+} from "../hooks/notisHook";
 
 function SendAssignmentNotification() {
-  
-
   const handleSendAssignmentNotification = async () => {
     const email = prompt("Ange mottagarens e-postadress:");
     if (!email) {
@@ -18,7 +20,7 @@ function SendAssignmentNotification() {
         teacherName: "Amir",
         assignmentDescription: "New assignment created",
         assignmentDueDate: "2026-05-15T17:00:00.000Z",
-        assignmentId:"1"
+        assignmentId: "1",
       });
       alert(data.message);
     } catch (error) {
@@ -36,7 +38,10 @@ function SendAssignmentNotification() {
     }
 
     try {
-      const data = await SendDirectMessage({ RecipientEmail: email, Message: message });
+      const data = await SendDirectMessage({
+        RecipientEmail: email,
+        Message: message,
+      });
       alert(data.message);
     } catch (error) {
       console.log("notification error:", error.message);
@@ -53,7 +58,7 @@ function SendAssignmentNotification() {
 
     try {
       const data = await sendScheduleUpdated({
-         email,
+        email,
         message: "Your schedule has been updated.",
       });
       alert(data.message);
@@ -92,17 +97,33 @@ function SendAssignmentNotification() {
 
   return (
     <>
-      <div className="notis-knapp-container">
-        <button type="button" onClick={handleSendDirectMessage}>
+      <div className="notis-knapp">
+        <button
+          type="button"
+          className="notis-knapp__action"
+          onClick={handleSendDirectMessage}
+        >
           Skicka direkt meddelande
         </button>
-        <button type="button" onClick={handleSendAssignmentNotification}>
+        <button
+          type="button"
+          className="notis-knapp__action"
+          onClick={handleSendAssignmentNotification}
+        >
           Skicka ny uppdrag
         </button>
-        <button type="button" onClick={handleSendScheduleUpdated}>
+        <button
+          type="button"
+          className="notis-knapp__action"
+          onClick={handleSendScheduleUpdated}
+        >
           Skicka schema uppdaterad
         </button>
-        <button type="button" onClick={handleSendScheduleCalendar}>
+        <button
+          type="button"
+          className="notis-knapp__action"
+          onClick={handleSendScheduleCalendar}
+        >
           Skicka Schema kalendar
         </button>
       </div>

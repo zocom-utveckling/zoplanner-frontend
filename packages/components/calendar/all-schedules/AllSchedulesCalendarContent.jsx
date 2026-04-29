@@ -13,7 +13,7 @@ function AllSchedulesCalendarContent({
   onFocusDateChange,
 }) {
   return (
-    <div className="content-card">
+    <div className="all-schedules-scheduler__content-card">
       <AllSchedulesView
         view={view}
         focusDate={focusDate}

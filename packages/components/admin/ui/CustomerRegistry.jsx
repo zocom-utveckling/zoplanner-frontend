@@ -239,7 +239,7 @@ export function CustomerRegistry({ user, onStartPlanning }) {
         </button>
       </div>
 
-      <div className="main">
+      <div className="customer-registry__main">
         {!isCreating && !isCreatingOrder && (
           <RegistrySearchFilter
             search={search}

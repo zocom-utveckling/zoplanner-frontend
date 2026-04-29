@@ -1,25 +1,23 @@
 .admin-container {
-    padding: 30px;
+  padding: 30px;
 }
 .admin-header {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
 }
 .admin-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-    margin-bottom: 2rem;
-
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 .admin-card {
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 12px;
   background: var(--surface);
- 
 }
 .schemaplanerar-container {
-   border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 12px;
   background: var(--surface);
@@ -27,7 +25,7 @@
 .admin-container {
   display: flex;
   min-height: calc(100vh - 72px);
-  background: #eef1f6;
+  background: var(--app-bg);
 }
 
 .admin-content {
@@ -41,7 +39,7 @@
 .admin-content h3,
 .admin-content p,
 .admin-content li {
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .admin-content ul {
@@ -56,8 +54,8 @@
 }
 
 .overview-card {
-  background: #fff;
-  border: 1px solid #d7dce5;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 20px;
 }
