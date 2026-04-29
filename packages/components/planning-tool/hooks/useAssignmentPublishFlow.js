@@ -14,32 +14,58 @@ export function useAssignmentPublishFlow({
   managerId,
   courseDraft,
   setActiveAssignment,
+  setCourseDraft,
   setPlannerMode,
 }) {
   const [isSaving, setIsSaving] = useState(false);
 
-  async function handleAssignConsultant(assignment, consultant) {
-    if (!assignment?.id || !consultant?.id) return;
+  function resolveEntityId(entity) {
+  return entity?.id ?? entity?.assignmentId ?? entity?.data?.id ?? null;
+}
+
+async function handleAssignConsultant(assignment, consultant) {
+  const resolvedAssignmentId = resolveEntityId(assignment);
+
+  console.log("🔥 ASSIGN USING ID:", resolvedAssignmentId);
+
+    if (!resolvedAssignmentId || !consultant?.id) {
+      console.error("Cannot assign consultant without persisted assignment id", {
+        assignment,
+        consultant,
+      });
+      return;
+    }
 
     try {
       console.log("ASSIGN PAYLOAD:", {
-        assignmentId: assignment.id,
+        assignmentId: resolvedAssignmentId,
         consultantId: consultant.id,
         managerId: assignment.managerId ?? managerId ?? null,
         dateStart: assignment.dateStart,
         dateEnd: assignment.dateEnd,
       });
 
-      const updatedAssignment = await assignmentService.update(assignment.id, {
-        consultantId: consultant.id,
-        managerId: assignment.managerId ?? managerId ?? null,
-        dateStart: assignment.dateStart,
-        dateEnd: assignment.dateEnd,
-      });
+      const updatedAssignmentResponse = await assignmentService.update(
+        resolvedAssignmentId,
+        {
+          consultantId: consultant.id,
+          managerId: assignment.managerId ?? managerId ?? null,
+          dateStart: assignment.dateStart,
+          dateEnd: assignment.dateEnd,
+        },
+      );
+
+      // Some backend update endpoints return 204/empty body.
+      const updatedAssignment =
+        updatedAssignmentResponse && Object.keys(updatedAssignmentResponse).length > 0
+          ? updatedAssignmentResponse
+          : { id: resolvedAssignmentId };
 
       setActiveAssignment((previous) => ({
         ...previous,
         ...updatedAssignment,
+        id: resolvedAssignmentId,
+        assignmentId: resolvedAssignmentId,
         consultantId: consultant.id,
         consultant,
         course: previous?.course ?? updatedAssignment?.course,
@@ -56,9 +82,10 @@ export function useAssignmentPublishFlow({
       alert("Kunde inte tilldela konsult till uppdraget.");
     }
   }
+async function handlePublishDraft() {
+  console.log("🔥 PUBLISH START", courseDraft);
 
-  async function handlePublishDraft() {
-    if (!courseDraft) return;
+  if (!courseDraft) return;
 
     if (!managerId) {
       alert("Kunde inte identifiera användaren. Försök igen.");
@@ -120,10 +147,17 @@ export function useAssignmentPublishFlow({
 
       if (existingAssignmentId) {
         try {
-          savedAssignment = await assignmentService.update(
+          const updateResponse = await assignmentService.update(
             existingAssignmentId,
             assignmentPayload,
           );
+
+          // Some update endpoints return 204/empty response.
+          savedAssignment =
+            updateResponse && Object.keys(updateResponse).length > 0
+              ? updateResponse
+              : { id: existingAssignmentId };
+
           console.log("✅ Assignment updated:", savedAssignment);
         } catch (error) {
           console.error(
@@ -149,20 +183,22 @@ export function useAssignmentPublishFlow({
         }
       }
 
-      if (!savedAssignment?.id) {
+      const resolvedAssignmentId = resolveEntityId(savedAssignment) ?? existingAssignmentId;
+
+      if (!resolvedAssignmentId) {
         console.error("❌ Assignment saved without id:", savedAssignment);
         alert("Kunde inte spara kursschema.");
         return;
       }
 
       try {
-        dev.saveCourseNameForAssignment(savedAssignment.id, courseDraft.courseName);
+        dev.saveCourseNameForAssignment(resolvedAssignmentId, courseDraft.courseName);
       } catch (error) {
         console.error("❌ DEV mapping failed:", error);
       }
 
       try {
-        const assignmentId = savedAssignment.id;
+        const assignmentId = resolvedAssignmentId;
         const draftSessions = courseDraft.sessionsDraft ?? [];
         const existingIds = courseDraft.existingSessionIds ?? [];
 
@@ -211,6 +247,8 @@ export function useAssignmentPublishFlow({
 
       const nextAssignment = {
         ...savedAssignment,
+        id: resolvedAssignmentId,
+        assignmentId: resolvedAssignmentId,
         dateStart: courseDraft.startDate,
         dateEnd: courseDraft.endDate,
         course: {
@@ -222,10 +260,26 @@ export function useAssignmentPublishFlow({
 
       setActiveAssignment(nextAssignment);
 
-      setPlannerMode("matching");
-      removePlanningDraft(courseDraft.id);
+      setCourseDraft((previousDraft) => {
+        if (!previousDraft) return previousDraft;
 
-      return nextAssignment;
+        return {
+          ...previousDraft,
+          id: resolvedAssignmentId,
+          assignmentId: resolvedAssignmentId,
+          courseId: resolvedCourseId,
+          existingSessionIds: (previousDraft.sessionsDraft ?? [])
+            .map((session) => session?.id)
+            .filter((sessionId) => typeof sessionId === "number"),
+        };
+      });
+
+      setPlannerMode("matching");
+// removePlanningDraft(courseDraft.id);
+
+console.log("🔥 RETURNING ASSIGNMENT", nextAssignment);
+
+return nextAssignment;
     } finally {
       setIsSaving(false);
     }

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useCourseSetupForm } from "../hooks/useCourseSetupForm";
 
 const DAY_LABELS = {
@@ -16,9 +17,14 @@ export default function CourseSetupForm({
   showScheduleEditor = true,
   onEditBasicInfo,
   onEditSchedule,
+  customers = [],
+  onOpenAddCustomer,
 }) {
   const {
     courseName,
+    customerId,
+    customerName,
+    className,
     startDate,
     endDate,
     totalHours,
@@ -26,10 +32,24 @@ export default function CourseSetupForm({
     handleWeekdayToggle,
     handleWeekdayTimeChange,
     handleChange,
+    handleSelectCustomer,
     handleSubmit,
     getStartTimeForDay,
     isSelected,
   } = useCourseSetupForm(onSave, initialValues);
+
+  // Update customer name when customer ID is selected from dropdown
+  useEffect(() => {
+    if (!customerId) return;
+
+    const selectedCustomer = customers.find(
+      (c) => String(c.id) === String(customerId),
+    );
+
+    if (selectedCustomer && selectedCustomer.name !== customerName) {
+      handleSelectCustomer(selectedCustomer);
+    }
+  }, [customerId, customers, customerName, handleSelectCustomer]);
 
   const weekdaySummarySource =
     selectedWeekdays?.length > 0
@@ -80,10 +100,13 @@ export default function CourseSetupForm({
             {lockBasicInfo ? (
               <div className="course-setup-summary">
                 <div className="course-setup-summary__main">
-                  <h2>{courseName}</h2>
+                  <h2>Kursschema</h2>
                   <p>
-                    Total undervisningstid: {totalHours} tim <br />
-                    Period: {startDate} t.o.m {endDate}
+                    <strong>Kund:</strong> {customerName} <br />
+                    <strong>Klass:</strong> {className} <br />
+                    <strong>Kurs:</strong> {courseName} <br />
+                    <strong>Timmar:</strong> {totalHours} tim <br />
+                    <strong>Period:</strong> {startDate} t.o.m {endDate}
                   </p>
                 </div>
 
@@ -97,6 +120,57 @@ export default function CourseSetupForm({
               </div>
             ) : (
               <div className="course-setup-field-container">
+                <div className="course-setup-field">
+                  <label htmlFor="customerId">
+                    Kund <span className="course-setup-required">*</span>
+                  </label>
+                  <div className="course-setup-customer-selector">
+                    <select
+                      id="customerId"
+                      name="customerId"
+                      value={customerId || ""}
+                      onChange={(e) => {
+                        if (e.target.value === "__new_customer__") {
+                          onOpenAddCustomer?.();
+                          return;
+                        }
+                        handleChange(e);
+                      }}
+                      disabled={lockBasicInfo}
+                    >
+                      <option value="">-- Välj kund --</option>
+                      {customers
+                        .filter(
+                          (c) =>
+                            (c.name || "").trim().toUpperCase() !== "UTKAST",
+                        )
+                        .map((customer) => (
+                          <option key={customer.id} value={customer.id}>
+                            {customer.name}
+                          </option>
+                        ))}
+                      <option value="__new_customer__" disabled={lockBasicInfo}>
+                        + Lägg till ny kund
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="course-setup-field">
+                  <label htmlFor="className">
+                    Klass <span className="course-setup-required">*</span>
+                  </label>
+                  <input
+                    id="className"
+                    name="className"
+                    type="text"
+                    placeholder="Ange klassnamn"
+                    value={className}
+                    onChange={handleChange}
+                    disabled={lockBasicInfo}
+                  />
+                </div>
+
                 <div className="course-setup-field">
                   <label htmlFor="courseName">
                     Kursnamn <span className="course-setup-required">*</span>

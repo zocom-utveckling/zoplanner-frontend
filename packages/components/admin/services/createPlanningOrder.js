@@ -1,4 +1,4 @@
-import { classService, courseService } from "@zoplanner/api";
+import { classService, courseService, assignmentService } from "@zoplanner/api";
 
 export async function createPlanningOrder({
   customerId,
@@ -8,11 +8,13 @@ export async function createPlanningOrder({
   startDate,
   endDate,
   totalHours,
+  managerId, // 👈 viktigt
 }) {
   if (!customerId || !className || !courseName) {
     throw new Error("Missing required data for planning order");
   }
 
+  // ===== CREATE CLASS =====
   let createdClass;
 
   try {
@@ -39,6 +41,7 @@ export async function createPlanningOrder({
     throw new Error("Failed to create class");
   }
 
+  // ===== CREATE COURSE =====
   let createdCourse;
 
   try {
@@ -69,7 +72,47 @@ export async function createPlanningOrder({
     throw new Error("Failed to create course");
   }
 
+  // ===== CREATE ASSIGNMENT (DET SOM SAKNADES) =====
+  let createdAssignment;
+
+  try {
+    createdAssignment = await assignmentService.create({
+      managerId,
+      consultantId: null,
+      courseId,
+      dateStart: startDate,
+      dateEnd: endDate,
+      published: false,
+    });
+
+    console.log("✅ Assignment created:", createdAssignment);
+  } catch (error) {
+    console.error("❌ Failed assignment payload:", {
+      managerId,
+      consultantId: null,
+      courseId,
+      dateStart: startDate,
+      dateEnd: endDate,
+      published: false,
+    });
+    console.error("❌ Failed assignment error:", error);
+    console.error("❌ Failed assignment response:", error?.response);
+    console.error("❌ Failed assignment response data:", error?.response?.data);
+    throw error;
+  }
+
+  const assignmentId =
+    createdAssignment?.id ?? createdAssignment?.data?.id;
+
+  if (!assignmentId) {
+    console.error("❌ Assignment created without id:", createdAssignment);
+    throw new Error("Failed to create assignment");
+  }
+
+  // ===== RETURN REAL DATA =====
   return {
+    id: assignmentId,
+    assignmentId,
     customerId,
     customerName,
     classId,

@@ -32,6 +32,18 @@ function AdminPage() {
   const [plannerMode, setPlannerMode] = useState("planning");
   const [selectedAssignmentForMatching, setSelectedAssignmentForMatching] =
     useState(null);
+
+  function handleSidebarViewChange(view) {
+    // Opening planner from sidebar should always start in fresh planning mode.
+    if (view === "planner") {
+      setPlannerMode("planning");
+      setSelectedAssignmentForMatching(null);
+      setSelectedIncompleteItem(null);
+      setPlannerPanel(null);
+    }
+    setAdminView(view);
+  }
+
   function handleIncompleteItemClick(item) {
     setSelectedAssignmentForMatching(item.assignment);
     setPlannerMode("matching");
@@ -56,7 +68,7 @@ function AdminPage() {
         setActivePage={setActivePage}
       />
 
-      <AdminLayout setView={setAdminView} activeView={adminView}>
+      <AdminLayout setView={handleSidebarViewChange} activeView={adminView}>
         {adminView === "overview" && (
           <div>
             <AdminOverview
