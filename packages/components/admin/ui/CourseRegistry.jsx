@@ -1,5 +1,5 @@
 import "./index.css";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCurrentActor } from "@zoplanner/app-hooks";
 import { assignmentService } from "@zoplanner/api";
 import { dev } from "@zoplanner/admin";
@@ -9,6 +9,11 @@ import {
   loadPlanningDrafts,
   removePlanningDraft,
 } from "@zoplanner/planning-tool";
+import {
+  getCourseName,
+  getEndDate,
+  getStartDate,
+} from "../../planning-tool/utils/normalize.helpers";
 import { RegistrySearchFilter } from "./RegistrySearchFilter";
 
 export function CourseRegistry({
@@ -25,8 +30,6 @@ export function CourseRegistry({
   const [confirmDeleteCourse, setConfirmDeleteCourse] = useState(null);
   const [draftsKey, setDraftsKey] = useState(0);
 
-  // draftsKey dependency ensures re-read from localStorage after deletion
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const drafts = useMemo(() => loadPlanningDrafts(), [draftsKey]);
 
   const [search, setSearch] = useState("");
@@ -78,44 +81,51 @@ export function CourseRegistry({
     return "Kommande";
   }
 
-  const courseRows = assignments.map((assignment) => ({
-    id: assignment.id,
-    assignment,
-    isDraft: false,
-    name: dev.getCourseNameForAssignment(assignment),
-    customer:
-      assignment.course?.className ||
-      assignment.course?.customerName ||
-      "Kund saknas",
-    startDate: assignment.dateStart,
-    endDate: assignment.dateEnd,
-    sessions: assignment.sessions ?? [],
-    consultantId: assignment.consultantId ?? null,
-    managerId: assignment.managerId ?? null,
-    subject:
-      assignment.course?.subject ||
-      assignment.course?.subjectArea ||
-      assignment.course?.courseSubject ||
-      assignment.subject ||
-      assignment.Subject ||
-      "",
-    hasConsultant: Boolean(assignment.consultantId),
-    status: getStatus({
-      startDate: assignment.dateStart,
-      endDate: assignment.dateEnd,
-      consultantId: assignment.consultantId,
-      sessions: assignment.sessions,
-    }),
-  }));
+  const courseRows = assignments.map((assignment) => {
+    const startDate = getStartDate(assignment);
+    const endDate = getEndDate(assignment);
+
+    return {
+      id: assignment.id,
+      assignment,
+      isDraft: false,
+      name:
+        dev.getCourseNameForAssignment(assignment) ||
+        getCourseName(assignment, "Kurs saknas"),
+      customer:
+        assignment.course?.className ||
+        assignment.course?.customerName ||
+        "Kund saknas",
+      startDate,
+      endDate,
+      sessions: assignment.sessions ?? [],
+      consultantId: assignment.consultantId ?? null,
+      managerId: assignment.managerId ?? null,
+      subject:
+        assignment.course?.subject ||
+        assignment.course?.subjectArea ||
+        assignment.course?.courseSubject ||
+        assignment.subject ||
+        assignment.Subject ||
+        "",
+      hasConsultant: Boolean(assignment.consultantId),
+      status: getStatus({
+        startDate,
+        endDate,
+        consultantId: assignment.consultantId,
+        sessions: assignment.sessions,
+      }),
+    };
+  });
 
   const draftRows = drafts.map((draft) => ({
     id: `draft-${draft.id}`,
     draftId: draft.id,
     isDraft: true,
-    name: draft.courseName || "Utkast",
+    name: getCourseName(draft, "Utkast"),
     customer: "Ej vald",
-    startDate: draft.startDate,
-    endDate: draft.endDate,
+    startDate: getStartDate(draft),
+    endDate: getEndDate(draft),
     sessions: draft.sessionsDraft ?? [],
     managerId: null,
     subject: draft.subject || draft.subjectArea || draft.courseSubject || "",
@@ -173,7 +183,7 @@ export function CourseRegistry({
     })
     .filter((c) => {
       if (filters.mine && managerId && c.managerId != null) {
-        return c.managerId === managerId;
+        return Number(c.managerId) === Number(managerId);
       }
       if (filters.mine && managerId && c.managerId == null) {
         return true;
@@ -337,6 +347,7 @@ export function CourseRegistry({
                   consultant: course.assignment.consultant ?? null,
                 }
               : course;
+
             onOpenConsultantMatching?.(assignmentForMatching);
           }}
         />

@@ -1,13 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useCourseSetupForm } from "../hooks/useCourseSetupForm";
-
-const DAY_LABELS = {
-  MONDAY: "Måndag",
-  TUESDAY: "Tisdag",
-  WEDNESDAY: "Onsdag",
-  THURSDAY: "Torsdag",
-  FRIDAY: "Fredag",
-};
+import { buildScheduleSummary } from "../utils/scheduleSummary.helpers";
 
 export default function CourseSetupForm({
   onSave,
@@ -38,7 +31,6 @@ export default function CourseSetupForm({
     isSelected,
   } = useCourseSetupForm(onSave, initialValues);
 
-  // Update customer name when customer ID is selected from dropdown
   useEffect(() => {
     if (!customerId) return;
 
@@ -51,46 +43,8 @@ export default function CourseSetupForm({
     }
   }, [customerId, customers, customerName, handleSelectCustomer]);
 
-  const weekdaySummarySource =
-    selectedWeekdays?.length > 0
-      ? selectedWeekdays
-      : (initialValues?.selectedWeekdays ?? []);
-
   const sessions = initialValues?.sessionsDraft ?? [];
-
-  const scheduleSummary = (() => {
-    if (!sessions.length) return "";
-
-    const grouped = {};
-
-    sessions.forEach((session) => {
-      const date = new Date(session.timeStart);
-      const day = date.getDay();
-
-      const dayKey = day;
-      const start = session.timeStart.split("T")[1]?.slice(0, 5);
-      const end = session.timeEnd.split("T")[1]?.slice(0, 5);
-
-      if (!grouped[dayKey]) {
-        grouped[dayKey] = { start, end };
-      }
-    });
-
-    return Object.entries(grouped)
-      .map(([day, times]) => {
-        const label =
-          {
-            1: "Måndagar",
-            2: "Tisdagar",
-            3: "Onsdagar",
-            4: "Torsdagar",
-            5: "Fredagar",
-          }[day] || "";
-
-        return `${label} ${times.start}–${times.end}`;
-      })
-      .join(", ");
-  })();
+  const scheduleSummary = buildScheduleSummary(sessions);
 
   return (
     <section className="course-setup">

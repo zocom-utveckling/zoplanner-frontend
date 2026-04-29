@@ -1,17 +1,22 @@
 import "./index.css";
+import {
+  getCourseName,
+  getEndDate,
+  getStartDate,
+} from "@zoplanner/planning-tool";
 
 export default function CourseSummary({ assignment, onDelete }) {
   if (!assignment) return null;
 
   const sessions = assignment.sessions ?? [];
+  const courseName = getCourseName(assignment, "Kursschema");
+  const startDate = getStartDate(assignment);
+  const endDate = getEndDate(assignment);
 
   return (
     <div className="course-summary">
-      {/* Header med titel + delete */}
       <div className="course-summary__header">
-        <h3 className="course-summary__title">
-          {assignment.course?.name || "Kursschema"}
-        </h3>
+        <h3 className="course-summary__title">{courseName}</h3>
 
         {onDelete && (
           <button
@@ -28,17 +33,14 @@ export default function CourseSummary({ assignment, onDelete }) {
         )}
       </div>
 
-      {/* Period */}
       <p className="course-summary__meta">
-        {assignment.dateStart} – {assignment.dateEnd}
+        {startDate} – {endDate}
       </p>
 
-      {/* Antal tillfällen */}
       <p className="course-summary__meta">
         {sessions.length} lektionstillfällen
       </p>
 
-      {/* Sessions lista */}
       <ul className="course-summary__list">
         {sessions.map((session, index) => (
           <li key={session.id ?? index} className="course-summary__list-item">

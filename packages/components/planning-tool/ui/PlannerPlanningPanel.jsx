@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { CourseSetupForm } from "@zoplanner/planning-tool";
+import { CourseSetupForm, getCourseName } from "@zoplanner/planning-tool";
 import { useCustomers } from "@zoplanner/app-hooks";
 
 export default function PlannerPlanningPanel({
+  managerId,
   courseDraft,
   selectedAssignmentForMatching,
   isEditingBasicInfo,
@@ -28,11 +29,18 @@ export default function PlannerPlanningPanel({
       return;
     }
 
+    if (!managerId) {
+      alert("Kunde inte skapa kund: managerId saknas.");
+      return;
+    }
+
     try {
       setIsCreatingCustomer(true);
+
       const newCustomer = await createCustomer({
         name: newCustomerName,
         city: newCustomerCity,
+        managerId,
       });
 
       setNewCustomerName("");
@@ -40,14 +48,13 @@ export default function PlannerPlanningPanel({
       setShowAddCustomer(false);
       setIsCreatingCustomer(false);
 
-      // Auto-select the newly created customer in the form
       if (newCustomer && courseDraft) {
-        // Update the form with the new customer
         const updatedDraft = {
           ...courseDraft,
           customerId: String(newCustomer.id),
           customerName: newCustomer.name,
         };
+
         onSaveDraft?.(updatedDraft);
       }
 
@@ -86,8 +93,6 @@ export default function PlannerPlanningPanel({
           } else {
             console.log("➡️ switching to matching");
 
-            // Propagate planning summary state into matching state.
-            // This keeps summary/assignment visible across mode switch.
             setActiveAssignment((previous) => ({
               ...previous,
               id: previous?.id ?? courseDraft.assignmentId ?? null,
@@ -99,7 +104,7 @@ export default function PlannerPlanningPanel({
               course: {
                 ...(previous?.course ?? {}),
                 id: courseDraft.courseId ?? previous?.course?.id ?? null,
-                name: courseDraft.courseName || "Kursschema",
+                name: getCourseName(courseDraft, "Kursschema"),
               },
               customerId:
                 courseDraft.customerId ?? previous?.customerId ?? null,
