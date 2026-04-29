@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
-import "./index.css"
-import { sendNewAssignmentNotification, SendDirectMessage, sendScheduleCalendar, sendScheduleUpdated } from "../hooks/notisHook";
+import "./index.css";
+import {
+  sendNewAssignmentNotification,
+  SendDirectMessage,
+  sendScheduleCalendar,
+  sendScheduleUpdated,
+} from "../hooks/notisHook";
 
 function SendAssignmentNotification() {
-  
-
   const handleSendAssignmentNotification = async () => {
     const email = prompt("Ange mottagarens e-postadress:");
     if (!email) {
@@ -99,17 +101,33 @@ function SendAssignmentNotification() {
 
   return (
     <>
-      <div className="notis-knapp-container">
-        <button type="button" onClick={handleSendDirectMessage}>
+      <div className="notis-knapp">
+        <button
+          type="button"
+          className="notis-knapp__action"
+          onClick={handleSendDirectMessage}
+        >
           Skicka direkt meddelande
         </button>
-        <button type="button" onClick={handleSendAssignmentNotification}>
+        <button
+          type="button"
+          className="notis-knapp__action"
+          onClick={handleSendAssignmentNotification}
+        >
           Skicka ny uppdrag
         </button>
-        <button type="button" onClick={handleSendScheduleUpdated}>
+        <button
+          type="button"
+          className="notis-knapp__action"
+          onClick={handleSendScheduleUpdated}
+        >
           Skicka schema uppdaterad
         </button>
-        <button type="button" onClick={handleSendScheduleCalendar}>
+        <button
+          type="button"
+          className="notis-knapp__action"
+          onClick={handleSendScheduleCalendar}
+        >
           Skicka Schema kalendar
         </button>
       </div>

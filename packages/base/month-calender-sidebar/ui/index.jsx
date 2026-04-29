@@ -153,25 +153,25 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
 
   return (
     <div
-      className={`month-calendar ${variant === "sidebar" ? "sidebar-variant" : "page-variant"}`}
+      className={`month-calendar ${variant === "sidebar" ? "month-calendar--sidebar" : "month-calendar--page"}`}
     >
-      <div className="calendar-section-header">
-        <button className="nav-btn" onClick={prevMonth}>
+      <div className="month-calendar__header">
+        <button className="month-calendar__nav-btn" onClick={prevMonth}>
           {"<"}
         </button>
-        <span className="section-title">Månad</span>
-        <button className="nav-btn" onClick={nextMonth}>
+        <span className="month-calendar__section-title">Månad</span>
+        <button className="month-calendar__nav-btn" onClick={nextMonth}>
           {">"}
         </button>
       </div>
 
-      <div className="month-display">
+      <div className="month-calendar__display">
         {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
       </div>
 
-      <div className="calender-grid">
+      <div className="month-calendar__grid">
         {weekDays.map((day, index) => (
-          <div key={index} className="weekday-header">
+          <div key={index} className="month-calendar__weekday">
             {day}
           </div>
         ))}
@@ -179,7 +179,7 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
         {days.map((day, index) => (
           <div
             key={`day-${index}`}
-            className={`calendar-day ${day ? "" : "empty"} ${isToday(day) ? "today" : ""} ${day ? "clickable" : ""}`}
+            className={`month-calendar__day ${day ? "" : "month-calendar__day--empty"} ${isToday(day) ? "month-calendar__day--today" : ""} ${day ? "month-calendar__day--clickable" : ""}`}
             onClick={() => handleDayClick(day)}
           >
             {day || ""}
@@ -188,17 +188,26 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
       </div>
 
       {isModalOpen && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="month-calendar-modal" onClick={handleCloseModal}>
+          <div
+            className="month-calendar-modal__content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="month-calendar-modal__header">
               <h2>Lägg till aktivitet</h2>
-              <button className="close-btn" onClick={handleCloseModal}>
+              <button
+                className="month-calendar-modal__close-btn"
+                onClick={handleCloseModal}
+              >
                 ×
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="activity-form">
-              <div className="form-group">
+            <form
+              onSubmit={handleSubmit}
+              className="month-calendar-modal__form"
+            >
+              <div className="month-calendar-modal__field-group">
                 <label htmlFor="title">Titel</label>
                 <input
                   type="text"
@@ -210,7 +219,7 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="month-calendar-modal__field-group">
                 <label htmlFor="type">Typ av aktivitet *</label>
                 <select
                   id="type"
@@ -227,7 +236,7 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="month-calendar-modal__field-group">
                 <label htmlFor="date">Datum *</label>
                 <input
                   type="date"
@@ -239,8 +248,8 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
                 />
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
+              <div className="month-calendar-modal__row">
+                <div className="month-calendar-modal__field-group">
                   <label htmlFor="startTime">Starttid *</label>
                   <input
                     type="time"
@@ -252,7 +261,7 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="month-calendar-modal__field-group">
                   <label htmlFor="endTime">Sluttid *</label>
                   <input
                     type="time"
@@ -265,7 +274,7 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
                 </div>
               </div>
 
-              <div className="form-group">
+              <div className="month-calendar-modal__field-group">
                 <label htmlFor="description">Beskrivning</label>
                 <textarea
                   id="description"
@@ -277,10 +286,10 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
                 />
               </div>
 
-              <div className="modal-actions">
+              <div className="month-calendar-modal__actions">
                 <button
                   type="button"
-                  className="btn-cancel"
+                  className="month-calendar-modal__cancel-btn"
                   onClick={handleCloseModal}
                   disabled={isSubmitting}
                 >
@@ -288,7 +297,7 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
                 </button>
                 <button
                   type="submit"
-                  className="btn-submit"
+                  className="month-calendar-modal__submit-btn"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Sparar..." : "Lägg till"}
@@ -296,7 +305,7 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
               </div>
 
               {submitError ? (
-                <p className="form-error" role="alert">
+                <p className="month-calendar-modal__error" role="alert">
                   {submitError}
                 </p>
               ) : null}

@@ -77,16 +77,19 @@ function AddActivityButton({ onSubmit }) {
   return (
     <>
       <button className="add-activity-btn" onClick={handleAddActivity}>
-        <span className="plus-icon">+</span> Lägg till aktivitet
+        <span className="add-activity-btn__icon">+</span> Lägg till aktivitet
       </button>
 
       {isModalOpen && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="add-activity-modal" onClick={handleCloseModal}>
+          <div
+            className="add-activity-modal__content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="add-activity-modal__header">
               <h2>Lägg till aktivitet</h2>
               <button
-                className="close-btn"
+                className="add-activity-modal__close-btn"
                 onClick={handleCloseModal}
                 disabled={isSubmitting}
               >
@@ -94,8 +97,8 @@ function AddActivityButton({ onSubmit }) {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="activity-form">
-              <div className="form-group">
+            <form onSubmit={handleSubmit} className="add-activity-modal__form">
+              <div className="add-activity-modal__field-group">
                 <label htmlFor="title">Titel</label>
                 <input
                   type="text"
@@ -107,7 +110,7 @@ function AddActivityButton({ onSubmit }) {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="add-activity-modal__field-group">
                 <label htmlFor="type">Typ av aktivitet *</label>
                 <select
                   id="type"
@@ -124,7 +127,7 @@ function AddActivityButton({ onSubmit }) {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="add-activity-modal__field-group">
                 <label htmlFor="date">Datum *</label>
                 <input
                   type="date"
@@ -136,8 +139,8 @@ function AddActivityButton({ onSubmit }) {
                 />
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
+              <div className="add-activity-modal__row">
+                <div className="add-activity-modal__field-group">
                   <label htmlFor="startTime">Starttid *</label>
                   <input
                     type="time"
@@ -149,7 +152,7 @@ function AddActivityButton({ onSubmit }) {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="add-activity-modal__field-group">
                   <label htmlFor="endTime">Sluttid *</label>
                   <input
                     type="time"
@@ -162,7 +165,7 @@ function AddActivityButton({ onSubmit }) {
                 </div>
               </div>
 
-              <div className="form-group">
+              <div className="add-activity-modal__field-group">
                 <label htmlFor="description">Beskrivning</label>
                 <textarea
                   id="description"
@@ -174,10 +177,10 @@ function AddActivityButton({ onSubmit }) {
                 />
               </div>
 
-              <div className="modal-actions">
+              <div className="add-activity-modal__actions">
                 <button
                   type="button"
-                  className="btn-cancel"
+                  className="add-activity-modal__cancel-btn"
                   onClick={handleCloseModal}
                   disabled={isSubmitting}
                 >
@@ -185,7 +188,7 @@ function AddActivityButton({ onSubmit }) {
                 </button>
                 <button
                   type="submit"
-                  className="btn-submit"
+                  className="add-activity-modal__submit-btn"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Sparar..." : "Lägg till"}
@@ -193,7 +196,7 @@ function AddActivityButton({ onSubmit }) {
               </div>
 
               {submitError ? (
-                <p className="form-error" role="alert">
+                <p className="add-activity-modal__error" role="alert">
                   {submitError}
                 </p>
               ) : null}

@@ -47,32 +47,37 @@ function AllSchedulesTopbar({
   onNext,
 }) {
   return (
-    <div className="topbar topbar--all-schedules">
-      <div className="topbar-all-schedules-row">
-        <div className="topbar-heading topbar-heading--with-nav">
-          <button className="nav-btn" onClick={onPrev}>
+    <div className="all-schedules-topbar">
+      <div className="all-schedules-topbar__summary-row">
+        <div className="all-schedules-topbar__heading-nav">
+          <button className="all-schedules-topbar__nav-btn" onClick={onPrev}>
             ←
           </button>
-          <p className="topbar-heading__subtitle">{getSubtitle(focusDate, view)}</p>
-          <button className="nav-btn" onClick={onNext}>
+          <p className="all-schedules-topbar__subtitle">
+            {getSubtitle(focusDate, view)}
+          </p>
+          <button className="all-schedules-topbar__nav-btn" onClick={onNext}>
             →
           </button>
         </div>
 
-        <div className="topbar-all-schedules-actions">
-          <button className="small-btn" onClick={onGoToday}>
+        <div className="all-schedules-topbar__actions">
+          <button
+            className="all-schedules-topbar__today-btn"
+            onClick={onGoToday}
+          >
             Idag
           </button>
 
-          <div className="segment">
+          <div className="all-schedules-topbar__segment">
             <button
-              className={`segment-btn ${view === "week" ? "segment-active" : ""}`}
+              className={`all-schedules-topbar__segment-btn ${view === "week" ? "all-schedules-topbar__segment-btn--active" : ""}`}
               onClick={() => setView("week")}
             >
               Veckovy
             </button>
             <button
-              className={`segment-btn ${view === "month" ? "segment-active" : ""}`}
+              className={`all-schedules-topbar__segment-btn ${view === "month" ? "all-schedules-topbar__segment-btn--active" : ""}`}
               onClick={() => setView("month")}
             >
               Månadsvy
@@ -81,16 +86,18 @@ function AllSchedulesTopbar({
         </div>
       </div>
 
-      <div className="controls controls--all-schedules controls--all-schedules-filters">
+      <div className="all-schedules-topbar__filters">
         <input
-          className="search"
+          className="all-schedules-topbar__search"
           placeholder="Sök lärare, kurs, ort..."
           value={filters.searchQuery}
-          onChange={(event) => onFilterChange?.("searchQuery", event.target.value)}
+          onChange={(event) =>
+            onFilterChange?.("searchQuery", event.target.value)
+          }
         />
 
         <select
-          className="filter-select"
+          className="all-schedules-topbar__filter-select"
           value={filters.teacher}
           onChange={(event) => onFilterChange?.("teacher", event.target.value)}
         >
@@ -103,7 +110,7 @@ function AllSchedulesTopbar({
         </select>
 
         <select
-          className="filter-select"
+          className="all-schedules-topbar__filter-select"
           value={filters.course}
           onChange={(event) => onFilterChange?.("course", event.target.value)}
         >
@@ -116,7 +123,7 @@ function AllSchedulesTopbar({
         </select>
 
         <select
-          className="filter-select"
+          className="all-schedules-topbar__filter-select"
           value={filters.location}
           onChange={(event) => onFilterChange?.("location", event.target.value)}
         >
@@ -129,7 +136,7 @@ function AllSchedulesTopbar({
         </select>
 
         <select
-          className="filter-select"
+          className="all-schedules-topbar__filter-select"
           value={filters.sortBy}
           onChange={(event) => onFilterChange?.("sortBy", event.target.value)}
         >

@@ -41,7 +41,7 @@ export function AdminOverview({
         <div className="admin-overview__time">{timeLabel}</div>
       </div>
 
-      <div className="main">
+      <div className="admin-overview__main">
         <div className="overview-grid">
           <section className="overview-card">
             <h3>Dagens planering</h3>

@@ -140,12 +140,12 @@ export function RegistrySearchFilter({
   });
 
   return (
-    <div className="controls--all-schedules">
-      <div className="controls--all-schedules-filters">
+    <div className="registry-search-filter">
+      <div className="registry-search-filter__bar">
         <div className="registry-search-filter__left">
           <button
             type="button"
-            className="filter-select registry-search-filter__toggle"
+            className="registry-search-filter__toggle"
             onClick={onToggleFilters}
           >
             {showFilters ? "Filter ×" : "Filtrera"}
@@ -252,7 +252,7 @@ export function RegistrySearchFilter({
         </div>
 
         <input
-          className="search"
+          className="registry-search-filter__search"
           type="text"
           placeholder={searchPlaceholder}
           value={search}
@@ -266,7 +266,7 @@ export function RegistrySearchFilter({
             <button
               key={chip.key}
               type="button"
-              className="chip"
+              className="registry-search-filter__chip"
               onClick={chip.onRemove}
             >
               {chip.label} ✕

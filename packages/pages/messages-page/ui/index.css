@@ -1,10 +1,10 @@
-.messages-container {
+.messages-page__container {
   width: 100%;
   height: calc(100vh - 70px);
   background-color: var(--app-bg);
 }
 
-.messaging-dashboard {
+.messages-page__dashboard {
   display: grid;
   grid-template-columns: 290px 1fr 280px;
   background-color: var(--surface);
@@ -16,14 +16,16 @@
   min-height: 0;
 }
 
-.messaging-dashboard > * {
+.messages-page__dashboard > * {
   min-height: 0;
 }
-.messages-container h2 {
+
+.messages-page__container h2 {
   font-size: 24px;
   font-weight: 600;
 }
-.messages-container h3 {
+
+.messages-page__container h3 {
   font-size: 20px;
   font-weight: 600;
   cursor: pointer;

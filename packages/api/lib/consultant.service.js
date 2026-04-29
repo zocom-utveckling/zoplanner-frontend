@@ -4,6 +4,10 @@ export function createConsultantService(api) {
         getAll: async () => {
             return api.get (`/Consultant`);
         },
+       
+        getMe: async () => {
+         return api.get(`/Consultant/me`);
+            },
 
         create: async (payload) => {
             if(!payload){

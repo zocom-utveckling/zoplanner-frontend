@@ -28,7 +28,7 @@ export default function PlannerPlanningPanel({
       />
 
       <button
-        className="planner-btn-primary"
+        className="planner-planning-panel__action-btn"
         onClick={() => {
           console.log("🔘 primary click", courseDraft);
 

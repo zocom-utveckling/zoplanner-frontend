@@ -271,7 +271,7 @@ export function PlannerWorkspace({
           </span>
         </div>
       </div>
-      <div className="main">
+      <div className="planner-workspace__content">
         <div className="planner-workspace__layout">
           <aside className="planner-workspace__sidebar">
             <section className="planner-workspace__panel planner-workspace__panel--form">

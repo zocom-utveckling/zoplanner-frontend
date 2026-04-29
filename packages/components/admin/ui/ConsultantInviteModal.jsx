@@ -12,28 +12,40 @@ export function ConsultantInviteModal({ isOpen, onClose, onSubmit }) {
   };
 
   return (
-    <div className="modal">
-      <div className="modal__content">
-        <h2 className="modal__title">Bjud in konsult</h2>
+    <div className="consultant-invite-modal__overlay">
+      <div className="consultant-invite-modal__content">
+        <h2 className="consultant-invite-modal__title">Bjud in konsult</h2>
 
-        <form onSubmit={handleSubmit} className="modal__body">
+        <form onSubmit={handleSubmit} className="consultant-invite-modal__body">
           <input
             type="email"
             placeholder="Ange e-postadress"
-            className="modal__input"
+            className="consultant-invite-modal__input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <div className="modal__actions">
-            <button type="button" className="modal__btn" onClick={onClose}>
+          <div className="consultant-invite-modal__actions">
+            <button
+              type="button"
+              className="consultant-invite-modal__btn"
+              onClick={onClose}
+            >
               Avbryt
             </button>
 
-            <button type="submit" className="modal__btn modal__btn--primary">
+            <button
+              type="submit"
+              className="consultant-invite-modal__btn consultant-invite-modal__btn--primary"
+            >
               Skicka
             </button>
           </div>
+          <p className="customer-registry__modal-future-note">
+            Tanken är att en inbjudningslänk skickas till konsulten, där kontot
+            skapas. Backendstöd saknas i dagsläget. För demo navigerar den här
+            till registreringssidan som konsulten ska nå med länken.
+          </p>
         </form>
       </div>
     </div>

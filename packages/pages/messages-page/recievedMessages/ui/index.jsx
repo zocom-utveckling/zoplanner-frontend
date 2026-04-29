@@ -30,20 +30,20 @@ function RecievedMessagesPage() {
           status={"recieved"}
         />
       )}
-      <div className="recieved-container">
+      <div className="messages-recieved__container">
         {recievedMessages.length === 0 ? (
           <h2>No Chats found</h2>
         ) : (
-          <div className="recieved-content">
+          <div className="messages-recieved__content">
             {recievedMessages.map((message, index) => (
               <div
                 key={index}
-                className="recieved-card"
+                className="messages-recieved__card"
                 onClick={() => setSelectedMessage(message)}
               >
-                <div className="recieved-left">
+                <div className="messages-recieved__left">
                   {" "}
-                  <div className="recieved-header">
+                  <div className="messages-recieved__header">
                     <h3>{message.sender}</h3>
                     <h4>{message.subject}</h4>
                   </div>
@@ -53,7 +53,7 @@ function RecievedMessagesPage() {
                       : message.text}
                   </p>
                 </div>
-                <div className="recieved-right">
+                <div className="messages-recieved__right">
                   <span>{message.createdAt}</span>
                   <span>...</span>
                 </div>

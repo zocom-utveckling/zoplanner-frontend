@@ -4,9 +4,9 @@
 
 import { useState } from "react";
 import "./index.css";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@zoplanner/button";
-import { authService } from "@zoplanner/api";
+import { authService, managerService, userService } from "@zoplanner/api";
 import { FaLock, FaEnvelope, FaUser } from "react-icons/fa";
 
 function DevManagerRegister() {
@@ -17,7 +17,6 @@ function DevManagerRegister() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-
   const addManager = async ({ userId }) => {
     try {
       if (!userId) {
@@ -25,17 +24,7 @@ function DevManagerRegister() {
         return false;
       }
 
-      const res = await fetch(`http://localhost:5027/api/Manager/${userId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert("Kunde inte lägga till manager");
-        return false;
-      }
+      const data = await managerService.create(userId);
 
       if (data?.id) {
         localStorage.setItem("managerId", data.id);
@@ -70,12 +59,8 @@ function DevManagerRegister() {
       // Auth/register returnerar inte userId.
       // Vi hämtar därför användaren efteråt
       // för att kunna skapa manager-kopplingen.
-      const userRes = await fetch(
-        `http://localhost:5027/api/User/username/${username}`,
-      );
-      const userData = await userRes.json();
-
-      if (!userRes.ok || !userData?.id) {
+      const userData = await userService.getByUsername(username);
+      if (!userData?.id) {
         alert("Kunde inte hämta användaren efter registrering");
         return;
       }
@@ -103,12 +88,12 @@ function DevManagerRegister() {
 
   return (
     <>
-      <div className="container">
+      <div className="register-page__form-container">
         <h1>ZoPlanner</h1>
         <form onSubmit={handleSubmit}>
           <button
             type="button"
-            className="close-button"
+            className="register-page__close-button"
             onClick={handleClose}
             aria-label="Stäng"
           >
@@ -116,8 +101,8 @@ function DevManagerRegister() {
           </button>
           <h2>Skapa managerkonto</h2>
 
-          <div className="field">
-            <div className="label">
+          <div className="register-page__field">
+            <div className="register-page__label">
               <FaUser /> <span>För- och efternamn</span>
             </div>
             <input
@@ -129,8 +114,8 @@ function DevManagerRegister() {
             />
           </div>
 
-          <div className="field">
-            <div className="label">
+          <div className="register-page__field">
+            <div className="register-page__label">
               <FaEnvelope /> <span>E-post</span>
             </div>
             <input
@@ -142,8 +127,8 @@ function DevManagerRegister() {
             />
           </div>
 
-          <div className="field">
-            <div className="label">
+          <div className="register-page__field">
+            <div className="register-page__label">
               <FaUser /> <span>Användarnamn</span>
             </div>
             <input
@@ -155,8 +140,8 @@ function DevManagerRegister() {
             />
           </div>
 
-          <div className="field">
-            <div className="label">
+          <div className="register-page__field">
+            <div className="register-page__label">
               <FaLock /> <span>Lösenord</span>
             </div>
             <input
@@ -169,13 +154,17 @@ function DevManagerRegister() {
             />
           </div>
 
-          <div className="button">
+          <div className="register-page__button-group">
             <Button
               text={loading ? "Loading..." : "Skapa managerkonto"}
               type="submit"
               style="submit"
             />
           </div>
+          <p className="customer-registry__modal-future-note">
+            Gör det möjligt att skapa ett managerkonto i demo utan att sätta upp
+            data manuellt. Kommer inte att stödjas i kommande versioner.
+          </p>
         </form>
       </div>
     </>

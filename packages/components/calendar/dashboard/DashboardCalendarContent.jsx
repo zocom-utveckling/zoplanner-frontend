@@ -15,7 +15,7 @@ function DashboardCalendarContent({
   bookingWeekColors,
 }) {
   return (
-    <div className="content-card">
+    <div className="dashboard-scheduler__content-card">
       {view === "week" ? (
         <TimeGridView
           days={weekDays}
