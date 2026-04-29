@@ -1,0 +1,114 @@
+.zo-time-picker__field .MuiInputLabel-root {
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.zo-time-picker__field .MuiInputLabel-root.Mui-focused {
+  color: var(--active-bg);
+}
+
+.zo-time-picker__field .MuiOutlinedInput-root {
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+  background-color: var(--surface);
+  border-radius: 8px;
+}
+
+.zo-time-picker__field .MuiOutlinedInput-root fieldset {
+  border-color: var(--border-color);
+}
+
+.zo-time-picker__field .MuiOutlinedInput-root:hover fieldset {
+  border-color: var(--border-strong);
+}
+
+.zo-time-picker__field .MuiOutlinedInput-root.Mui-focused fieldset {
+  border-color: var(--active-bg);
+  border-width: 2px;
+}
+
+.zo-time-picker__field .MuiOutlinedInput-root.Mui-disabled {
+  background-color: var(--surface-muted);
+}
+
+.zo-time-picker__field .MuiOutlinedInput-root.Mui-disabled fieldset {
+  border-color: var(--border-subtle);
+}
+
+.zo-time-picker__field .MuiInputBase-input {
+  padding: 10px 12px;
+  color: var(--text-primary);
+}
+
+.zo-time-picker__field .MuiSvgIcon-root {
+  color: var(--text-muted);
+}
+
+.zo-time-picker__dialog {
+  z-index: 5001 !important;
+}
+
+.zo-time-picker__mobile-paper {
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--elevation-modal);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-family: "Poppins", sans-serif;
+}
+
+.zo-time-picker__popper {
+  z-index: 5001 !important;
+}
+
+.zo-time-picker__popper .MuiPaper-root {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--elevation-modal);
+  font-family: "Poppins", sans-serif;
+}
+
+.zo-time-picker__popper .MuiClock-root {
+  background-color: var(--surface);
+}
+
+.zo-time-picker__popper .MuiClockNumber-root {
+  color: var(--text-primary);
+  font-family: "Poppins", sans-serif;
+}
+
+.zo-time-picker__popper .MuiClockPointer-root {
+  background-color: var(--active-bg);
+}
+
+.zo-time-picker__popper .MuiClock-pin {
+  background-color: var(--active-bg);
+}
+
+.zo-time-picker__popper .MuiClockPointer-thumb {
+  background-color: var(--active-bg);
+  border-color: var(--active-bg);
+}
+
+.zo-time-picker__popper .MuiClockNumber-root.Mui-selected {
+  background-color: var(--active-bg);
+  color: var(--active-fg);
+}
+
+.zo-time-picker__popper .MuiPickersToolbar-root {
+  background-color: var(--surface-alt);
+}
+
+.zo-time-picker__popper .MuiTimePickerToolbar-hourMinuteLabel button {
+  color: var(--text-primary);
+  font-family: "Poppins", sans-serif;
+}
+
+.zo-time-picker__popper .MuiPickersToolbar-content .Mui-selected {
+  color: var(--accent);
+}

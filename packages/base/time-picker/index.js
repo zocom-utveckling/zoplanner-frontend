@@ -1,1 +1,1 @@
-export { default } from "./ui/ZoTimePicker.jsx";
+export { default } from "./ui/index.jsx";
