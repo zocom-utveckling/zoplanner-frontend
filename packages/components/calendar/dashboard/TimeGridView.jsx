@@ -10,8 +10,8 @@ import {
 import sv from "date-fns/locale/sv";
 import EventBlock from "./EventBlock";
 
-const HOURS_START = 8;
-const HOURS_END = 17;
+const HOURS_START = 6;
+const HOURS_END = 21;
 const SLOT_MINUTES = 30;
 
 function minutesFromStartOfDay(date) {
