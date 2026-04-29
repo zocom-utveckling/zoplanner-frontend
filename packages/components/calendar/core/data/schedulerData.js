@@ -93,6 +93,35 @@ function toArray(value) {
   return [];
 }
 
+function firstNonNull(...values) {
+  for (const value of values) {
+    if (value !== null && value !== undefined && value !== "") {
+      return value;
+    }
+  }
+  return null;
+}
+
+function resolveAssignmentId(assignment) {
+  return firstNonNull(
+    assignment?.id,
+    assignment?.assignmentId,
+    assignment?.idAssignment,
+    assignment?.AssignmentId,
+    assignment?.Id,
+  );
+}
+
+function resolveSessionId(session) {
+  return firstNonNull(
+    session?.id,
+    session?.sessionId,
+    session?.idSession,
+    session?.SessionId,
+    session?.Id,
+  );
+}
+
 export async function fetchUserCities() {
   try {
     const users = toArray(await userService.getAll());
@@ -415,6 +444,7 @@ export async function fetchSchedulerEvents(user, options = {}) {
       assignment,
       consultantNameById,
     );
+    const resolvedAssignmentId = resolveAssignmentId(assignment);
 
     const assignmentCourseId =
       assignment?.course?.id || assignment?.courseId || assignment?.idCourse;
@@ -425,6 +455,8 @@ export async function fetchSchedulerEvents(user, options = {}) {
 
     if (Array.isArray(sessions) && sessions.length > 0) {
       sessions.forEach((session) => {
+        const resolvedAssignmentId = resolveAssignmentId(assignment);
+        const resolvedSessionId = resolveSessionId(session);
         const start = toLocalDateTime(
           session?.timeStart || session?.start || session?.time_start,
         );
@@ -468,7 +500,9 @@ export async function fetchSchedulerEvents(user, options = {}) {
         );
 
         nextEvents.push({
-          id: `session-${assignment.id}-${session.id}`,
+          id: `session-${resolvedAssignmentId ?? "unknown"}-${resolvedSessionId ?? "unknown"}`,
+          assignmentId: resolvedAssignmentId,
+          sessionId: resolvedSessionId,
           title: courseName,
           subtitle: sessionDescription,
           description: sessionDescription,
@@ -520,7 +554,15 @@ export async function fetchSchedulerEvents(user, options = {}) {
     if (!start || !end) return;
 
     nextEvents.push({
-      id: `assignment-${assignment.id}`,
+      id: `assignment-${resolvedAssignmentId ?? "unknown"}`,
+      assignmentId: resolvedAssignmentId,
+      consultantId: getAssignmentConsultantId(assignment),
+      managerId: firstNonNull(
+        assignment?.managerId,
+        assignment?.idManager,
+        assignment?.manager?.id,
+      ),
+      courseId: assignmentCourseId ?? null,
       title: courseName,
       start,
       end,

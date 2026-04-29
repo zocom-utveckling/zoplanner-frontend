@@ -9,18 +9,6 @@ function resolveStatus(start, end) {
   return { label: "Pågående", tone: "ongoing" };
 }
 
-/*
-function formatDeliveryType(value) {
-  const normalized =
-    typeof value === "string" ? value.trim().toUpperCase() : "";
-
-  if (normalized === "ONSITE") return "På plats";
-  if (normalized === "REMOTE") return "Distans";
-  if (normalized === "HYBRID") return "Hybrid";
-  return "-";
-}
-*/
-
 function formatDateRange(start, end) {
   if (!start || !end) return "-";
 
@@ -70,7 +58,7 @@ function ComingSoonNotice({ text = "Kommer inom kort" }) {
 export default function EventDetailsModal({
   event,
   onClose,
-  userRole,
+  canManageActions,
   onEdit,
   onDelete,
 }) {
@@ -78,17 +66,11 @@ export default function EventDetailsModal({
   const endDate = event?.end ? new Date(event.end) : null;
 
   const status = resolveStatus(startDate, endDate);
-  // const placeCity = event?.context?.customerCity || event?.city || "-";
-  // const deliveryType = formatDeliveryType(
-  //   event?.locationType || event?.context?.availability,
-  // );
   const description =
     event?.description || event?.subtitle || "Ingen beskrivning";
   const dateTimeLabel = formatDateRange(startDate, endDate);
 
-  const normalizedRole =
-    typeof userRole === "string" ? userRole.trim().toUpperCase() : "";
-  const isManager = normalizedRole === "MANAGER" || normalizedRole === "BOTH";
+  const isManager = canManageActions === true;
 
   useEffect(() => {
     function handleKeydown(keyboardEvent) {
@@ -156,22 +138,10 @@ export default function EventDetailsModal({
 
           <Section title="Plats">
             <ComingSoonNotice text="Platsinformation kommer inom kort" />
-            {/*
-            <div className="scheduler-event-row">
-              <span className="scheduler-event-label">Stad</span>
-              <span className="scheduler-location-badge">{placeCity}</span>
-            </div>
-            <InfoRow label="Format" value={deliveryType} />
-            */}
           </Section>
 
           <Section title="Uppdraget">
             <ComingSoonNotice text="Uppdragsinformation kommer inom kort" />
-            {/*
-            <InfoRow label="Klass" value={event?.context?.className} />
-            <InfoRow label="Skola" value={event?.context?.customer} />
-            <InfoRow label="Sal" value={event?.context?.room} />
-            */}
           </Section>
 
           <Section title="Beskrivning">
