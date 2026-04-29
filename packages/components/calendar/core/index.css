@@ -260,6 +260,18 @@
   background: var(--surface);
 }
 
+.scheduler-coming-soon {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px dashed var(--border-color);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--surface-soft);
+  text-align: center;
+}
+
 .scheduler-description-text {
   margin: 0;
   font-size: 14px;
