@@ -25,7 +25,7 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 20px;
 }
 
 .navbar__logo {
@@ -53,6 +53,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-left: 16px;
 }
 
 .navbar__route-btn {
@@ -81,39 +82,69 @@
 
 .navbar__icon-group {
   display: flex;
-  gap: 10px;
-  margin-right: 20px;
+  gap: 12px;
+  align-items: center;
 }
 
 .navbar__icon,
 .navbar__notification {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--navbar-fg) 55%, transparent);
-  background-color: color-mix(in srgb, var(--navbar-fg) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--navbar-fg) 35%, transparent);
+  background: radial-gradient(
+    circle at 30% 25%,
+    color-mix(in srgb, var(--navbar-fg) 22%, transparent) 0%,
+    color-mix(in srgb, var(--navbar-fg) 6%, transparent) 60%,
+    color-mix(in srgb, var(--navbar-fg) 2%, transparent) 100%
+  );
   color: var(--navbar-fg);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   position: relative;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.18),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 25%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #000000 12%, transparent);
   transition:
     transform 0.2s ease,
-    background-color 0.2s ease;
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .navbar__icon:hover,
 .navbar__notification:hover {
-  background-color: color-mix(in srgb, var(--navbar-fg) 20%, transparent);
+  background: radial-gradient(
+    circle at 30% 25%,
+    color-mix(in srgb, var(--navbar-fg) 32%, transparent) 0%,
+    color-mix(in srgb, var(--navbar-fg) 14%, transparent) 65%,
+    color-mix(in srgb, var(--navbar-fg) 6%, transparent) 100%
+  );
+  border-color: color-mix(in srgb, var(--navbar-fg) 60%, transparent);
   color: var(--navbar-fg);
   transform: translateY(-1px);
+  box-shadow:
+    0 4px 10px rgba(15, 23, 42, 0.22),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 30%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #000000 14%, transparent);
+}
+
+.navbar__icon:active,
+.navbar__notification:active {
+  transform: translateY(0);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.2),
+    inset 0 1px 2px rgba(0, 0, 0, 0.18);
 }
 
 .navbar__notification svg,
 .navbar__icon svg {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
+  filter: drop-shadow(0 1px 0 color-mix(in srgb, #000000 18%, transparent));
 }
 
 .navbar__locale-chip {
@@ -142,6 +173,9 @@
 .navbar__profile {
   position: relative;
   z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .navbar__profile-trigger {
@@ -156,27 +190,57 @@
   text-transform: uppercase;
   letter-spacing: 0.03em;
   font-weight: 600;
-  padding: 2px 4px;
-  border-radius: 0;
+  padding: 0;
+  border-radius: 50%;
   transition:
     background-color 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
-.navbar__profile-trigger span {
-  max-width: 145px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.navbar__profile-trigger:hover {
+  transform: translateY(-1px);
 }
 
-.navbar__profile-trigger:hover,
-.navbar__profile-trigger:focus-visible {
-  background-color: transparent;
-  outline: none;
+.navbar__profile-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid color-mix(in srgb, var(--navbar-fg) 55%, transparent);
+  background-color: color-mix(in srgb, var(--navbar-fg) 8%, transparent);
+  display: block;
 }
 
-.navbar__profile-trigger svg {
+.navbar__profile-avatar--placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--navbar-fg);
+}
+
+.navbar__profile-avatar--placeholder svg {
+  width: 16px;
+  height: 16px;
+}
+
+.navbar__profile-caret {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--navbar-fg);
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.navbar__profile-caret:hover {
+  background-color: color-mix(in srgb, var(--navbar-fg) 12%, transparent);
+}
+
+.navbar__profile-caret svg {
   width: 13px;
   height: 13px;
 }
@@ -224,16 +288,39 @@
 }
 
 .navbar .dark-mode-button {
-  width: 30px;
-  height: 30px;
-  min-width: 30px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
   padding: 0;
   font-size: 0;
   gap: 0;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--navbar-fg) 55%, transparent);
-  background-color: color-mix(in srgb, var(--navbar-fg) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--navbar-fg) 35%, transparent);
+  background: radial-gradient(
+    circle at 30% 25%,
+    color-mix(in srgb, var(--navbar-fg) 22%, transparent) 0%,
+    color-mix(in srgb, var(--navbar-fg) 6%, transparent) 60%,
+    color-mix(in srgb, var(--navbar-fg) 2%, transparent) 100%
+  );
   color: var(--navbar-fg);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.18),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 25%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #000000 12%, transparent);
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.navbar .dark-mode-button:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--navbar-fg) 60%, transparent);
+  box-shadow:
+    0 4px 10px rgba(15, 23, 42, 0.22),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 30%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #000000 14%, transparent);
 }
 
 .navbar .dark-mode-button span {
@@ -241,8 +328,9 @@
 }
 
 .navbar .dark-mode-button svg {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
+  filter: drop-shadow(0 1px 0 color-mix(in srgb, #000000 18%, transparent));
 }
 
 @media (max-width: 1500px) {
@@ -273,8 +361,9 @@
     gap: 7px;
   }
 
-  .navbar__profile-trigger span {
-    max-width: 130px;
+  .navbar__profile-avatar {
+    width: 46px;
+    height: 46px;
   }
 }
 
@@ -301,6 +390,11 @@
 
   .navbar__profile-trigger span {
     max-width: 100px;
+  }
+
+  .navbar__profile-avatar {
+    width: 42px;
+    height: 42px;
   }
 
   .navbar .dark-mode-button {

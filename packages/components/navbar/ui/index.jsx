@@ -2,9 +2,10 @@ import { appRoutesConfig } from "../../../app-routes/appRoutes.config";
 
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
-import { FaAngleDown, FaAngleUp, FaBell } from "react-icons/fa";
+import { FaAngleDown, FaAngleUp, FaBell, FaUser } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import { DarkModeButton } from "@zoplanner/dark-mode-button";
+import { useProfilePicture } from "@zoplanner/app-hooks";
 import { ConfirmPopup } from "../../confirm-popup/ui";
 
 function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
@@ -43,6 +44,10 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
   const isManager =
     normalizedRoles.includes("manager") || normalizedRoles.includes("both");
   const homeRoute = appRoutesConfig.home.replace(":id", String(user.id));
+  const { profilePicture } = useProfilePicture(
+    user?.id,
+    user?.profilePicture || user?.profilePictureUrl,
+  );
 
   return (
     <>
@@ -144,9 +149,27 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
           <div className="navbar__profile" ref={dropdownRef}>
             <button
               className="navbar__profile-trigger"
-              onClick={() => setShowDropdown((prev) => !prev)}
+              onClick={() => navigate(`/profile/${user.id}`)}
+              aria-label="Gå till profilsida"
+              title={user?.name || "Profil"}
             >
-              <span>{user?.name || "Users Name"}</span>
+              {profilePicture ? (
+                <img
+                  className="navbar__profile-avatar"
+                  src={profilePicture}
+                  alt={user?.name || "Profilbild"}
+                />
+              ) : (
+                <span className="navbar__profile-avatar navbar__profile-avatar--placeholder">
+                  <FaUser />
+                </span>
+              )}
+            </button>
+            {/* <button
+              className="navbar__profile-caret"
+              onClick={() => setShowDropdown((prev) => !prev)}
+              aria-label="Visa profilmeny"
+            >
               {showDropdown ? <FaAngleUp /> : <FaAngleDown />}
             </button>
 
@@ -157,7 +180,7 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
                   Logga ut
                 </Link>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </nav>
