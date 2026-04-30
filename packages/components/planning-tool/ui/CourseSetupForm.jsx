@@ -87,7 +87,7 @@ export default function CourseSetupForm({
       .join(", ");
   })();
 
-  const weekdaySummary = weekdaySummarySource
+  const weekdaySummary = selectedWeekdays
     .map((entry) => {
       const dayLabel = DAY_LABELS[entry.day] || entry.day;
       const time = (entry.startTime || "").trim();
