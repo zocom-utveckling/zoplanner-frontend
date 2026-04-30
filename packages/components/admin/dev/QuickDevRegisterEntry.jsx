@@ -68,7 +68,7 @@ export function QuickDevRegisterEntry({ managers = [] }) {
         className="quick-dev-register__button"
         onClick={() => setIsOpen(true)}
       >
-        Open dev register
+        Öppna dev-registrering
       </button>
 
       {isOpen && (
@@ -84,12 +84,12 @@ export function QuickDevRegisterEntry({ managers = [] }) {
             </button>
             {managers.length === 0 ? (
               <>
-                <h2>Create first manager</h2>
+                <h2>Skapa första managern</h2>
                 <div className="quick-dev-register__empty">
-                  <p>No managers available yet.</p>
+                  <p>Inga managers finns ännu.</p>
                   <p>
-                    You need to create a manager account before registering
-                    consultants.
+                    Du behöver skapa ett managerkonto innan du kan registrera
+                    konsulter.
                   </p>
                 </div>
 
@@ -98,12 +98,12 @@ export function QuickDevRegisterEntry({ managers = [] }) {
                   className="quick-dev-register__continue"
                   onClick={handleCreateManager}
                 >
-                  Create manager account
+                  Skapa managerkonto
                 </button>
               </>
             ) : (
               <>
-                <h3>1. Select manager</h3>
+                <h3>1. Välj manager</h3>
 
                 <div className="quick-dev-register__list">
                   {managers.map((manager) => {
@@ -117,16 +117,16 @@ export function QuickDevRegisterEntry({ managers = [] }) {
                         onClick={() => handleSelectManager(manager.id)}
                         className={isSelected ? "selected" : ""}
                       >
-                        {user ? user.name : "Loading..."}
+                        {user ? user.name : "Laddar..."}
                       </button>
                     );
                   })}
                 </div>
-                <h3>2. Enter consultant's email</h3>
+                <h3>2. Ange konsultens e-postadress</h3>
 
                 <input
                   type="email"
-                  placeholder="Enter consultant's email"
+                  placeholder="Ange konsultens e-postadress"
                   className="quick-dev-register__input"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -137,7 +137,7 @@ export function QuickDevRegisterEntry({ managers = [] }) {
                   className="quick-dev-register__continue"
                   onClick={handleContinue}
                 >
-                  Continue
+                  Fortsätt
                 </button>
 
                 <button
@@ -145,7 +145,7 @@ export function QuickDevRegisterEntry({ managers = [] }) {
                   className="quick-dev-register__close"
                   onClick={handleCreateManager}
                 >
-                  Create manager account
+                  Skapa managerkonto
                 </button>
               </>
             )}
