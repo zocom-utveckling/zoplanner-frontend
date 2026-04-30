@@ -141,7 +141,7 @@ function LoginPage() {
 
           <div className="login-page__button-group">
             <Button
-              text={loading ? "Loading..." : "Login"}
+              text={loading ? "Laddar..." : "Logga in"}
               type="submit"
               style="submit"
             />
@@ -150,7 +150,7 @@ function LoginPage() {
         </form>
       </div>
 
-      <p className="login-page__footer">ZoPlanner is a product of ZoCom</p>
+      <p className="login-page__footer">ZoPlanner är en produkt av ZoCom</p>
     </div>
   );
 }
