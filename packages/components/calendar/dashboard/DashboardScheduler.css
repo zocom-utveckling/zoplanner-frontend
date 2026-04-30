@@ -223,19 +223,21 @@
   color: var(--text-primary);
 }
 
-.day-header-cell--saturday {
-  background: #fdf0f5;
-  color: #a04070;
+.day-header-cell--saturday,
+.day-header-cell--sunday {
+  background: #f3f4f6;
+  color: var(--text-primary);
 }
 
-.day-header-cell--sunday,
 .day-header-cell--holiday {
   background: #fff5f5;
   color: #c62828;
 }
 
-.day-header-cell--sunday.day-header-cell--holiday {
-  background: #fff0f0;
+.day-header-cell--sunday.day-header-cell--holiday,
+.day-header-cell--saturday.day-header-cell--holiday {
+  background: #fff5f5;
+  color: #c62828;
 }
 
 .day-header-cell__holiday-name {
@@ -284,17 +286,18 @@
   border-left: 1px solid var(--border-subtle);
 }
 
-.day-col--saturday {
-  background: rgba(253, 240, 245, 0.55);
+.day-col--saturday,
+.day-col--sunday {
+  background: #f3f4f6;
 }
 
-.day-col--sunday,
 .day-col--holiday {
-  background: rgba(255, 245, 245, 0.55);
+  background: #fff5f5;
 }
 
-.day-col--sunday.day-col--holiday {
-  background: rgba(255, 240, 240, 0.65);
+.day-col--sunday.day-col--holiday,
+.day-col--saturday.day-col--holiday {
+  background: #fff5f5;
 }
 
 .day-slot-bg {
@@ -638,12 +641,12 @@
   color: #ff9d9d;
 }
 
-[data-theme="dark"] .day-header-cell--saturday {
-  background: color-mix(in srgb, #d48bbf 22%, var(--surface));
-  color: #e8a0cc;
+[data-theme="dark"] .day-header-cell--saturday,
+[data-theme="dark"] .day-header-cell--sunday {
+  background: color-mix(in srgb, var(--text-primary) 8%, var(--surface));
+  color: var(--text-primary);
 }
 
-[data-theme="dark"] .day-header-cell--sunday,
 [data-theme="dark"] .day-header-cell--holiday {
   background: color-mix(in srgb, #d46a6a 22%, var(--surface));
   color: #ff9d9d;
@@ -653,11 +656,11 @@
   color: #ff9d9d;
 }
 
-[data-theme="dark"] .day-col--saturday {
-  background: color-mix(in srgb, #d48bbf 10%, var(--surface));
+[data-theme="dark"] .day-col--saturday,
+[data-theme="dark"] .day-col--sunday {
+  background: color-mix(in srgb, var(--text-primary) 8%, var(--surface));
 }
 
-[data-theme="dark"] .day-col--sunday,
 [data-theme="dark"] .day-col--holiday {
   background: color-mix(in srgb, #d46a6a 10%, var(--surface));
 }
