@@ -14,6 +14,13 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
   const dropdownRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadnotification] = useState(["example notification"]);
+  const [comingSoonFor, setComingSoonFor] = useState(null);
+
+  useEffect(() => {
+    if (!comingSoonFor) return;
+    const timer = setTimeout(() => setComingSoonFor(null), 2000);
+    return () => clearTimeout(timer);
+  }, [comingSoonFor]);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -77,18 +84,48 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
 
         <div className="navbar__right">
           <div className="navbar__icon-group">
-            <div className="navbar__notification">
+            <button
+              type="button"
+              className="navbar__notification"
+              onClick={() =>
+                setComingSoonFor((prev) =>
+                  prev === "notification" ? null : "notification",
+                )
+              }
+              aria-label="Notiser"
+            >
               <FaBell />
               {unreadnotification.length > 0 && (
                 <span className="navbar__notification-badge">
                   {unreadnotification.length}
                 </span>
               )}
-            </div>
+              {comingSoonFor === "notification" && (
+                <span className="navbar__coming-soon" role="status">
+                  Kommer inom kort
+                </span>
+              )}
+            </button>
 
             <DarkModeButton />
 
-            <div className="navbar__icon navbar__locale-chip">SV</div>
+            <button
+              type="button"
+              className="navbar__icon navbar__locale-chip"
+              onClick={() =>
+                setComingSoonFor((prev) =>
+                  prev === "locale" ? null : "locale",
+                )
+              }
+              aria-label="Byt språk"
+            >
+              SV
+              {comingSoonFor === "locale" && (
+                <span className="navbar__coming-soon" role="status">
+                  Kommer inom kort
+                </span>
+              )}
+            </button>
           </div>
 
           <div className="navbar__routes">
