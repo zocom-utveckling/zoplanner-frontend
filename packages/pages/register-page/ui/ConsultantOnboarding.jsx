@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@zoplanner/button";
 import { authService, consultantService, userService } from "@zoplanner/api";
 import { FaEnvelope, FaLock, FaUser } from "react-icons/fa";
+import { LoginPage } from "@zoplanner/login-page";
 import "./index.css";
 
 async function getErrorMessage(response, fallbackMessage) {
@@ -108,107 +109,116 @@ export function ConsultantOnboarding() {
   };
 
   return (
-    <div className="register-page__form-container">
-      <h1>ZoPlanner</h1>
+    <>
+      <div className="register-page__background" aria-hidden="true">
+        <LoginPage />
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        <button
-          type="button"
-          className="register-page__close-button"
-          onClick={handleClose}
-          aria-label="Stäng"
-        >
-          ×
-        </button>
-        <h2>Skapa ditt konto</h2>
-        <div className="register-page__field">
-          <div className="register-page__label">
-            <FaUser /> <span>Förnamn</span>
+      <div
+        className="register-page__overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Skapa ditt konto"
+      >
+        <form className="register-page__modal" onSubmit={handleSubmit}>
+          <button
+            type="button"
+            className="register-page__close-button"
+            onClick={handleClose}
+            aria-label="Stäng"
+          >
+            ×
+          </button>
+          <h2>Skapa ditt konto</h2>
+          <div className="register-page__field">
+            <div className="register-page__label">
+              <FaUser /> <span>Förnamn</span>
+            </div>
+            <input
+              name="firstName"
+              type="text"
+              value={formData.firstName}
+              placeholder="Ange ditt förnamn"
+              onChange={handleChange}
+            />
           </div>
-          <input
-            name="firstName"
-            type="text"
-            value={formData.firstName}
-            placeholder="Ange ditt förnamn"
-            onChange={handleChange}
-          />
-        </div>
 
-        <div className="register-page__field">
-          <div className="register-page__label">
-            <FaUser /> <span>Efternamn</span>
+          <div className="register-page__field">
+            <div className="register-page__label">
+              <FaUser /> <span>Efternamn</span>
+            </div>
+            <input
+              name="lastName"
+              type="text"
+              value={formData.lastName}
+              placeholder="Ange ditt efternamn"
+              onChange={handleChange}
+            />
           </div>
-          <input
-            name="lastName"
-            type="text"
-            value={formData.lastName}
-            placeholder="Ange ditt efternamn"
-            onChange={handleChange}
-          />
-        </div>
 
-        <div className="register-page__field">
-          <div className="register-page__label">
-            <FaUser /> <span>Användarnamn</span>
+          <div className="register-page__field">
+            <div className="register-page__label">
+              <FaUser /> <span>Användarnamn</span>
+            </div>
+            <input
+              name="username"
+              type="text"
+              value={formData.username}
+              placeholder="Välj ett användarnamn"
+              onChange={handleChange}
+            />
           </div>
-          <input
-            name="username"
-            type="text"
-            value={formData.username}
-            placeholder="Välj ett användarnamn"
-            onChange={handleChange}
-          />
-        </div>
 
-        <div className="register-page__field">
-          <div className="register-page__label">
-            <FaEnvelope /> <span>E-post</span>
+          <div className="register-page__field">
+            <div className="register-page__label">
+              <FaEnvelope /> <span>E-post</span>
+            </div>
+            <input
+              name="email"
+              type="email"
+              value={formData.email}
+              disabled
+              className="register-page__input--disabled"
+            />
           </div>
-          <input
-            name="email"
-            type="email"
-            value={formData.email}
-            disabled
-            className="register-page__input--disabled"
-          />
-        </div>
 
-        <div className="register-page__field">
-          <div className="register-page__label">
-            <FaLock /> <span>Lösenord</span>
+          <div className="register-page__field">
+            <div className="register-page__label">
+              <FaLock /> <span>Lösenord</span>
+            </div>
+            <input
+              name="password"
+              type="password"
+              value={formData.password}
+              placeholder="Skapa ett lösenord"
+              minLength={8}
+              onChange={handleChange}
+            />
           </div>
-          <input
-            name="password"
-            type="password"
-            value={formData.password}
-            placeholder="Skapa ett lösenord"
-            minLength={8}
-            onChange={handleChange}
-          />
-        </div>
 
-        <div className="register-page__field">
-          <div className="register-page__label">
-            <FaLock /> <span>Upprepa lösenord</span>
+          <div className="register-page__field">
+            <div className="register-page__label">
+              <FaLock /> <span>Upprepa lösenord</span>
+            </div>
+            <input
+              name="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              placeholder="Upprepa lösenord"
+              minLength={8}
+              onChange={handleChange}
+            />
           </div>
-          <input
-            name="confirmPassword"
-            type="password"
-            value={formData.confirmPassword}
-            placeholder="Upprepa lösenord"
-            minLength={8}
-            onChange={handleChange}
-          />
-        </div>
 
-        <div className="register-page__button-group">
-          <Button text="Skapa konto" type={"submit"} style={"submit"} />
-        </div>
-        <p className="customer-registry__modal-future-note">
-          Detta formulär är tänkt att nås via konsultens inbjudningslänk. I demo
-          skickas man hit direkt från dev-flödet.
-        </p>
-      </form>
-    </div>
+          <div className="register-page__button-group">
+            <Button text="Skapa konto" type={"submit"} style={"submit"} />
+          </div>
+          <p className="customer-registry__modal-future-note">
+            Detta formulär är tänkt att nås via konsultens inbjudningslänk. I
+            demo skickas man hit direkt från dev-flödet.
+          </p>
+        </form>
+      </div>
+    </>
   );
 }
