@@ -468,6 +468,12 @@
 .all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(5) {
   border-top-color: #d4b84a; /* fredag – gul */
 }
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(6) {
+  border-top-color: #d48bbf; /* lördag – rosa */
+}
+.all-schedules-weekdays > .all-schedules-weekdays__item:nth-child(7) {
+  border-top-color: #d46a6a; /* söndag – röd */
+}
 
 .all-schedules-weekdays > .all-schedules-weekdays__item:hover {
   background: #e2eaf2;
