@@ -495,7 +495,7 @@
   background: rgba(255, 255, 255, 0.9);
 }
 
-.course-setup-form button {
+.course-setup-form .course-setup-summary__actions button {
   width: 100%;
   padding: 10px 14px;
   border: none;
@@ -589,7 +589,8 @@
 }
 
 .course-setup-day-time {
-  width: 120px;
+  width: 140px;
+  margin-left: auto;
 }
 
 .course-setup-summary {
@@ -1585,14 +1586,17 @@
   background: var(--action-bg-hover);
 }
 
-[data-theme="dark"] .course-setup-form button,
+[data-theme="dark"] .course-setup-form .course-setup-summary__actions button,
 [data-theme="dark"] .consultant-match-panel__select,
 [data-theme="dark"] .planner-planning-panel__action-btn {
   background: var(--action-bg);
   color: var(--action-fg);
 }
 
-[data-theme="dark"] .course-setup-form button:hover,
+[data-theme="dark"]
+  .course-setup-form
+  .course-setup-summary__actions
+  button:hover,
 [data-theme="dark"]
   .consultant-match-panel__card--selected
   .consultant-match-panel__select,
