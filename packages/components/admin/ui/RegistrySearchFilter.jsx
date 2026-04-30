@@ -1,5 +1,9 @@
 import "./index.css";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+const EMPTY_RECORDS = [];
+const EMPTY_FILTERS = [];
+const EMPTY_FILTER_STATE = {};
 
 export function RegistrySearchFilter({
   search,
@@ -7,15 +11,14 @@ export function RegistrySearchFilter({
   searchPlaceholder = "Sök...",
   showFilters,
   onToggleFilters,
-  filters = [],
-  citySourceRecords = [],
-  filterState = {},
+  filters = EMPTY_FILTERS,
+  citySourceRecords = EMPTY_RECORDS,
+  filterState = EMPTY_FILTER_STATE,
   onToggleFilter,
   onMultiFilterToggle,
   onResetFilters,
 }) {
   const [openFilter, setOpenFilter] = useState(null);
-  const [cityOptions, setCityOptions] = useState([]);
 
   useEffect(() => {
     if (!showFilters) {
@@ -23,18 +26,14 @@ export function RegistrySearchFilter({
     }
   }, [showFilters]);
 
-  useEffect(() => {
+  const cityOptions = useMemo(() => {
     const cities = (citySourceRecords ?? [])
       .map((record) => record.city)
       .filter(Boolean)
       .map((city) => city.trim())
       .filter((city) => city.length > 0);
 
-    const uniqueCities = [...new Set(cities)].sort((a, b) =>
-      a.localeCompare(b, "sv"),
-    );
-
-    setCityOptions(uniqueCities);
+    return [...new Set(cities)].sort((a, b) => a.localeCompare(b, "sv"));
   }, [citySourceRecords]);
 
   const resolvedFilters = filters.map((filter) => {

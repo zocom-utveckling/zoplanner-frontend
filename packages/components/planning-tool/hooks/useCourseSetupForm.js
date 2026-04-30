@@ -116,10 +116,10 @@ export function useCourseSetupForm(onSave, initialValues) {
   function handleSubmit(event) {
     event.preventDefault();
 
-    const safeCourseName = courseName.trim() || "UTKAST – ange kursnamn";
+    const safeCourseName = courseName.trim() || "Ange kursnamn";
     const safeCustomerName =
-      customerName.trim() || "UTKAST – ange kund";
-    const safeClassName = className.trim() || "UTKAST – ange klass";
+      customerName.trim() || "Ange kund";
+    const safeClassName = className.trim() || "Ange klass";
 
     const parsedTotalHours = Number(totalHours);
     const parsedCustomerId = Number(customerId);
@@ -127,16 +127,6 @@ export function useCourseSetupForm(onSave, initialValues) {
 
     if (!courseName.trim()) {
       alert("Ange kursnamn.");
-      return;
-    }
-
-    if (!customerId) {
-      alert("Välj en kund.");
-      return;
-    }
-
-    if (Number.isNaN(parsedCustomerId) || parsedCustomerId < 1) {
-      alert("Välj en giltig kund.");
       return;
     }
 
@@ -173,7 +163,10 @@ export function useCourseSetupForm(onSave, initialValues) {
       courseName: safeCourseName,
       isDraftCourse: !courseName.trim(),
 
-      customerId: parsedCustomerId,
+      customerId:
+        !Number.isNaN(parsedCustomerId) && parsedCustomerId > 0
+          ? parsedCustomerId
+          : null,
       customerName: safeCustomerName,
       isDraftCustomer: !customerId,
 

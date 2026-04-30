@@ -6,14 +6,15 @@ import { dev } from "@zoplanner/admin";
 import CourseDetailsModal from "./CourseDetailsModal";
 import ConfirmModal from "./ConfirmModal";
 import {
-  loadPlanningDrafts,
-  removePlanningDraft,
-} from "@zoplanner/planning-tool";
-import {
+  getConsultantName,
   getCourseName,
+  getCustomerName,
   getEndDate,
   getStartDate,
-} from "../../planning-tool/utils/normalize.helpers";
+  loadPlanningDrafts,
+  removePlanningDraft,
+  toDraftCourseRow,
+} from "@zoplanner/planning-tool";
 import { RegistrySearchFilter } from "./RegistrySearchFilter";
 
 export function CourseRegistry({
@@ -31,6 +32,7 @@ export function CourseRegistry({
   const [draftsKey, setDraftsKey] = useState(0);
 
   const drafts = useMemo(() => loadPlanningDrafts(), [draftsKey]);
+  const draftRows = drafts.map(toDraftCourseRow);
 
   const [search, setSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -92,10 +94,8 @@ export function CourseRegistry({
       name:
         dev.getCourseNameForAssignment(assignment) ||
         getCourseName(assignment, "Kurs saknas"),
-      customer:
-        assignment.course?.className ||
-        assignment.course?.customerName ||
-        "Kund saknas",
+      customer: getCustomerName(assignment),
+      consultantName: getConsultantName(assignment),
       startDate,
       endDate,
       sessions: assignment.sessions ?? [],
@@ -117,20 +117,6 @@ export function CourseRegistry({
       }),
     };
   });
-
-  const draftRows = drafts.map((draft) => ({
-    id: `draft-${draft.id}`,
-    draftId: draft.id,
-    isDraft: true,
-    name: getCourseName(draft, "Utkast"),
-    customer: "Ej vald",
-    startDate: getStartDate(draft),
-    endDate: getEndDate(draft),
-    sessions: draft.sessionsDraft ?? [],
-    managerId: null,
-    subject: draft.subject || draft.subjectArea || draft.courseSubject || "",
-    status: "draft",
-  }));
 
   const allCourses = [...courseRows, ...draftRows];
 
@@ -225,6 +211,7 @@ export function CourseRegistry({
         await assignmentService.remove(course.id);
         setAssignments((prev) => prev.filter((a) => a.id !== course.id));
       }
+
       handleCloseDeleteConfirm();
       handleCloseCourseModal();
     } catch (error) {
@@ -242,6 +229,7 @@ export function CourseRegistry({
       <div className="course-registry__header">
         <h1>Kurser</h1>
       </div>
+
       <div className="course-registry__main">
         <RegistrySearchFilter
           search={search}
@@ -317,10 +305,12 @@ export function CourseRegistry({
                     <span>{c.customer}</span>
                     {!c.isDraft && (
                       <span
-                        className={`course-item__consultant-badge course-item__consultant-badge--${c.hasConsultant ? "assigned" : "unassigned"}`}
+                        className={`course-item__consultant-badge course-item__consultant-badge--${
+                          c.hasConsultant ? "assigned" : "unassigned"
+                        }`}
                       >
                         {c.hasConsultant
-                          ? "Konsult tilldelad"
+                          ? c.consultantName || "Konsult tilldelad"
                           : "Ingen konsult"}
                       </span>
                     )}

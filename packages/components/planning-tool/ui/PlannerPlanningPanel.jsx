@@ -6,6 +6,7 @@ export default function PlannerPlanningPanel({
   managerId,
   courseDraft,
   selectedAssignmentForMatching,
+  isDirectPlanning,
   isEditingBasicInfo,
   showBasicInfo,
   showScheduleEditor,
@@ -70,6 +71,7 @@ export default function PlannerPlanningPanel({
     <>
       <CourseSetupForm
         initialValues={courseDraft}
+        isDirectPlanning={isDirectPlanning}
         lockBasicInfo={
           Boolean(selectedAssignmentForMatching) && !isEditingBasicInfo
         }
