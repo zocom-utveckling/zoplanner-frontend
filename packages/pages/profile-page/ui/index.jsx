@@ -1,12 +1,15 @@
 import "./index.css";
 import "../../../components/calendar/core/index.css";
 import { useMemo, useState } from "react";
+import { format } from "date-fns";
 import { FaCamera } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { Navbar } from "@zoplanner/navbar";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProfilePicture, useUserById } from "@zoplanner/app-hooks";
 import { ActivityModal, EventDetailsModal } from "@zoplanner/calendar";
+import BookingEditModal from "../../../components/calendar/core/ui/modals/BookingEditModal";
+import { assignmentService } from "@zoplanner/api";
 import { ConfirmPopup } from "../../../components/confirm-popup/ui";
 import { ProfileCard } from "@zoplanner/profile-card";
 import {
@@ -48,6 +51,7 @@ const COMPETENCY_GROUPS = [
 function Profile_Page({ user: initialUser }) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [selectedAssignmentEvent, setSelectedAssignmentEvent] = useState(null);
+  const [assignmentToEdit, setAssignmentToEdit] = useState(null);
 
   function assignmentToEvent(assignment) {
     const start = assignment?.dateStart
@@ -62,6 +66,17 @@ function Profile_Page({ user: initialUser }) {
         : null;
     return {
       id: assignment?.id,
+      assignmentId: assignment?.id,
+      consultantId:
+        assignment?.consultantId ||
+        assignment?.idConsultant ||
+        assignment?.consultant?.id,
+      managerId:
+        assignment?.managerId ||
+        assignment?.idManager ||
+        assignment?.manager?.id,
+      courseId:
+        assignment?.course?.id || assignment?.courseId || assignment?.idCourse,
       title: assignment?.course?.name || assignment?.title || "Uppdrag",
       start,
       end,
@@ -96,8 +111,110 @@ function Profile_Page({ user: initialUser }) {
     user?.profilePicture || user?.profilePictureUrl,
   );
 
-  const { assignments, activities, setActivities, isLoadingSidebarData } =
-    useProfileData(user);
+  const {
+    assignments,
+    activities,
+    setActivities,
+    setAssignments,
+    isLoadingSidebarData,
+  } = useProfileData(user);
+
+  function resolveAssignmentMeta(eventItem) {
+    const directAssignmentId = eventItem?.assignmentId;
+    if (directAssignmentId != null) {
+      return { assignmentId: directAssignmentId };
+    }
+
+    const match = String(eventItem?.id || "").match(/^assignment-(.*)$/);
+    if (!match) return null;
+    return { assignmentId: match[1] || null };
+  }
+
+  function canManageAssignments() {
+    const normalizedRole =
+      typeof user?.role === "string" ? user.role.trim().toUpperCase() : "";
+    return normalizedRole === "MANAGER" || normalizedRole === "BOTH";
+  }
+
+  function handleEditAssignment(eventToEdit) {
+    const parsedAssignment = resolveAssignmentMeta(eventToEdit);
+    if (!parsedAssignment?.assignmentId) {
+      setSelectedAssignmentEvent(null);
+      return;
+    }
+
+    setAssignmentToEdit(eventToEdit);
+    setSelectedAssignmentEvent(null);
+  }
+
+  function closeAssignmentModals() {
+    setSelectedAssignmentEvent(null);
+    setAssignmentToEdit(null);
+  }
+
+  async function handleDeleteAssignment(eventToDelete) {
+    const parsedAssignment = resolveAssignmentMeta(eventToDelete);
+    if (!parsedAssignment?.assignmentId) return;
+
+    const confirmed = window.confirm(
+      "Är du säker på att du vill ta bort den här bokningen?",
+    );
+    if (!confirmed) return;
+
+    try {
+      await assignmentService.remove(parsedAssignment.assignmentId);
+      setAssignments((prev) =>
+        prev.filter(
+          (assignment) =>
+            String(assignment?.id) !== String(parsedAssignment.assignmentId),
+        ),
+      );
+      closeAssignmentModals();
+    } catch {
+      // no-op
+    }
+  }
+
+  async function handleSaveAssignmentEdit(nextValues) {
+    const parsedAssignment = resolveAssignmentMeta(assignmentToEdit);
+    if (!parsedAssignment?.assignmentId) return;
+
+    try {
+      const payload = {
+        consultantId:
+          assignmentToEdit?.consultantId ||
+          assignmentToEdit?.context?.consultantId,
+        managerId:
+          assignmentToEdit?.managerId || assignmentToEdit?.context?.managerId,
+        courseId:
+          assignmentToEdit?.courseId || assignmentToEdit?.context?.courseId,
+        dateStart: format(nextValues.start, "yyyy-MM-dd"),
+        dateEnd: format(nextValues.end, "yyyy-MM-dd"),
+        description: nextValues.description || "",
+        comment: nextValues.description || "",
+      };
+
+      await assignmentService.update(parsedAssignment.assignmentId, payload);
+
+      setAssignments((prev) =>
+        prev.map((assignment) =>
+          String(assignment?.id) === String(parsedAssignment.assignmentId)
+            ? {
+                ...assignment,
+                dateStart: payload.dateStart,
+                dateEnd: payload.dateEnd,
+                description: payload.description,
+                comment: payload.comment,
+              }
+            : assignment,
+        ),
+      );
+
+      closeAssignmentModals();
+    } catch {
+      // no-op
+    }
+  }
 
   const {
     isActivityModalOpen,
@@ -426,6 +543,17 @@ function Profile_Page({ user: initialUser }) {
         event={selectedAssignmentEvent}
         onClose={() => setSelectedAssignmentEvent(null)}
         userRole={user?.role}
+        canManageActions={canManageAssignments()}
+        onEdit={handleEditAssignment}
+        onDelete={handleDeleteAssignment}
+      />
+
+      <BookingEditModal
+        isOpen={Boolean(assignmentToEdit)}
+        event={assignmentToEdit}
+        onClose={() => setAssignmentToEdit(null)}
+        onSave={handleSaveAssignmentEdit}
+        onDelete={handleDeleteAssignment}
       />
     </>
   );

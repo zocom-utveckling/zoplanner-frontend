@@ -1,20 +1,27 @@
 import { useRef, useState } from "react";
+import { format } from "date-fns";
 import "./DashboardScheduler.css";
 import DashboardTopbar from "./DashboardTopbar";
 import DashboardCalendarContent from "./DashboardCalendarContent";
 import ActivityModal from "../core/ui/modals/ActivityModal";
 import EventDetailsModal from "../core/ui/modals/EventDetailsModal";
+import BookingEditModal from "../core/ui/modals/BookingEditModal";
 import useSchedulerNavigation from "../core/hooks/useSchedulerNavigation";
 import useActivityForm from "../core/hooks/useActivityForm";
 import useEventDetailsModal from "../core/hooks/useEventDetailsModal";
 import useSchedulerEvents from "../core/hooks/useSchedulerEvents";
 import useSchedulerFilters from "../core/hooks/useSchedulerFilters";
-import { activityService } from "@zoplanner/api";
+import {
+  activityService,
+  assignmentService,
+  sessionService,
+} from "@zoplanner/api";
 import "../core/index.css";
 import RequestActivityModal from "@zoplanner/planning-tool/ui/RequestActivityModal";
 
 export function DashboardScheduler({ user, calendarUser, managerUser }) {
   const [bookingWeekColors, setBookingWeekColors] = useState(false);
+  const [bookingToEdit, setBookingToEdit] = useState(null);
 
   const {
     view,
@@ -29,8 +36,15 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
     goNext,
   } = useSchedulerNavigation();
 
+  const actorRole =
+    typeof managerUser?.role === "string"
+      ? managerUser.role.trim().toUpperCase()
+      : typeof user?.role === "string"
+        ? user.role.trim().toUpperCase()
+        : "";
   const isManagerManagingOther =
     managerUser && calendarUser && managerUser.id !== calendarUser.id;
+  const canManageBookingActions = ["MANAGER", "BOTH"].includes(actorRole);
   const managerName = managerUser?.name || managerUser?.username || "Manager";
   const calendarUserName =
     calendarUser?.name || calendarUser?.username || "Medarbetare";
@@ -97,8 +111,93 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
     );
   }
 
+  function resolveSessionMeta(eventItem) {
+    const directSessionId = eventItem?.sessionId;
+    const directAssignmentId = eventItem?.assignmentId;
+
+    if (directSessionId != null) {
+      return {
+        assignmentId: directAssignmentId ?? null,
+        sessionId: directSessionId,
+      };
+    }
+
+    const match = String(eventItem?.id || "").match(/^session-(.*?)-(.*)$/);
+    if (!match) return null;
+    return {
+      assignmentId: match[1] || null,
+      sessionId: match[2] || null,
+    };
+  }
+
+  function resolveAssignmentMeta(eventItem) {
+    const directAssignmentId = eventItem?.assignmentId;
+    if (directAssignmentId != null) {
+      return { assignmentId: directAssignmentId };
+    }
+
+    const match = String(eventItem?.id || "").match(/^assignment-(.*)$/);
+    if (!match) return null;
+    return { assignmentId: match[1] || null };
+  }
+
   function getLinkedMeta(eventId) {
     return crossCalendarMapRef.current[String(eventId)] || null;
+  }
+
+  function toArray(response) {
+    if (Array.isArray(response)) return response;
+    if (Array.isArray(response?.data)) return response.data;
+    return [];
+  }
+
+  async function resolveLinkedMeta(eventId) {
+    if (!isManagerManagingOther) return null;
+
+    const currentUserId = calendarUser?.id || user?.id;
+    const linkedUserId = managerUser?.id;
+
+    if (!currentUserId || !linkedUserId) return null;
+
+    try {
+      const allActivities = toArray(await activityService.getAll());
+      const currentActivity = allActivities.find(
+        (activity) => String(activity?.id) === String(eventId),
+      );
+
+      if (!currentActivity) return null;
+
+      const currentBaseTitle = stripLabelSuffix(currentActivity?.title, [
+        managerName,
+        calendarUserName,
+      ]);
+
+      const linkedActivity = allActivities.find((activity) => {
+        if (String(activity?.userId) !== String(linkedUserId)) return false;
+        if (String(activity?.id) === String(currentActivity?.id)) return false;
+
+        const linkedBaseTitle = stripLabelSuffix(activity?.title, [
+          managerName,
+          calendarUserName,
+        ]);
+
+        return (
+          linkedBaseTitle === currentBaseTitle &&
+          activity?.date === currentActivity?.date &&
+          activity?.startTime === currentActivity?.startTime &&
+          activity?.endTime === currentActivity?.endTime
+        );
+      });
+
+      if (!linkedActivity?.id) return null;
+
+      return {
+        linkedId: String(linkedActivity.id),
+        linkedUserId,
+      };
+    } catch {
+      return null;
+    }
   }
 
   const { filteredEvents } = useSchedulerFilters(events, {
@@ -152,39 +251,76 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
 
   async function handleUpdateEventForBothUsers(updatedEvent) {
     const linkedMeta = getLinkedMeta(updatedEvent?.id);
+    const resolvedLinkedMeta =
+      linkedMeta || (await resolveLinkedMeta(updatedEvent?.id));
 
-    if (!linkedMeta) {
+    if (!resolvedLinkedMeta) {
       updateEvent(updatedEvent);
       return;
     }
 
+    const currentUserId = calendarUser?.id || user?.id;
+    const fallbackLabels =
+      String(resolvedLinkedMeta.linkedUserId) === String(managerUser?.id)
+        ? {
+            selfLabel: managerName,
+            linkedLabel: calendarUserName,
+          }
+        : {
+            selfLabel: calendarUserName,
+            linkedLabel: managerName,
+          };
+    const normalizedMeta = {
+      ...resolvedLinkedMeta,
+      selfLabel: linkedMeta?.selfLabel || fallbackLabels.selfLabel,
+      linkedLabel: linkedMeta?.linkedLabel || fallbackLabels.linkedLabel,
+    };
+
+    if (!linkedMeta && normalizedMeta?.linkedId && updatedEvent?.id) {
+      crossCalendarMapRef.current[String(updatedEvent.id)] = {
+        linkedId: String(normalizedMeta.linkedId),
+        linkedUserId: normalizedMeta.linkedUserId,
+        selfLabel: normalizedMeta.selfLabel,
+        linkedLabel: normalizedMeta.linkedLabel,
+      };
+
+      if (currentUserId) {
+        crossCalendarMapRef.current[String(normalizedMeta.linkedId)] = {
+          linkedId: String(updatedEvent.id),
+          linkedUserId: currentUserId,
+          selfLabel: normalizedMeta.linkedLabel,
+          linkedLabel: normalizedMeta.selfLabel,
+        };
+      }
+    }
+
     const baseTitle = stripLabelSuffix(updatedEvent?.title, [
-      linkedMeta.selfLabel,
-      linkedMeta.linkedLabel,
+      normalizedMeta.selfLabel,
+      normalizedMeta.linkedLabel,
     ]);
     const normalizedCurrentEvent = {
       ...updatedEvent,
-      title: `${baseTitle} - ${linkedMeta.selfLabel}`,
+      title: `${baseTitle} - ${normalizedMeta.selfLabel}`,
     };
     const normalizedLinkedEvent = {
       ...updatedEvent,
-      id: linkedMeta.linkedId,
-      title: `${baseTitle} - ${linkedMeta.linkedLabel}`,
+      id: normalizedMeta.linkedId,
+      title: `${baseTitle} - ${normalizedMeta.linkedLabel}`,
     };
 
     updateEvent(normalizedCurrentEvent);
 
-    if (String(linkedMeta.linkedUserId) === String(managerUser?.id)) {
+    if (String(normalizedMeta.linkedUserId) === String(managerUser?.id)) {
       managerUpdateEvent(normalizedLinkedEvent);
       return;
     }
 
     try {
       await activityService.update(
-        Number(linkedMeta.linkedId),
-        toActivityPayload(normalizedLinkedEvent, linkedMeta.linkedUserId),
+        Number(normalizedMeta.linkedId),
+        toActivityPayload(normalizedLinkedEvent, normalizedMeta.linkedUserId),
       );
-      emitActivitiesUpdated(linkedMeta.linkedUserId);
+      emitActivitiesUpdated(normalizedMeta.linkedUserId);
     } catch {
       // no-op
     }
@@ -192,26 +328,27 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
 
   async function handleDeleteEventForBothUsers(eventId) {
     const linkedMeta = getLinkedMeta(eventId);
+    const resolvedLinkedMeta = linkedMeta || (await resolveLinkedMeta(eventId));
 
-    removeEvent(eventId);
+    await removeEvent(eventId);
 
-    if (!linkedMeta) {
+    if (!resolvedLinkedMeta) {
       return;
     }
 
-    if (String(linkedMeta.linkedUserId) === String(managerUser?.id)) {
-      managerRemoveEvent(linkedMeta.linkedId);
+    if (String(resolvedLinkedMeta.linkedUserId) === String(managerUser?.id)) {
+      await managerRemoveEvent(resolvedLinkedMeta.linkedId);
     } else {
       try {
-        await activityService.remove(Number(linkedMeta.linkedId));
-        emitActivitiesUpdated(linkedMeta.linkedUserId);
+        await activityService.remove(Number(resolvedLinkedMeta.linkedId));
+        emitActivitiesUpdated(resolvedLinkedMeta.linkedUserId);
       } catch {
         // no-op
       }
     }
 
     delete crossCalendarMapRef.current[String(eventId)];
-    delete crossCalendarMapRef.current[String(linkedMeta.linkedId)];
+    delete crossCalendarMapRef.current[String(resolvedLinkedMeta.linkedId)];
   }
 
   const {
@@ -253,10 +390,8 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
   }
 
   function handleEventClick(eventItem) {
-    console.log("CLICKED EVENT:", eventItem);
     if (eventItem.isRequest) {
       setSelectedRequest(eventItem);
-      console.log("SETTING selectedRequest");
       return;
     }
 
@@ -269,15 +404,117 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
   }
 
   function handleDeleteEvent(eventToDelete) {
+    if (!canManageBookingActions) {
+      handleCloseEventModal();
+      return;
+    }
+
     if (!eventToDelete?.id) return;
+
+    const parsedSession = resolveSessionMeta(eventToDelete);
+    const parsedAssignment = resolveAssignmentMeta(eventToDelete);
+
+    if (parsedSession?.sessionId) {
+      const confirmed = window.confirm(
+        "Är du säker på att du vill ta bort den här bokningen?",
+      );
+      if (!confirmed) return;
+
+      sessionService
+        .remove(parsedSession.sessionId)
+        .then(() => {
+          emitActivitiesUpdated(calendarUser?.id || user?.id);
+          handleCloseEventModal();
+          setBookingToEdit(null);
+        })
+        .catch(() => {
+          // no-op
+        });
+      return;
+    }
+
+    if (parsedAssignment?.assignmentId) {
+      const confirmed = window.confirm(
+        "Är du säker på att du vill ta bort den här bokningen?",
+      );
+      if (!confirmed) return;
+
+      assignmentService
+        .remove(parsedAssignment.assignmentId)
+        .then(() => {
+          emitActivitiesUpdated(calendarUser?.id || user?.id);
+          handleCloseEventModal();
+          setBookingToEdit(null);
+        })
+        .catch(() => {
+          // no-op
+        });
+      return;
+    }
+
     removeEvent(eventToDelete.id);
     handleCloseEventModal();
   }
 
-  function handleEditEvent() {
+  function handleEditEvent(eventToEdit) {
+    if (!canManageBookingActions) {
+      handleCloseEventModal();
+      return;
+    }
+
+    const parsedSession = resolveSessionMeta(eventToEdit);
+    const parsedAssignment = resolveAssignmentMeta(eventToEdit);
+    if (parsedSession?.sessionId || parsedAssignment?.assignmentId) {
+      setBookingToEdit(eventToEdit);
+      handleCloseEventModal();
+      return;
+    }
+
     handleCloseEventModal();
   }
-  console.log("selectedRequest:", selectedRequest);
+
+  async function handleSaveBookingEdit(nextValues) {
+    if (!canManageBookingActions) {
+      setBookingToEdit(null);
+      return;
+    }
+
+    const parsedSession = resolveSessionMeta(bookingToEdit);
+    const parsedAssignment = resolveAssignmentMeta(bookingToEdit);
+    if (!parsedSession?.sessionId && !parsedAssignment?.assignmentId) return;
+
+    try {
+      if (parsedSession?.sessionId) {
+        await sessionService.update(parsedSession.sessionId, {
+          timeStart: format(nextValues.start, "yyyy-MM-dd HH:mm:ss"),
+          timeEnd: format(nextValues.end, "yyyy-MM-dd HH:mm:ss"),
+          comment: nextValues.description || "",
+          location:
+            bookingToEdit?.location ||
+            bookingToEdit?.context?.location ||
+            bookingToEdit?.locationType ||
+            "ONSITE",
+        });
+      } else if (parsedAssignment?.assignmentId) {
+        await assignmentService.update(parsedAssignment.assignmentId, {
+          consultantId:
+            bookingToEdit?.consultantId || bookingToEdit?.context?.consultantId,
+          managerId:
+            bookingToEdit?.managerId || bookingToEdit?.context?.managerId,
+          courseId: bookingToEdit?.courseId || bookingToEdit?.context?.courseId,
+          dateStart: format(nextValues.start, "yyyy-MM-dd"),
+          dateEnd: format(nextValues.end, "yyyy-MM-dd"),
+          description: nextValues.description || "",
+          comment: nextValues.description || "",
+        });
+      }
+
+      emitActivitiesUpdated(calendarUser?.id || user?.id);
+      setBookingToEdit(null);
+    } catch {
+      // no-op
+    }
+  }
   return (
     <main className="dashboard-scheduler">
       <DashboardTopbar
@@ -327,7 +564,16 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
         event={selectedEvent}
         onClose={handleCloseEventModal}
         userRole={user?.role}
+        canManageActions={canManageBookingActions}
         onEdit={handleEditEvent}
+        onDelete={handleDeleteEvent}
+      />
+
+      <BookingEditModal
+        isOpen={Boolean(bookingToEdit)}
+        event={bookingToEdit}
+        onClose={() => setBookingToEdit(null)}
+        onSave={handleSaveBookingEdit}
         onDelete={handleDeleteEvent}
       />
       {selectedRequest && (

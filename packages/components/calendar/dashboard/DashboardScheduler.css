@@ -228,6 +228,28 @@
   color: var(--text-primary);
 }
 
+.day-header-cell--saturday {
+  background: #fdf0f5;
+  color: #a04070;
+}
+
+.day-header-cell--sunday,
+.day-header-cell--holiday {
+  background: #fff5f5;
+  color: #c62828;
+}
+
+.day-header-cell--sunday.day-header-cell--holiday {
+  background: #fff0f0;
+}
+
+.day-header-cell__holiday-name {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 1px;
+  opacity: 0.85;
+}
+
 .time-grid-body {
   display: grid;
   flex: 1;
@@ -267,6 +289,19 @@
 .day-col {
   position: relative;
   border-left: 1px solid var(--border-subtle);
+}
+
+.day-col--saturday {
+  background: rgba(253, 240, 245, 0.55);
+}
+
+.day-col--sunday,
+.day-col--holiday {
+  background: rgba(255, 245, 245, 0.55);
+}
+
+.day-col--sunday.day-col--holiday {
+  background: rgba(255, 240, 240, 0.65);
 }
 
 .day-slot-bg {
@@ -487,6 +522,29 @@
   background-color: #c0d8fb;
 }
 
+.month-cell--weekend {
+  background: #f3f4f6;
+}
+
+.month-cell--holiday {
+  background: #fff5f5;
+}
+
+.month-cell--holiday.month-cell--weekend {
+  background: #fff5f5;
+}
+
+.month-cell-holiday {
+  font-size: 11px;
+  font-weight: 600;
+  color: #c62828;
+  margin-bottom: 4px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .month-event-pill {
   width: 100%;
   overflow: hidden;
@@ -573,6 +631,42 @@
     var(--surface)
   );
   border-left-color: var(--event-card-accent, var(--accent));
+}
+
+[data-theme="dark"] .month-cell--weekend {
+  background: color-mix(in srgb, var(--text-primary) 8%, var(--surface));
+}
+
+[data-theme="dark"] .month-cell--holiday {
+  background: color-mix(in srgb, #d46a6a 20%, var(--surface));
+}
+
+[data-theme="dark"] .month-cell-holiday {
+  color: #ff9d9d;
+}
+
+[data-theme="dark"] .day-header-cell--saturday {
+  background: color-mix(in srgb, #d48bbf 22%, var(--surface));
+  color: #e8a0cc;
+}
+
+[data-theme="dark"] .day-header-cell--sunday,
+[data-theme="dark"] .day-header-cell--holiday {
+  background: color-mix(in srgb, #d46a6a 22%, var(--surface));
+  color: #ff9d9d;
+}
+
+[data-theme="dark"] .day-header-cell__holiday-name {
+  color: #ff9d9d;
+}
+
+[data-theme="dark"] .day-col--saturday {
+  background: color-mix(in srgb, #d48bbf 10%, var(--surface));
+}
+
+[data-theme="dark"] .day-col--sunday,
+[data-theme="dark"] .day-col--holiday {
+  background: color-mix(in srgb, #d46a6a 10%, var(--surface));
 }
 
 [data-theme="dark"] .event-block:not(.event-block--activity) {

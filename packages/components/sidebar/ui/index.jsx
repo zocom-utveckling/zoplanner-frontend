@@ -19,6 +19,7 @@ function Sidebar({ user, onSelectCalendarUser }) {
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [isUsersOpen, setIsUsersOpen] = useState(true);
+  const [addActivityOpenKey, setAddActivityOpenKey] = useState(0);
 
   useEffect(() => {
     let isCancelled = false;
@@ -170,6 +171,7 @@ function Sidebar({ user, onSelectCalendarUser }) {
     const payload = {
       title: activityData?.title || "Aktivitet",
       type: activityData?.type || "meeting",
+      color: activityData?.color || "blue",
       date: activityData?.date,
       startTime: activityData?.startTime,
       endTime: activityData?.endTime,
@@ -255,9 +257,14 @@ function Sidebar({ user, onSelectCalendarUser }) {
         </div>
       )}
 
-      <AddActivityButton onSubmit={handleSubmitActivity} />
+      <AddActivityButton
+        onClick={() => setAddActivityOpenKey((current) => current + 1)}
+      />
 
-      <MonthCalendar onSubmit={handleSubmitActivity} />
+      <MonthCalendar
+        onSubmit={handleSubmitActivity}
+        openRequestKey={addActivityOpenKey}
+      />
     </aside>
   );
 }

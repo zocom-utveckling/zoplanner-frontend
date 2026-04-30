@@ -1,6 +1,16 @@
 import { useEffect } from "react";
 import { useCourseSetupForm } from "../hooks/useCourseSetupForm";
-import { buildScheduleSummary } from "../utils/scheduleSummary.helpers";
+import ZoTimePicker from "@zoplanner/time-picker";
+
+const DAY_LABELS = {
+  MONDAY: "Måndag",
+  TUESDAY: "Tisdag",
+  WEDNESDAY: "Onsdag",
+  THURSDAY: "Torsdag",
+  FRIDAY: "Fredag",
+};
+
+const DAY_ORDER = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
 
 export default function CourseSetupForm({
   onSave,
@@ -44,7 +54,49 @@ export default function CourseSetupForm({
   }, [customerId, customers, customerName, handleSelectCustomer]);
 
   const sessions = initialValues?.sessionsDraft ?? [];
-  const scheduleSummary = buildScheduleSummary(sessions);
+
+  const scheduleSummary = (() => {
+    if (!sessions.length) return "";
+
+    const grouped = {};
+
+    sessions.forEach((session) => {
+      const date = new Date(session.timeStart);
+      const day = date.getDay();
+      const start = session.timeStart.split("T")[1]?.slice(0, 5);
+      const end = session.timeEnd.split("T")[1]?.slice(0, 5);
+
+      if (!grouped[day]) {
+        grouped[day] = { start, end };
+      }
+    });
+
+    return Object.entries(grouped)
+      .map(([day, times]) => {
+        const label =
+          {
+            1: "Måndagar",
+            2: "Tisdagar",
+            3: "Onsdagar",
+            4: "Torsdagar",
+            5: "Fredagar",
+          }[day] || "";
+
+        return `${label} ${times.start}–${times.end}`;
+      })
+      .join(", ");
+  })();
+
+  const weekdaySummary = selectedWeekdays
+    .map((entry) => {
+      const dayLabel = DAY_LABELS[entry.day] || entry.day;
+      const time = (entry.startTime || "").trim();
+      return time ? `${dayLabel} ${time}` : dayLabel;
+    })
+    .join(", ");
+
+  const resolvedScheduleSummary =
+    scheduleSummary || weekdaySummary || "Inga tider valda";
 
   return (
     <section className="course-setup">
@@ -197,115 +249,31 @@ export default function CourseSetupForm({
               </span>
 
               <div className="course-setup-days__list">
-                <div className="course-setup-day-row">
-                  <label className="course-setup-day-label">
-                    <input
-                      type="checkbox"
-                      checked={isSelected("MONDAY")}
-                      onChange={() => handleWeekdayToggle("MONDAY")}
-                    />
-                    Måndag
-                  </label>
+                {DAY_ORDER.map((day) => (
+                  <div className="course-setup-day-row" key={day}>
+                    <label className="course-setup-day-label">
+                      <input
+                        type="checkbox"
+                        checked={isSelected(day)}
+                        onChange={() => handleWeekdayToggle(day)}
+                      />
+                      {DAY_LABELS[day]}
+                    </label>
 
-                  {isSelected("MONDAY") && (
-                    <input
-                      className="course-setup-day-time"
-                      type="time"
-                      value={getStartTimeForDay("MONDAY")}
-                      onChange={(event) =>
-                        handleWeekdayTimeChange("MONDAY", event)
-                      }
-                    />
-                  )}
-                </div>
-
-                <div className="course-setup-day-row">
-                  <label className="course-setup-day-label">
-                    <input
-                      type="checkbox"
-                      checked={isSelected("TUESDAY")}
-                      onChange={() => handleWeekdayToggle("TUESDAY")}
-                    />
-                    Tisdag
-                  </label>
-
-                  {isSelected("TUESDAY") && (
-                    <input
-                      className="course-setup-day-time"
-                      type="time"
-                      value={getStartTimeForDay("TUESDAY")}
-                      onChange={(event) =>
-                        handleWeekdayTimeChange("TUESDAY", event)
-                      }
-                    />
-                  )}
-                </div>
-
-                <div className="course-setup-day-row">
-                  <label className="course-setup-day-label">
-                    <input
-                      type="checkbox"
-                      checked={isSelected("WEDNESDAY")}
-                      onChange={() => handleWeekdayToggle("WEDNESDAY")}
-                    />
-                    Onsdag
-                  </label>
-
-                  {isSelected("WEDNESDAY") && (
-                    <input
-                      className="course-setup-day-time"
-                      type="time"
-                      value={getStartTimeForDay("WEDNESDAY")}
-                      onChange={(event) =>
-                        handleWeekdayTimeChange("WEDNESDAY", event)
-                      }
-                    />
-                  )}
-                </div>
-
-                <div className="course-setup-day-row">
-                  <label className="course-setup-day-label">
-                    <input
-                      type="checkbox"
-                      checked={isSelected("THURSDAY")}
-                      onChange={() => handleWeekdayToggle("THURSDAY")}
-                    />
-                    Torsdag
-                  </label>
-
-                  {isSelected("THURSDAY") && (
-                    <input
-                      className="course-setup-day-time"
-                      type="time"
-                      value={getStartTimeForDay("THURSDAY")}
-                      onChange={(event) =>
-                        handleWeekdayTimeChange("THURSDAY", event)
-                      }
-                    />
-                  )}
-                </div>
-
-                <div className="course-setup-day-row">
-                  <label className="course-setup-day-label">
-                    <input
-                      type="checkbox"
-                      checked={isSelected("FRIDAY")}
-                      onChange={() => handleWeekdayToggle("FRIDAY")}
-                    />
-                    Fredag
-                  </label>
-
-                  {isSelected("FRIDAY") && (
-                    <input
-                      className="course-setup-day-time"
-                      type="time"
-                      value={getStartTimeForDay("FRIDAY")}
-                      onChange={(event) =>
-                        handleWeekdayTimeChange("FRIDAY", event)
-                      }
-                    />
-                  )}
-                </div>
+                    {isSelected(day) && (
+                      <div className="course-setup-day-time">
+                        <ZoTimePicker
+                          label="Starttid"
+                          name="startTime"
+                          value={getStartTimeForDay(day)}
+                          onChange={(event) =>
+                            handleWeekdayTimeChange(day, event)
+                          }
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
 
               <div className="course-setup-hint">* Obligatoriska fält</div>
@@ -314,7 +282,7 @@ export default function CourseSetupForm({
             <div className="course-setup-summary">
               <div className="course-setup-summary__main">
                 <h3>Dag och tid</h3>
-                <p>{scheduleSummary}</p>
+                <p>{resolvedScheduleSummary}</p>
               </div>
 
               <div className="course-setup-summary__actions">

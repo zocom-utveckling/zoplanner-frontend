@@ -77,6 +77,7 @@ function useProfileData(user) {
     assignments,
     activities,
     setActivities,
+    setAssignments,
     isLoadingSidebarData,
   };
 }

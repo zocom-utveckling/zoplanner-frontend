@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import {
+  ACTIVITY_COLOR_OPTIONS,
+  DEFAULT_ACTIVITY_COLOR,
+} from "../../../components/calendar/core/utils/eventColors";
 import "./index.css";
+import ZoTimePicker from "@zoplanner/time-picker";
 
-function MonthCalendar({ variant = "sidebar", onSubmit }) {
+function MonthCalendar({ variant = "sidebar", onSubmit, openRequestKey = 0 }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const today = new Date();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,6 +20,7 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
     startTime: "",
     endTime: "",
     type: "meeting",
+    color: DEFAULT_ACTIVITY_COLOR,
   });
 
   const monthNames = [
@@ -31,6 +38,13 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
     "December",
   ];
   const weekDays = ["M", "T", "O", "T", "F", "L", "S"];
+
+  const toDateString = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   const prevMonth = () => {
     setCurrentDate(
@@ -94,9 +108,28 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
       startTime: "",
       endTime: "",
       type: "meeting",
+      color: DEFAULT_ACTIVITY_COLOR,
     });
     setIsModalOpen(true);
   };
+
+  useEffect(() => {
+    if (!openRequestKey) return;
+
+    const now = new Date();
+    setSubmitError("");
+    setCurrentDate(new Date(now.getFullYear(), now.getMonth(), 1));
+    setFormData({
+      title: "",
+      description: "",
+      date: toDateString(now),
+      startTime: "",
+      endTime: "",
+      type: "meeting",
+      color: DEFAULT_ACTIVITY_COLOR,
+    });
+    setIsModalOpen(true);
+  }, [openRequestKey]);
 
   const handleCloseModal = () => {
     if (isSubmitting) return;
@@ -140,6 +173,7 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
         startTime: "",
         endTime: "",
         type: "meeting",
+        color: DEFAULT_ACTIVITY_COLOR,
       });
       setIsModalOpen(false);
     } catch {
@@ -150,170 +184,182 @@ function MonthCalendar({ variant = "sidebar", onSubmit }) {
   };
 
   const days = getDaysInMonth();
-
-  return (
-    <div
-      className={`month-calendar ${variant === "sidebar" ? "month-calendar--sidebar" : "month-calendar--page"}`}
-    >
-      <div className="month-calendar__header">
-        <button className="month-calendar__nav-btn" onClick={prevMonth}>
-          {"<"}
-        </button>
-        <span className="month-calendar__section-title">Månad</span>
-        <button className="month-calendar__nav-btn" onClick={nextMonth}>
-          {">"}
-        </button>
-      </div>
-
-      <div className="month-calendar__display">
-        {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-      </div>
-
-      <div className="month-calendar__grid">
-        {weekDays.map((day, index) => (
-          <div key={index} className="month-calendar__weekday">
-            {day}
-          </div>
-        ))}
-
-        {days.map((day, index) => (
-          <div
-            key={`day-${index}`}
-            className={`month-calendar__day ${day ? "" : "month-calendar__day--empty"} ${isToday(day) ? "month-calendar__day--today" : ""} ${day ? "month-calendar__day--clickable" : ""}`}
-            onClick={() => handleDayClick(day)}
+  const modalMarkup = isModalOpen ? (
+    <div className="month-calendar-modal" onClick={handleCloseModal}>
+      <div
+        className="month-calendar-modal__content"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="month-calendar-modal__header">
+          <h2>Lägg till aktivitet</h2>
+          <button
+            className="month-calendar-modal__close-btn"
+            onClick={handleCloseModal}
           >
-            {day || ""}
-          </div>
-        ))}
-      </div>
-
-      {isModalOpen && (
-        <div className="month-calendar-modal" onClick={handleCloseModal}>
-          <div
-            className="month-calendar-modal__content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="month-calendar-modal__header">
-              <h2>Lägg till aktivitet</h2>
-              <button
-                className="month-calendar-modal__close-btn"
-                onClick={handleCloseModal}
-              >
-                ×
-              </button>
-            </div>
-
-            <form
-              onSubmit={handleSubmit}
-              className="month-calendar-modal__form"
-            >
-              <div className="month-calendar-modal__field-group">
-                <label htmlFor="title">Titel</label>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  placeholder="T.ex. Möte med kursledare"
-                />
-              </div>
-
-              <div className="month-calendar-modal__field-group">
-                <label htmlFor="type">Typ av aktivitet *</label>
-                <select
-                  id="type"
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="meeting">Möte</option>
-                  <option value="lecture">Lektion</option>
-                  <option value="review">Granskning</option>
-                  <option value="preparation">Förberedelse</option>
-                  <option value="other">Annat</option>
-                </select>
-              </div>
-
-              <div className="month-calendar-modal__field-group">
-                <label htmlFor="date">Datum *</label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="month-calendar-modal__row">
-                <div className="month-calendar-modal__field-group">
-                  <label htmlFor="startTime">Starttid *</label>
-                  <input
-                    type="time"
-                    id="startTime"
-                    name="startTime"
-                    value={formData.startTime}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="month-calendar-modal__field-group">
-                  <label htmlFor="endTime">Sluttid *</label>
-                  <input
-                    type="time"
-                    id="endTime"
-                    name="endTime"
-                    value={formData.endTime}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="month-calendar-modal__field-group">
-                <label htmlFor="description">Beskrivning</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows="4"
-                  placeholder="Lägg till eventuella anteckningar..."
-                />
-              </div>
-
-              <div className="month-calendar-modal__actions">
-                <button
-                  type="button"
-                  className="month-calendar-modal__cancel-btn"
-                  onClick={handleCloseModal}
-                  disabled={isSubmitting}
-                >
-                  Avbryt
-                </button>
-                <button
-                  type="submit"
-                  className="month-calendar-modal__submit-btn"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Sparar..." : "Lägg till"}
-                </button>
-              </div>
-
-              {submitError ? (
-                <p className="month-calendar-modal__error" role="alert">
-                  {submitError}
-                </p>
-              ) : null}
-            </form>
-          </div>
+            ×
+          </button>
         </div>
-      )}
+
+        <form onSubmit={handleSubmit} className="month-calendar-modal__form">
+          <div className="month-calendar-modal__field-group">
+            <label htmlFor="title">Titel</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="T.ex. Möte med kursledare"
+            />
+          </div>
+
+          <div className="month-calendar-modal__field-group">
+            <label htmlFor="type">Typ av aktivitet *</label>
+            <select
+              id="type"
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              required
+            >
+              <option value="meeting">Möte</option>
+              <option value="lecture">Lektion</option>
+              <option value="review">Granskning</option>
+              <option value="preparation">Förberedelse</option>
+              <option value="other">Annat</option>
+            </select>
+          </div>
+
+          <div className="month-calendar-modal__field-group">
+            <label>Färg</label>
+            <div className="month-calendar-modal__color-picker">
+              {ACTIVITY_COLOR_OPTIONS.map((colorOption) => (
+                <button
+                  key={colorOption.key}
+                  type="button"
+                  title={colorOption.label}
+                  className={`month-calendar-modal__color-dot${formData.color === colorOption.key ? " month-calendar-modal__color-dot--active" : ""}`}
+                  style={{ "--dot-color": colorOption.accent }}
+                  onClick={() =>
+                    handleChange({
+                      target: { name: "color", value: colorOption.key },
+                    })
+                  }
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="month-calendar-modal__field-group">
+            <label htmlFor="date">Datum *</label>
+            <input
+              type="date"
+              id="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="month-calendar-modal__row">
+            <ZoTimePicker
+              label="Starttid *"
+              name="startTime"
+              value={formData.startTime}
+              onChange={handleChange}
+              required
+            />
+            <ZoTimePicker
+              label="Sluttid *"
+              name="endTime"
+              value={formData.endTime}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="month-calendar-modal__field-group">
+            <label htmlFor="description">Beskrivning</label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows="4"
+              placeholder="Lägg till eventuella anteckningar..."
+            />
+          </div>
+
+          <div className="month-calendar-modal__actions">
+            <button
+              type="button"
+              className="month-calendar-modal__cancel-btn"
+              onClick={handleCloseModal}
+              disabled={isSubmitting}
+            >
+              Avbryt
+            </button>
+            <button
+              type="submit"
+              className="month-calendar-modal__submit-btn"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Sparar..." : "Lägg till"}
+            </button>
+          </div>
+
+          {submitError ? (
+            <p className="month-calendar-modal__error" role="alert">
+              {submitError}
+            </p>
+          ) : null}
+        </form>
+      </div>
     </div>
+  ) : null;
+  return (
+    <>
+      <div
+        className={`month-calendar ${variant === "sidebar" ? "month-calendar--sidebar" : "month-calendar--page"}`}
+      >
+        <div className="month-calendar__header">
+          <button className="month-calendar__nav-btn" onClick={prevMonth}>
+            {"<"}
+          </button>
+          <span className="month-calendar__section-title">Månad</span>
+          <button className="month-calendar__nav-btn" onClick={nextMonth}>
+            {">"}
+          </button>
+        </div>
+
+        <div className="month-calendar__display">
+          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+        </div>
+
+        <div className="month-calendar__grid">
+          {weekDays.map((day, index) => (
+            <div key={index} className="month-calendar__weekday">
+              {day}
+            </div>
+          ))}
+
+          {days.map((day, index) => (
+            <div
+              key={`day-${index}`}
+              className={`month-calendar__day ${day ? "" : "month-calendar__day--empty"} ${isToday(day) ? "month-calendar__day--today" : ""} ${day ? "month-calendar__day--clickable" : ""}`}
+              onClick={() => handleDayClick(day)}
+            >
+              {day || ""}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {typeof document !== "undefined" && modalMarkup
+        ? createPortal(modalMarkup, document.body)
+        : null}
+    </>
   );
 }
 

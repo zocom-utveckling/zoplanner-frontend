@@ -1,4 +1,4 @@
-export default function CustomerCreateForm({
+export function CustomerCreateForm({
   newCustomerName,
   setNewCustomerName,
   newCustomerCity,
@@ -95,3 +95,5 @@ export default function CustomerCreateForm({
     </form>
   );
 }
+
+export default CustomerCreateForm;

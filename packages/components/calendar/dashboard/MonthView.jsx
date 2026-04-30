@@ -1,5 +1,7 @@
+import Holidays from "date-holidays";
 import {
   format,
+  getDay,
   isSameDay,
   isSameMonth,
   isWithinInterval,
@@ -25,6 +27,7 @@ export default function MonthView({
   bookingWeekColors = false,
 }) {
   const weekdays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
+  const hd = new Holidays("SE");
 
   function getEventLabel(eventItem) {
     const eventLabel =
@@ -48,6 +51,10 @@ export default function MonthView({
       <div className="month-grid">
         {monthGridDays.map((d) => {
           const inMonth = isSameMonth(d, focusDate);
+          const dayOfWeek = getDay(d);
+          const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+          const holiday = hd.isHoliday(d);
+          const isHoliday = Boolean(holiday);
           const allDayEvents = events
             .filter((e) => {
               if (e.type === "session") return isSameDay(e.start, d);
@@ -106,6 +113,8 @@ export default function MonthView({
                 "month-cell",
                 !inMonth ? "month-cell--out-of-month" : "",
                 isSameDay(d, focusDate) ? "month-cell--focus-day" : "",
+                isWeekend ? "month-cell--weekend" : "",
+                isHoliday ? "month-cell--holiday" : "",
               ]
                 .filter(Boolean)
                 .join(" ")}
@@ -132,6 +141,9 @@ export default function MonthView({
               }}
             >
               <div className="month-cell-header">{format(d, "d")}</div>
+              {holiday?.[0]?.name && (
+                <div className="month-cell-holiday">{holiday[0].name}</div>
+              )}
               <div className={monthEventsClassName}>
                 {visibleEvents.map((e) => {
                   const isMultiDay = Boolean(

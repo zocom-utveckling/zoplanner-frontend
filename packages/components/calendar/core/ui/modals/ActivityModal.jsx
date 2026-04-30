@@ -2,6 +2,7 @@ import {
   ACTIVITY_COLOR_OPTIONS,
   DEFAULT_ACTIVITY_COLOR,
 } from "../../utils/eventColors";
+import ZoTimePicker from "@zoplanner/time-picker";
 
 export default function ActivityModal({
   isOpen,
@@ -118,31 +119,22 @@ export default function ActivityModal({
           </div>
 
           <div className="scheduler-form-row">
-            <div className="scheduler-form-group">
-              <label htmlFor="startTime">Starttid *</label>
-              <input
-                type="time"
-                id="startTime"
-                name="startTime"
-                value={formData.startTime}
-                onChange={onChange}
-                disabled={isViewMode}
-                required
-              />
-            </div>
-
-            <div className="scheduler-form-group">
-              <label htmlFor="endTime">Sluttid *</label>
-              <input
-                type="time"
-                id="endTime"
-                name="endTime"
-                value={formData.endTime}
-                onChange={onChange}
-                disabled={isViewMode}
-                required
-              />
-            </div>
+            <ZoTimePicker
+              label="Starttid *"
+              name="startTime"
+              value={formData.startTime}
+              onChange={onChange}
+              disabled={isViewMode}
+              required
+            />
+            <ZoTimePicker
+              label="Sluttid *"
+              name="endTime"
+              value={formData.endTime}
+              onChange={onChange}
+              disabled={isViewMode}
+              required
+            />
           </div>
 
           <div className="scheduler-form-group">

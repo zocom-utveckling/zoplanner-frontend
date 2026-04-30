@@ -11,8 +11,8 @@ import {
 import sv from "date-fns/locale/sv";
 import { getAllSchedulesEventColorVars } from "../core/utils/eventColors";
 
-const HOURS_START = 8;
-const HOURS_END = 18;
+const HOURS_START = 6;
+const HOURS_END = 21;
 const SLOT_MINUTES = 30;
 const GRID_START_MIN = HOURS_START * 60;
 const GRID_END_MIN = HOURS_END * 60;
@@ -138,7 +138,7 @@ export default function AllSchedulesView({
         {unassignedEvents.length > 0 ? (
           <p>{unassignedEvents.length} pass saknar lärare i vald period.</p>
         ) : (
-          <p>Det finns inga ej tilldelade pass i vald period.</p>
+          <p>Kommer inom kort.</p>
         )}
       </aside>
 
