@@ -1,26 +1,148 @@
-.notis-knapp {
+.notis-knapp-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: "Poppins", sans-serif;
+}
+
+.notis-feedback {
+  grid-column: 1 / -1;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notis-feedback--success {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.notis-feedback--error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.notis-section {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface-alt) 90%, var(--surface) 10%),
+    var(--surface)
+  );
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 14px;
+}
 
-  justify-content: space-between;
-  padding: 1rem;
+.notis-section h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.notis-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notis-form input,
+.notis-form textarea {
+  width: 100%;
+  padding: 10px 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  background-color: var(--surface-alt);
-  height: 300px;
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: "Poppins", sans-serif;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.notis-knapp__action {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  color: var(--action-fg);
-  background-color: var(--accent);
+.notis-form input::placeholder,
+.notis-form textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.notis-form input:focus,
+.notis-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 37, 99, 235), 0.1);
+}
+
+.notis-form input:disabled,
+.notis-form textarea:disabled {
+  background-color: var(--surface-muted);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.notis-form button {
+  padding: 10px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  background-color: var(--action-bg);
+  color: var(--action-fg);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.18s ease;
 }
 
-.notis-knapp__action:hover {
-  background-color: var(--accent-hover);
+.notis-form button:hover:not(:disabled) {
+  background-color: var(--action-bg-hover);
+  transform: translateY(-2px);
+}
+
+.notis-form button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.notis-form button:disabled {
+  background-color: var(--surface-muted);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .notis-knapp-sections {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .notis-section {
+    padding: 16px;
+  }
 }
