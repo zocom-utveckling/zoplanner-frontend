@@ -1,4 +1,4 @@
-export default function CustomerOrderCreateForm({
+export function CustomerOrderCreateForm({
   customers,
   newOrder,
   setNewOrder,
@@ -127,3 +127,5 @@ export default function CustomerOrderCreateForm({
     </form>
   );
 }
+
+export default CustomerOrderCreateForm;

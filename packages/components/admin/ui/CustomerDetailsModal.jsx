@@ -1,4 +1,4 @@
-export default function CustomerDetailsModal({
+export function CustomerDetailsModal({
   customer,
   orders,
   onClose,
@@ -117,3 +117,5 @@ export default function CustomerDetailsModal({
     </div>
   );
 }
+
+export default CustomerDetailsModal;

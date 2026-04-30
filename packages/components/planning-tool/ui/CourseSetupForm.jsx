@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useEffect } from "react";
 import { useCourseSetupForm } from "../hooks/useCourseSetupForm";
 import ZoTimePicker from "@zoplanner/time-picker";
 
