@@ -15,6 +15,7 @@ const DAY_ORDER = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
 export default function CourseSetupForm({
   onSave,
   initialValues,
+  isDirectPlanning = false,
   lockBasicInfo = false,
   showBasicInfo = true,
   showScheduleEditor = true,
@@ -126,56 +127,63 @@ export default function CourseSetupForm({
               </div>
             ) : (
               <div className="course-setup-field-container">
-                <div className="course-setup-field">
-                  <label htmlFor="customerId">
-                    Kund <span className="course-setup-required">*</span>
-                  </label>
-                  <div className="course-setup-customer-selector">
-                    <select
-                      id="customerId"
-                      name="customerId"
-                      value={customerId || ""}
-                      onChange={(e) => {
-                        if (e.target.value === "__new_customer__") {
-                          onOpenAddCustomer?.();
-                          return;
-                        }
-                        handleChange(e);
-                      }}
-                      disabled={lockBasicInfo}
-                    >
-                      <option value="">-- Välj kund --</option>
-                      {customers
-                        .filter(
-                          (c) =>
-                            (c.name || "").trim().toUpperCase() !== "UTKAST",
-                        )
-                        .map((customer) => (
-                          <option key={customer.id} value={customer.id}>
-                            {customer.name}
-                          </option>
-                        ))}
-                      <option value="__new_customer__" disabled={lockBasicInfo}>
-                        + Lägg till ny kund
-                      </option>
-                    </select>
+                {!isDirectPlanning && (
+                  <div className="course-setup-field">
+                    <label htmlFor="customerId">
+                      Kund <span className="course-setup-required">*</span>
+                    </label>
+                    <div className="course-setup-customer-selector">
+                      <select
+                        id="customerId"
+                        name="customerId"
+                        value={customerId || ""}
+                        onChange={(e) => {
+                          if (e.target.value === "__new_customer__") {
+                            onOpenAddCustomer?.();
+                            return;
+                          }
+                          handleChange(e);
+                        }}
+                        disabled={lockBasicInfo}
+                      >
+                        <option value="">-- Välj kund --</option>
+                        {customers
+                          .filter(
+                            (c) =>
+                              (c.name || "").trim().toUpperCase() !== "UTKAST",
+                          )
+                          .map((customer) => (
+                            <option key={customer.id} value={customer.id}>
+                              {customer.name}
+                            </option>
+                          ))}
+                        <option
+                          value="__new_customer__"
+                          disabled={lockBasicInfo}
+                        >
+                          + Lägg till ny kund
+                        </option>
+                      </select>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div className="course-setup-field">
-                  <label htmlFor="className">
-                    Klass <span className="course-setup-required">*</span>
-                  </label>
-                  <input
-                    id="className"
-                    name="className"
-                    type="text"
-                    placeholder="Ange klassnamn"
-                    value={className}
-                    onChange={handleChange}
-                    disabled={lockBasicInfo}
-                  />
-                </div>
+                {!isDirectPlanning && (
+                  <div className="course-setup-field">
+                    <label htmlFor="className">
+                      Klass <span className="course-setup-required">*</span>
+                    </label>
+                    <input
+                      id="className"
+                      name="className"
+                      type="text"
+                      placeholder="Ange klassnamn"
+                      value={className}
+                      onChange={handleChange}
+                      disabled={lockBasicInfo}
+                    />
+                  </div>
+                )}
 
                 <div className="course-setup-field">
                   <label htmlFor="courseName">

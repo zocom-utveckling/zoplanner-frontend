@@ -6,7 +6,9 @@ import { dev } from "@zoplanner/admin";
 import CourseDetailsModal from "./CourseDetailsModal";
 import ConfirmModal from "./ConfirmModal";
 import {
+  getConsultantName,
   getCourseName,
+  getCustomerName,
   getEndDate,
   getStartDate,
   loadPlanningDrafts,
@@ -92,10 +94,8 @@ export function CourseRegistry({
       name:
         dev.getCourseNameForAssignment(assignment) ||
         getCourseName(assignment, "Kurs saknas"),
-      customer:
-        assignment.course?.className ||
-        assignment.course?.customerName ||
-        "Kund saknas",
+      customer: getCustomerName(assignment),
+      consultantName: getConsultantName(assignment),
       startDate,
       endDate,
       sessions: assignment.sessions ?? [],
@@ -211,6 +211,7 @@ export function CourseRegistry({
         await assignmentService.remove(course.id);
         setAssignments((prev) => prev.filter((a) => a.id !== course.id));
       }
+
       handleCloseDeleteConfirm();
       handleCloseCourseModal();
     } catch (error) {
@@ -309,7 +310,7 @@ export function CourseRegistry({
                         }`}
                       >
                         {c.hasConsultant
-                          ? "Konsult tilldelad"
+                          ? c.consultantName || "Konsult tilldelad"
                           : "Ingen konsult"}
                       </span>
                     )}

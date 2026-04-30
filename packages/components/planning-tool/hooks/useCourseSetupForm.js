@@ -130,16 +130,6 @@ export function useCourseSetupForm(onSave, initialValues) {
       return;
     }
 
-    if (!customerId) {
-      alert("Välj en kund.");
-      return;
-    }
-
-    if (Number.isNaN(parsedCustomerId) || parsedCustomerId < 1) {
-      alert("Välj en giltig kund.");
-      return;
-    }
-
     if (!startDate) {
       alert("Välj startdatum.");
       return;
@@ -173,7 +163,10 @@ export function useCourseSetupForm(onSave, initialValues) {
       courseName: safeCourseName,
       isDraftCourse: !courseName.trim(),
 
-      customerId: parsedCustomerId,
+      customerId:
+        !Number.isNaN(parsedCustomerId) && parsedCustomerId > 0
+          ? parsedCustomerId
+          : null,
       customerName: safeCustomerName,
       isDraftCustomer: !customerId,
 

@@ -37,6 +37,8 @@ export function PlannerWorkspace({
   selectedAssignmentForMatching,
   clearSelectedAssignmentForMatching,
 }) {
+  const isDirectPlanning = !selectedAssignmentForMatching;
+
   const [showBasicInfo, setShowBasicInfo] = useState(true);
   const [showScheduleEditor, setShowScheduleEditor] = useState(true);
   const [focusDate, setFocusDate] = useState(new Date());
@@ -291,6 +293,7 @@ export function PlannerWorkspace({
                   managerId={managerId}
                   courseDraft={courseDraft}
                   selectedAssignmentForMatching={selectedAssignmentForMatching}
+                  isDirectPlanning={isDirectPlanning}
                   isEditingBasicInfo={isEditingBasicInfo}
                   showBasicInfo={showBasicInfo}
                   showScheduleEditor={showScheduleEditor}
@@ -346,8 +349,12 @@ export function PlannerWorkspace({
 
                     let assignment = activeAssignment;
 
-                    if (!assignment?.id) {
-                      console.log("⚠️ No assignment id → publishing");
+                    const isLocalDraft =
+                      assignment?.status === "DRAFT" ||
+                      !assignment?.assignmentId;
+
+                    if (isLocalDraft) {
+                      console.log("⚠️ Local draft → publishing first");
 
                       assignment = await handlePublishDraft();
 
