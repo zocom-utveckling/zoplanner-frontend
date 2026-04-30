@@ -116,10 +116,10 @@ export function useCourseSetupForm(onSave, initialValues) {
   function handleSubmit(event) {
     event.preventDefault();
 
-    const safeCourseName = courseName.trim() || "UTKAST – ange kursnamn";
+    const safeCourseName = courseName.trim() || "Ange kursnamn";
     const safeCustomerName =
-      customerName.trim() || "UTKAST – ange kund";
-    const safeClassName = className.trim() || "UTKAST – ange klass";
+      customerName.trim() || "Ange kund";
+    const safeClassName = className.trim() || "Ange klass";
 
     const parsedTotalHours = Number(totalHours);
     const parsedCustomerId = Number(customerId);

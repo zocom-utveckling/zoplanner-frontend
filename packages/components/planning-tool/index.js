@@ -13,3 +13,4 @@ export { default as AssignmentSummaryCard } from "./ui/AssignmentSummaryCard";
 export * from "./services/planningDraft.storage";
 export * from "./services/planningDraft.adapter";
 export * from "./utils/normalize.helpers";
+export * from "./utils/courseDraft.helpers";
