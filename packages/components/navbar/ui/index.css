@@ -1,8 +1,8 @@
 .navbar {
   display: flex;
   align-items: center;
-  min-height: 68px;
-  padding: 8px 22px;
+  min-height: 76px;
+  padding: 10px 32px;
   background-color: var(--navbar-bg);
   color: var(--navbar-fg);
   font-family: "Poppins", sans-serif;
@@ -25,7 +25,7 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 40px;
 }
 
 .navbar__logo {
@@ -52,20 +52,20 @@
 .navbar__routes {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 10px;
 }
 
 .navbar__route-btn {
   background: none;
   border: none;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 4px;
+  padding: 10px 16px;
+  border-radius: 20px;
   transition: background-color 0.2s ease;
   color: var(--navbar-fg);
   white-space: nowrap;
@@ -81,13 +81,14 @@
 
 .navbar__icon-group {
   display: flex;
-  gap: 6px;
+  gap: 10px;
+  margin-right: 20px;
 }
 
 .navbar__icon,
 .navbar__notification {
-  width: 22px;
-  height: 22px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 1px solid color-mix(in srgb, var(--navbar-fg) 55%, transparent);
   background-color: color-mix(in srgb, var(--navbar-fg) 8%, transparent);
@@ -111,12 +112,12 @@
 
 .navbar__notification svg,
 .navbar__icon svg {
-  width: 11px;
-  height: 11px;
+  width: 14px;
+  height: 14px;
 }
 
 .navbar__locale-chip {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
 }
@@ -146,11 +147,11 @@
 .navbar__profile-trigger {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--navbar-fg);
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -176,8 +177,8 @@
 }
 
 .navbar__profile-trigger svg {
-  width: 11px;
-  height: 11px;
+  width: 13px;
+  height: 13px;
 }
 
 .navbar__dropdown {
@@ -190,7 +191,9 @@
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border-color);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 24px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   animation: dropdown 0.3s ease forwards;
   z-index: 999;
 }
@@ -218,13 +221,12 @@
 
 .navbar__dropdown a:hover {
   background-color: var(--surface-muted);
- 
 }
 
 .navbar .dark-mode-button {
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
   padding: 0;
   font-size: 0;
   gap: 0;
@@ -239,72 +241,72 @@
 }
 
 .navbar .dark-mode-button svg {
-  width: 11px;
-  height: 11px;
+  width: 14px;
+  height: 14px;
 }
 
 @media (max-width: 1500px) {
   .navbar {
-    padding: 8px 16px;
+    padding: 10px 22px;
   }
 
-  .logo {
+  .navbar__logo {
     width: 150px;
     height: 36px;
   }
 
-  .navbar-right {
-    gap: 10px;
+  .navbar__right {
+    gap: 16px;
   }
 
-  .routes {
-    gap: 2px;
+  .navbar__routes {
+    gap: 6px;
   }
 
-  .routes button {
-    font-size: 11px;
-    padding: 7px 10px;
+  .navbar__route-btn {
+    font-size: 13px;
+    padding: 9px 13px;
   }
 
-  .profile-trigger {
-    font-size: 10px;
-    gap: 5px;
+  .navbar__profile-trigger {
+    font-size: 12px;
+    gap: 7px;
   }
 
-  .profile-trigger span {
-    max-width: 115px;
+  .navbar__profile-trigger span {
+    max-width: 130px;
   }
 }
 
 @media (max-width: 1280px) {
-  .logo {
+  .navbar__logo {
     width: 132px;
     height: 32px;
   }
 
-  .navbar-right {
-    gap: 8px;
+  .navbar__right {
+    gap: 12px;
   }
 
-  .routes button {
-    font-size: 10px;
-    padding: 6px 8px;
+  .navbar__route-btn {
+    font-size: 12px;
+    padding: 8px 11px;
   }
 
-  .icon,
-  .notification {
-    width: 20px;
-    height: 20px;
+  .navbar__icon,
+  .navbar__notification {
+    width: 24px;
+    height: 24px;
   }
 
-  .profile-trigger span {
-    max-width: 90px;
+  .navbar__profile-trigger span {
+    max-width: 100px;
   }
 
   .navbar .dark-mode-button {
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
   }
 }
 
