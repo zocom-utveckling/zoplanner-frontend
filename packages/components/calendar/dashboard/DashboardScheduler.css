@@ -3,15 +3,12 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  overflow: hidden;
   padding: 20px 20px 24px;
 }
 
 .dashboard-scheduler__content-card {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 200px);
-  overflow: hidden;
   padding: 0;
   border: 1px solid var(--border-color);
   border-radius: 14px;
@@ -196,9 +193,7 @@
 /* Week/day time grid */
 .time-grid-wrap {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .time-grid-header {
@@ -252,8 +247,6 @@
 
 .time-grid-body {
   display: grid;
-  flex: 1;
-  overflow: auto;
   grid-template-columns: 70px 1fr;
 }
 

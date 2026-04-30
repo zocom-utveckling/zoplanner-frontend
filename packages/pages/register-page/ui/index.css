@@ -1,62 +1,98 @@
 .register-page__form-container {
-  height: 100vh;
-  width: 100vw;
+  min-height: 100vh;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   background-color: var(--app-bg);
-  gap: 30px;
+  gap: 28px;
+  padding: 32px 16px;
+  box-sizing: border-box;
 }
 
 .register-page__form-container form {
   position: relative;
   display: flex;
-  align-items: center;
   flex-direction: column;
-  gap: 10px;
-  width: 30%;
+  gap: 14px;
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
   overflow: visible;
   background-color: var(--surface);
-  padding: 12px 22px 20px;
-  border-radius: 8px;
-  box-shadow: var(--elevation-card);
+  padding: 32px 32px 26px;
+  border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.06));
+  border-radius: 14px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 20px 40px -16px rgba(15, 23, 42, 0.18);
 }
 
 .register-page__form-container h1 {
+  margin: 0;
   letter-spacing: 5px;
+  color: var(--text-primary);
 }
 
 .register-page__form-container h2 {
+  margin: 0 0 6px;
   color: var(--accent);
   letter-spacing: 1px;
+  text-align: center;
+  font-size: 1.35rem;
+}
+
+.register-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
 }
 
 .register-page__label {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-weight: 600;
+  font-size: 0.9rem;
   color: var(--text-primary);
 }
+
 .register-page__label span {
-  letter-spacing: 0.7px;
+  letter-spacing: 0.5px;
 }
+
 .register-page__field input,
 .register-page__field select {
-  padding: 0 5px;
-  justify-content: center;
-  height: 40px;
+  width: 100%;
+  padding: 0 12px;
+  height: 42px;
   box-sizing: border-box;
-  font-size: 1rem;
+  font-size: 0.95rem;
   border: 1px solid var(--border-input);
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: var(--surface);
   color: var(--text-primary);
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
 }
+
+.register-page__field input::placeholder {
+  color: var(--text-muted);
+}
+
+.register-page__field input:focus,
+.register-page__field select:focus {
+  outline: none;
+  border-color: #2e7de3;
+  box-shadow: 0 0 0 3px rgba(46, 125, 227, 0.18);
+}
+
 .register-page__button-group {
-  margin-top: 10px;
+  margin-top: 14px;
   width: 100%;
   display: flex;
   align-items: center;
@@ -64,9 +100,11 @@
   justify-content: center;
   gap: 5px;
 }
+
 .register-page__button-group p {
   margin: 0;
 }
+
 .register-page__field input:disabled,
 .register-page__input--disabled {
   color: var(--text-muted);
@@ -74,30 +112,119 @@
   background-color: var(--surface-muted);
   cursor: not-allowed;
 }
+
 .register-page__close-button {
   position: absolute;
-  top: -10px;
-  right: -10px;
-
-  width: 28px;
-  height: 28px;
-
+  top: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: none;
-  background: var(--surface);
-
-  box-shadow: var(--elevation-card);
-
-  font-size: 1.2rem;
+  background: var(--surface-muted, #f3f4f6);
+  color: var(--text-muted, #4b5563);
+  font-size: 1.1rem;
+  line-height: 1;
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  opacity: 0.8;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
 }
 
 .register-page__close-button:hover {
-  opacity: 1;
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+.register-page__close-button:focus-visible {
+  outline: 2px solid #2e7de3;
+  outline-offset: 2px;
+}
+
+.register-page__form-container form .customer-registry__modal-future-note {
+  margin: 14px 0 0;
+}
+
+/* =========================================================
+   Onboarding modal — visas ovanpå LoginPage
+   ========================================================= */
+
+.register-page__background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.register-page__background > * {
+  pointer-events: none;
+}
+
+.register-page__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(3px);
+  animation: registerOverlayFadeIn 160ms ease-out;
+  overflow-y: auto;
+}
+
+.register-page__modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
+  background-color: var(--surface);
+  color: var(--text-primary);
+  padding: 32px 32px 26px;
+  border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.06));
+  border-radius: 14px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 20px 40px -12px rgba(15, 23, 42, 0.35);
+  animation: registerModalPopIn 180ms ease-out;
+}
+
+.register-page__modal h2 {
+  margin: 0 0 6px;
+  color: var(--accent);
+  letter-spacing: 1px;
+  text-align: center;
+  font-size: 1.35rem;
+}
+
+.register-page__modal .customer-registry__modal-future-note {
+  margin: 14px 0 0;
+}
+
+@keyframes registerOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes registerModalPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

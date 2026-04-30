@@ -2,9 +2,10 @@ import { appRoutesConfig } from "../../../app-routes/appRoutes.config";
 
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
-import { FaAngleDown, FaAngleUp, FaBell } from "react-icons/fa";
+import { FaAngleDown, FaAngleUp, FaBell, FaUser } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import { DarkModeButton } from "@zoplanner/dark-mode-button";
+import { useProfilePicture } from "@zoplanner/app-hooks";
 import { ConfirmPopup } from "../../confirm-popup/ui";
 
 function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
@@ -13,6 +14,13 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
   const dropdownRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadnotification] = useState(["example notification"]);
+  const [comingSoonFor, setComingSoonFor] = useState(null);
+
+  useEffect(() => {
+    if (!comingSoonFor) return;
+    const timer = setTimeout(() => setComingSoonFor(null), 2000);
+    return () => clearTimeout(timer);
+  }, [comingSoonFor]);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -43,6 +51,10 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
   const isManager =
     normalizedRoles.includes("manager") || normalizedRoles.includes("both");
   const homeRoute = appRoutesConfig.home.replace(":id", String(user.id));
+  const { profilePicture } = useProfilePicture(
+    user?.id,
+    user?.profilePicture || user?.profilePictureUrl,
+  );
 
   return (
     <>
@@ -72,18 +84,48 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
 
         <div className="navbar__right">
           <div className="navbar__icon-group">
-            <div className="navbar__notification">
+            <button
+              type="button"
+              className="navbar__notification"
+              onClick={() =>
+                setComingSoonFor((prev) =>
+                  prev === "notification" ? null : "notification",
+                )
+              }
+              aria-label="Notiser"
+            >
               <FaBell />
               {unreadnotification.length > 0 && (
                 <span className="navbar__notification-badge">
                   {unreadnotification.length}
                 </span>
               )}
-            </div>
+              {comingSoonFor === "notification" && (
+                <span className="navbar__coming-soon" role="status">
+                  Kommer inom kort
+                </span>
+              )}
+            </button>
 
             <DarkModeButton />
 
-            <div className="navbar__icon navbar__locale-chip">SV</div>
+            <button
+              type="button"
+              className="navbar__icon navbar__locale-chip"
+              onClick={() =>
+                setComingSoonFor((prev) =>
+                  prev === "locale" ? null : "locale",
+                )
+              }
+              aria-label="Byt språk"
+            >
+              SV
+              {comingSoonFor === "locale" && (
+                <span className="navbar__coming-soon" role="status">
+                  Kommer inom kort
+                </span>
+              )}
+            </button>
           </div>
 
           <div className="navbar__routes">
@@ -144,9 +186,27 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
           <div className="navbar__profile" ref={dropdownRef}>
             <button
               className="navbar__profile-trigger"
-              onClick={() => setShowDropdown((prev) => !prev)}
+              onClick={() => navigate(`/profile/${user.id}`)}
+              aria-label="Gå till profilsida"
+              title={user?.name || "Profil"}
             >
-              <span>{user?.name || "Users Name"}</span>
+              {profilePicture ? (
+                <img
+                  className="navbar__profile-avatar"
+                  src={profilePicture}
+                  alt={user?.name || "Profilbild"}
+                />
+              ) : (
+                <span className="navbar__profile-avatar navbar__profile-avatar--placeholder">
+                  <FaUser />
+                </span>
+              )}
+            </button>
+            {/* <button
+              className="navbar__profile-caret"
+              onClick={() => setShowDropdown((prev) => !prev)}
+              aria-label="Visa profilmeny"
+            >
               {showDropdown ? <FaAngleUp /> : <FaAngleDown />}
             </button>
 
@@ -157,7 +217,7 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
                   Logga ut
                 </Link>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </nav>
