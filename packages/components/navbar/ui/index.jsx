@@ -179,7 +179,7 @@ function Navbar({ user, activePage, setActivePage, onResetCalendarUser }) {
                   : "navbar__route-btn"
               }
             >
-              Uppdrag
+              Notiser
             </button>
           </div>
 
