@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import ZoTimePicker from "@zoplanner/time-picker";
+import ModalOverlay from "./ModalOverlay";
 
 const initialForm = {
   date: "",
@@ -37,12 +38,6 @@ export default function BookingEditModal({
 
   if (!isOpen || !event) return null;
 
-  function handleOverlayClick(overlayEvent) {
-    if (overlayEvent.target === overlayEvent.currentTarget) {
-      onClose?.();
-    }
-  }
-
   function handleChange(changeEvent) {
     const { name, value } = changeEvent.target;
     setFormData((prev) => ({
@@ -68,11 +63,7 @@ export default function BookingEditModal({
   }
 
   return (
-    <div className="scheduler-modal-overlay" onClick={handleOverlayClick}>
-      <div
-        className="scheduler-modal-content"
-        onClick={(modalEvent) => modalEvent.stopPropagation()}
-      >
+    <ModalOverlay onClose={onClose}>
         <div className="scheduler-modal-header">
           <h2>Redigera bokning</h2>
           <button className="scheduler-close-btn" onClick={onClose}>
@@ -142,7 +133,6 @@ export default function BookingEditModal({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </ModalOverlay>
   );
 }

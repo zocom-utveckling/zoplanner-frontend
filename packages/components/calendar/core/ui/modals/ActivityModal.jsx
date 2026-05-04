@@ -3,6 +3,7 @@ import {
   DEFAULT_ACTIVITY_COLOR,
 } from "../../utils/eventColors";
 import ZoTimePicker from "@zoplanner/time-picker";
+import ModalOverlay from "./ModalOverlay";
 
 export default function ActivityModal({
   isOpen,
@@ -23,12 +24,6 @@ export default function ActivityModal({
   const submitLabel = mode === "edit" ? "Spara" : "Lägg till";
   const title = mode === "create" ? "Lägg till aktivitet" : "Aktivitet";
 
-  function handleOverlayClick(event) {
-    if (event.target === event.currentTarget) {
-      onClose();
-    }
-  }
-
   function handleStartEditClick(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -36,11 +31,7 @@ export default function ActivityModal({
   }
 
   return (
-    <div className="scheduler-modal-overlay" onClick={handleOverlayClick}>
-      <div
-        className="scheduler-modal-content"
-        onClick={(event) => event.stopPropagation()}
-      >
+    <ModalOverlay onClose={onClose}>
         <div className="scheduler-modal-header">
           <div className="scheduler-modal-header__titles">
             <h2>{title}</h2>
@@ -182,7 +173,6 @@ export default function ActivityModal({
             )}
           </div>
         </form>
-      </div>
-    </div>
+    </ModalOverlay>
   );
 }

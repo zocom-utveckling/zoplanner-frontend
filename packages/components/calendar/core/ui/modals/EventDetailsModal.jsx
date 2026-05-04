@@ -1,6 +1,6 @@
-import { useEffect } from "react";
 import { format } from "date-fns";
 import sv from "date-fns/locale/sv";
+import ModalOverlay from "./ModalOverlay";
 
 function resolveStatus(start, end) {
   const now = new Date();
@@ -72,19 +72,6 @@ export default function EventDetailsModal({
 
   const isManager = canManageActions === true;
 
-  useEffect(() => {
-    function handleKeydown(keyboardEvent) {
-      if (keyboardEvent.key === "Escape") {
-        onClose();
-      }
-    }
-
-    window.addEventListener("keydown", handleKeydown);
-    return () => {
-      window.removeEventListener("keydown", handleKeydown);
-    };
-  }, [onClose]);
-
   if (!event) return null;
 
   function handleEditClick() {
@@ -104,14 +91,12 @@ export default function EventDetailsModal({
   }
 
   return (
-    <div className="scheduler-modal-overlay" onClick={onClose}>
-      <div
-        className="scheduler-modal-content"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Detaljer"
-        onClick={(modalEvent) => modalEvent.stopPropagation()}
-      >
+    <ModalOverlay
+      onClose={onClose}
+      closeOnEscape
+      role="dialog"
+      ariaLabel="Detaljer"
+    >
         <div className="scheduler-modal-header">
           <h2>Detaljer</h2>
           <button className="scheduler-close-btn" onClick={onClose}>
@@ -176,7 +161,6 @@ export default function EventDetailsModal({
             Stäng
           </button>
         </div>
-      </div>
-    </div>
+    </ModalOverlay>
   );
 }
