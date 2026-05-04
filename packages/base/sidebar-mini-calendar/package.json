@@ -1,5 +1,5 @@
 {
-  "name": "@zoplanner/month-calendar",
+  "name": "@zoplanner/sidebar-mini-calendar",
   "version": "1.0.0",
   "main": "index.js",
   "peerDependencies": {

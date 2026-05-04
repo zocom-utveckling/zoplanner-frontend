@@ -7,8 +7,8 @@
 // - <ModalOverlay /> — delad overlay-komponent för modaler
 // - Färgpaletten (ACTIVITY_COLOR_OPTIONS m.m.)
 //
-// Sidopanelens månadsvy bor i @zoplanner/month-calendar och importerar
-// färgpaletten härifrån.
+// Sidopanelens lilla månadskalender bor i @zoplanner/sidebar-mini-calendar och
+// importerar färgpaletten härifrån.
 
 export { AddActivityButton } from "./ui";
 

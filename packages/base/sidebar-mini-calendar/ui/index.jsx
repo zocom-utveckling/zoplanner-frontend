@@ -7,7 +7,11 @@ import {
 import "./index.css";
 import ZoTimePicker from "@zoplanner/time-picker";
 
-function MonthCalendar({ variant = "sidebar", onSubmit, openRequestKey = 0 }) {
+function SidebarMiniCalendar({
+  variant = "sidebar",
+  onSubmit,
+  openRequestKey = 0,
+}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const today = new Date();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -363,4 +367,4 @@ function MonthCalendar({ variant = "sidebar", onSubmit, openRequestKey = 0 }) {
   );
 }
 
-export { MonthCalendar };
+export { SidebarMiniCalendar };

@@ -3,7 +3,7 @@ import "./index.css";
 import { UserProfile } from "@zoplanner/user-profile";
 import { ProfileCard } from "@zoplanner/profile-card";
 import { AddActivityButton } from "@zoplanner/activity-creation";
-import { MonthCalendar } from "@zoplanner/month-calendar";
+import { SidebarMiniCalendar } from "@zoplanner/sidebar-mini-calendar";
 import { activityService, userService } from "@zoplanner/api";
 import { emitActivitiesUpdated } from "@zoplanner/calendar";
 
@@ -142,7 +142,7 @@ function Sidebar({ user, onSelectCalendarUser }) {
         onClick={() => setAddActivityOpenKey((current) => current + 1)}
       />
 
-      <MonthCalendar
+      <SidebarMiniCalendar
         onSubmit={handleSubmitActivity}
         openRequestKey={addActivityOpenKey}
       />
