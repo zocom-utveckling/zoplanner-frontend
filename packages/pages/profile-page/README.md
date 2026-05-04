@@ -38,13 +38,14 @@ Profile_Page
    ├── useProfileEdit(user, …)             → kompetens-redigering
    └── useProfileActivityModal(setActivities)
             │
-            └── useActivityForm (från @zoplanner/calendar)
+            └── useActivityForm (från @zoplanner/activity-creation)
                   → ActivityModal renderas när manager redigerar en aktivitet
 ```
 
 Bokningar (assignments) hanteras lokalt i `Profile_Page` via
 `assignmentService` + `BookingEditModal` / `EventDetailsModal` från
-`@zoplanner/calendar`.
+`@zoplanner/calendar`. `ActivityModal` importeras från
+`@zoplanner/activity-creation`.
 
 ---
 
@@ -96,7 +97,8 @@ att enbart läsa från `user`.
 
 - Komponenter `.jsx` i `PascalCase`, hooks `.js` med `useXxx`-prefix.
 - All UI-text och kommentarer på svenska.
-- Importera kalender-grejer från `@zoplanner/calendar`-paketroten (aldrig
+- Importera kalender-grejer från `@zoplanner/calendar`-paketroten och
+  aktivitets-skapande från `@zoplanner/activity-creation` (aldrig
   djupa interna sökvägar).
 - Profile_Page exporteras som `default` från `ui/index.jsx` och re-exporteras
   via `index.js`.

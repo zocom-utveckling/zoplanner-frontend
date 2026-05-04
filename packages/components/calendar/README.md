@@ -43,22 +43,17 @@ import {
   AllSchedulesScheduler,
 
   // Modaler (för t.ex. profil-sidan)
-  ActivityModal,
   EventDetailsModal,
   BookingEditModal,
 
-  // Hook (för t.ex. profil-sidans aktivitetsformulär)
-  useActivityForm,
-
   // Datumhjälp
   toLocalDateTime,
-
-  // Färgtema för aktiviteter
-  ACTIVITY_COLOR_OPTIONS,
-  DEFAULT_ACTIVITY_COLOR,
-  normalizeActivityColor,
 } from "@zoplanner/calendar";
 ```
+
+> Allt som rör att **skapa/redigera en aktivitet** (ActivityModal,
+> `useActivityForm`, `MonthCalendar`, `AddActivityButton`, färgpaletten,
+> `ModalOverlay`) bor i [@zoplanner/activity-creation](../../base/add-activity-button/README.md).
 
 ---
 
@@ -97,20 +92,20 @@ i appen lyssnar och laddar om sin data. All sådan eventing går genom
 
 ## Var hör en ny ändring hemma?
 
-| Du vill ändra…                            | Filen du letar efter                                                 |
-| ----------------------------------------- | -------------------------------------------------------------------- |
-| Hur ett aktivitets-event ser ut visuellt  | `dashboard/EventBlock.jsx`                                           |
-| Hur dagar/timmar ritas ut                 | `dashboard/MonthView.jsx`, `dashboard/TimeGridView.jsx`              |
-| Filtreringen i Hem-vyn                    | `core/hooks/useSchedulerFilters.js`                                  |
-| API-anropen som hämtar events             | `core/data/schedulerData.js`                                         |
-| Tolkning av API-fält (namnsynonymer m.m.) | `core/data/fieldNormalizers.js`                                      |
-| Korskalender-synk (manager ↔ medarbetare) | `core/hooks/useCrossCalendarSync.js`                                 |
-| Modal-overlay (gemensam för alla modaler) | `core/ui/modals/ModalOverlay.jsx`                                    |
-| Datum-/tidsformatering                    | `core/utils/dateTimeUtils.js`                                        |
-| Att skapa/uppdatera/radera en aktivitet   | `core/hooks/useSchedulerEvents.js`                                   |
-| Aktivitetsformuläret (steg, validering)   | `core/hooks/useActivityForm.js` + `core/ui/modals/ActivityModal.jsx` |
-| Att tolka ett event-id som "session-X-Y"  | `core/utils/bookingMeta.js`                                          |
-| Färgvalet på aktivitet                    | `core/utils/eventColors.js`                                          |
+| Du vill ändra…                            | Filen du letar efter                                                                           |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Hur ett aktivitets-event ser ut visuellt  | `dashboard/EventBlock.jsx`                                                                     |
+| Hur dagar/timmar ritas ut                 | `dashboard/MonthView.jsx`, `dashboard/TimeGridView.jsx`                                        |
+| Filtreringen i Hem-vyn                    | `core/hooks/useSchedulerFilters.js`                                                            |
+| API-anropen som hämtar events             | `core/data/schedulerData.js`                                                                   |
+| Tolkning av API-fält (namnsynonymer m.m.) | `core/data/fieldNormalizers.js`                                                                |
+| Korskalender-synk (manager ↔ medarbetare) | `core/hooks/useCrossCalendarSync.js`                                                           |
+| Modal-overlay (gemensam för alla modaler) | Bor i `@zoplanner/activity-creation` (`modals/ModalOverlay.jsx`)                               |
+| Datum-/tidsformatering                    | `core/utils/dateTimeUtils.js`                                                                  |
+| Att skapa/uppdatera/radera en aktivitet   | `core/hooks/useSchedulerEvents.js`                                                             |
+| Aktivitetsformuläret (steg, validering)   | Bor i `@zoplanner/activity-creation` (`hooks/useActivityForm.js` + `modals/ActivityModal.jsx`) |
+| Att tolka ett event-id som "session-X-Y"  | `core/utils/bookingMeta.js`                                                                    |
+| Färgvalet på aktivitet                    | Bor i `@zoplanner/activity-creation` (`utils/eventColors.js`)                                  |
 
 ---
 
