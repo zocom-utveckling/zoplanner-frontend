@@ -1,7 +1,7 @@
 import { Navbar } from "@zoplanner/navbar";
 import { Sidebar } from "@zoplanner/sidebar";
 import { Dashboard } from "@zoplanner/dashboard";
-import { AllSchedulesPage } from "@zoplanner/all-schedules-page";
+import { AllSchedulesScheduler } from "@zoplanner/calendar";
 import { CoursesPage } from "@zoplanner/courses-page";
 import { MessagesPage } from "@zoplanner/messages-page";
 import "./index.css";
@@ -90,6 +90,31 @@ function HomePage() {
   const resolvedActivePage =
     activePage === "allSchedules" && !isManager ? "dashboard" : activePage;
 
+  let pageContent;
+  switch (resolvedActivePage) {
+    case "allSchedules":
+      pageContent = <AllSchedulesScheduler user={user} />;
+      break;
+    case "courses":
+      pageContent = <CoursesPage />;
+      break;
+    case "messages":
+      pageContent = <MessagesPage user={user} />;
+      break;
+    case "profile":
+      pageContent = <Profile_Page user={user} />;
+      break;
+    case "dashboard":
+    default:
+      pageContent = (
+        <Dashboard
+          user={calendarUser || user}
+          calendarUser={calendarUser}
+          managerUser={user}
+        />
+      );
+  }
+
   return (
     <DashboardLayout
       user={user}
@@ -98,11 +123,7 @@ function HomePage() {
       onSelectCalendarUser={setCalendarUser}
       onResetCalendarUser={handleResetCalendarUser}
     >
-      <Dashboard
-        user={calendarUser || user}
-        calendarUser={calendarUser}
-        managerUser={user}
-      />
+      {pageContent}
     </DashboardLayout>
   );
 }
