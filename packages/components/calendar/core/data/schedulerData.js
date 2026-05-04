@@ -1,3 +1,14 @@
+// Hämtar och formatterar kalender-events från backend.
+//
+// Tre exporter:
+// - fetchSchedulerEvents(user, options) — events för en användare
+//   (aktiviteter + sessioner + obokade uppdrag, beroende på options).
+// - fetchUserCities() — uniklista över städer från alla användare.
+// - fetchConsultantUsers() — uniklista över konsult-namn.
+//
+// Fält-normalisering bor i ./fieldNormalizers.js, datum-/tidshjälpare i
+// ../utils/dateTimeUtils.js.
+
 import {
   activityService,
   assignmentService,
@@ -5,122 +16,23 @@ import {
   courseService,
   userService,
 } from "@zoplanner/api";
-
-function firstNonEmptyString(...values) {
-  for (const value of values) {
-    if (typeof value === "string" && value.trim()) {
-      return value.trim();
-    }
-  }
-  return null;
-}
-
-function normalizeLocationType(locationTypeValue) {
-  const normalized = firstNonEmptyString(locationTypeValue)?.toUpperCase();
-  if (normalized === "REMOTE") return "REMOTE";
-  if (normalized === "ONSITE") return "ONSITE";
-  if (normalized === "HYBRID") return "HYBRID";
-  return null;
-}
-
-function getPersonName(person) {
-  return firstNonEmptyString(
-    person?.name,
-    person?.Name,
-    person?.fullName,
-    person?.FullName,
-    [person?.firstName, person?.lastName].filter(Boolean).join(" "),
-    [person?.FirstName, person?.LastName].filter(Boolean).join(" "),
-  );
-}
-
-function getAssignmentConsultantId(assignment) {
-  return (
-    assignment?.consultantId ||
-    assignment?.idConsultant ||
-    assignment?.consultant?.id ||
-    null
-  );
-}
-
-function getAssignmentConsultantName(assignment, consultantNameById) {
-  const consultantId = getAssignmentConsultantId(assignment);
-
-  return firstNonEmptyString(
-    getPersonName(assignment?.consultant),
-    assignment?.consultantName,
-    assignment?.consultant?.name,
-    assignment?.consultant?.Name,
-    consultantId ? consultantNameById.get(consultantId) : null,
-  );
-}
-
-function hasConsultantRole(user) {
-  const roleValue = firstNonEmptyString(user?.role, user?.Role);
-  if (!roleValue) return false;
-
-  const normalizedRoles = roleValue
-    .toLowerCase()
-    .split(/[\s,;|/+-]+/)
-    .map((role) => role.trim())
-    .filter(Boolean);
-
-  return (
-    normalizedRoles.includes("consultant") || normalizedRoles.includes("both")
-  );
-}
-
-function toDisplayCity(cityValue) {
-  const normalized = firstNonEmptyString(cityValue);
-  if (!normalized) return null;
-  return normalized
-    .toLocaleLowerCase("sv")
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toLocaleUpperCase("sv") + part.slice(1))
-    .join(" ");
-}
-
-function toArray(value) {
-  if (Array.isArray(value)) {
-    return value;
-  }
-
-  if (Array.isArray(value?.data)) {
-    return value.data;
-  }
-
-  return [];
-}
-
-function firstNonNull(...values) {
-  for (const value of values) {
-    if (value !== null && value !== undefined && value !== "") {
-      return value;
-    }
-  }
-  return null;
-}
-
-function resolveAssignmentId(assignment) {
-  return firstNonNull(
-    assignment?.id,
-    assignment?.assignmentId,
-    assignment?.idAssignment,
-    assignment?.AssignmentId,
-    assignment?.Id,
-  );
-}
-
-function resolveSessionId(session) {
-  return firstNonNull(
-    session?.id,
-    session?.sessionId,
-    session?.idSession,
-    session?.SessionId,
-    session?.Id,
-  );
-}
+import {
+  toActivityDateTime,
+  toDateWithTime,
+  toLocalDateTime,
+} from "../utils/dateTimeUtils";
+import {
+  firstNonEmptyString,
+  firstNonNull,
+  getAssignmentConsultantId,
+  getAssignmentConsultantName,
+  hasConsultantRole,
+  normalizeLocationType,
+  resolveAssignmentId,
+  resolveSessionId,
+  toArray,
+  toDisplayCity,
+} from "./fieldNormalizers";
 
 export async function fetchUserCities() {
   try {
@@ -128,7 +40,7 @@ export async function fetchUserCities() {
 
     const cityMap = new Map();
 
-    (Array.isArray(users) ? users : []).forEach((user) => {
+    users.forEach((user) => {
       const city = toDisplayCity(firstNonEmptyString(user?.city, user?.City));
       if (!city) return;
       cityMap.set(city.toLocaleLowerCase("sv"), city);
@@ -153,7 +65,7 @@ export async function fetchConsultantUsers() {
     const users = toArray(usersRes);
 
     const userMap = new Map(
-      (Array.isArray(users) ? users : [])
+      users
         .map((user) => [
           user?.id,
           firstNonEmptyString(
@@ -170,9 +82,7 @@ export async function fetchConsultantUsers() {
         .filter(([id, name]) => Boolean(id) && Boolean(name)),
     );
 
-    const consultantNamesFromConsultants = (
-      Array.isArray(consultants) ? consultants : []
-    )
+    const consultantNamesFromConsultants = consultants
       .map((consultant) => {
         const linkedUserName = userMap.get(consultant?.userId);
         return firstNonEmptyString(
@@ -191,7 +101,7 @@ export async function fetchConsultantUsers() {
       })
       .filter(Boolean);
 
-    const consultantNamesFromUsers = (Array.isArray(users) ? users : [])
+    const consultantNamesFromUsers = users
       .filter((user) => hasConsultantRole(user))
       .map((user) =>
         firstNonEmptyString(
@@ -218,90 +128,6 @@ export async function fetchConsultantUsers() {
   } catch {
     return [];
   }
-}
-
-export function toDateWithTime(dateValue, hours, minutes) {
-  if (!dateValue) return null;
-  if (dateValue instanceof Date) {
-    const baseDate = new Date(dateValue);
-    if (Number.isNaN(baseDate.getTime())) return null;
-    baseDate.setHours(hours, minutes, 0, 0);
-    return baseDate;
-  }
-
-  if (
-    typeof dateValue === "object" &&
-    dateValue !== null &&
-    "year" in dateValue &&
-    "month" in dateValue &&
-    "day" in dateValue
-  ) {
-    const baseDate = new Date(
-      dateValue.year,
-      Math.max(0, dateValue.month - 1),
-      dateValue.day,
-    );
-    if (Number.isNaN(baseDate.getTime())) return null;
-    baseDate.setHours(hours, minutes, 0, 0);
-    return baseDate;
-  }
-
-  const asString = String(dateValue);
-  if (/^\d{4}-\d{2}-\d{2}$/.test(asString)) {
-    const [year, month, day] = asString.split("-").map(Number);
-    const baseDate = new Date(year, Math.max(0, month - 1), day);
-    if (Number.isNaN(baseDate.getTime())) return null;
-    baseDate.setHours(hours, minutes, 0, 0);
-    return baseDate;
-  }
-
-  const base = asString.includes("T")
-    ? new Date(asString)
-    : new Date(`${asString}T00:00:00`);
-  if (Number.isNaN(base.getTime())) return null;
-  base.setHours(hours, minutes, 0, 0);
-  return base;
-}
-
-export function toLocalDateTime(dateValue) {
-  if (!dateValue) return null;
-  if (dateValue instanceof Date) {
-    return Number.isNaN(dateValue.getTime()) ? null : new Date(dateValue);
-  }
-
-  if (typeof dateValue === "string") {
-    const trimmed = dateValue.trim();
-    const match = trimmed.match(
-      /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/,
-    );
-
-    if (match) {
-      const year = Number(match[1]);
-      const month = Number(match[2]);
-      const day = Number(match[3]);
-      const hour = Number(match[4]);
-      const minute = Number(match[5]);
-      const second = match[6] ? Number(match[6]) : 0;
-      const localDate = new Date(year, month - 1, day, hour, minute, second, 0);
-      return Number.isNaN(localDate.getTime()) ? null : localDate;
-    }
-  }
-
-  const parsed = new Date(dateValue);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-}
-
-function toActivityDateTime(dateValue, timeValue) {
-  const date = firstNonEmptyString(dateValue);
-  const rawTime = firstNonEmptyString(timeValue);
-  if (!date || !rawTime) return null;
-
-  const normalizedTime = rawTime.split(".")[0];
-  const withSeconds = /^\d{2}:\d{2}$/.test(normalizedTime)
-    ? `${normalizedTime}:00`
-    : normalizedTime;
-
-  return toLocalDateTime(`${date} ${withSeconds}`);
 }
 
 export async function fetchSchedulerEvents(user, options = {}) {
@@ -340,7 +166,7 @@ export async function fetchSchedulerEvents(user, options = {}) {
   const users = toArray(usersRes);
 
   const userNameById = new Map(
-    (Array.isArray(users) ? users : [])
+    users
       .map((loadedUser) => [
         loadedUser?.id,
         firstNonEmptyString(
@@ -362,7 +188,7 @@ export async function fetchSchedulerEvents(user, options = {}) {
   );
 
   const consultantNameById = new Map(
-    (Array.isArray(consultants) ? consultants : [])
+    consultants
       .map((consultant) => {
         const linkedUserName = userNameById.get(consultant?.userId);
         return [
@@ -390,7 +216,7 @@ export async function fetchSchedulerEvents(user, options = {}) {
     ? []
     : toArray(await activityService.getAll());
   const courseMap = new Map(
-    (Array.isArray(courses) ? courses : [])
+    courses
       .map((course) => [
         course?.id,
         firstNonEmptyString(
@@ -405,10 +231,8 @@ export async function fetchSchedulerEvents(user, options = {}) {
 
   const nextEvents = [];
 
-  (Array.isArray(activities) ? activities : [])
-    .filter((activity) => {
-      return String(activity?.userId) === String(user?.id);
-    })
+  activities
+    .filter((activity) => String(activity?.userId) === String(user?.id))
     .forEach((activity) => {
       const start = toActivityDateTime(activity?.date, activity?.startTime);
       const end = toActivityDateTime(activity?.date, activity?.endTime);
@@ -455,7 +279,6 @@ export async function fetchSchedulerEvents(user, options = {}) {
 
     if (Array.isArray(sessions) && sessions.length > 0) {
       sessions.forEach((session) => {
-        const resolvedAssignmentId = resolveAssignmentId(assignment);
         const resolvedSessionId = resolveSessionId(session);
         const start = toLocalDateTime(
           session?.timeStart || session?.start || session?.time_start,

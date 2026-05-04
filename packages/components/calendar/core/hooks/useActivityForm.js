@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
-import { toLocalDateTime } from "../data/schedulerData";
+import { toLocalDateTime } from "../utils/dateTimeUtils";
 import { DEFAULT_ACTIVITY_COLOR } from "../utils/eventColors";
 
 const initialFormData = {

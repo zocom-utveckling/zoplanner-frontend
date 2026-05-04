@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { activityService } from "@zoplanner/api";
-import { fetchSchedulerEvents, toLocalDateTime } from "../data/schedulerData";
+import { fetchSchedulerEvents } from "../data/schedulerData";
+import {
+  toDatePart,
+  toLocalDateTime,
+  toTimePart,
+} from "../utils/dateTimeUtils";
+import {
+  ACTIVITIES_UPDATED_EVENT,
+  emitActivitiesUpdated,
+} from "../utils/activityEvents";
 import {
   DEFAULT_ACTIVITY_COLOR,
   normalizeActivityColor,
@@ -48,33 +57,6 @@ function applyStoredColor(eventItem, colorMap) {
   };
 }
 
-function emitActivitiesUpdated(userId) {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(
-    new CustomEvent("zoplanner:activities:updated", {
-      detail: { userId },
-    }),
-  );
-}
-
-function toDatePart(value) {
-  const date = toLocalDateTime(value);
-  if (!date) return null;
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-function toTimePart(value) {
-  const date = toLocalDateTime(value);
-  if (!date) return null;
-
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${hours}:${minutes}`;
-}
 function toEventFromActivity(activity, fallbackEvent) {
   if (!activity) return fallbackEvent;
 
@@ -335,13 +317,13 @@ export default function useSchedulerEvents(user, options = {}) {
     }
 
     window.addEventListener(
-      "zoplanner:activities:updated",
+      ACTIVITIES_UPDATED_EVENT,
       handleActivitiesUpdated,
     );
 
     return () => {
       window.removeEventListener(
-        "zoplanner:activities:updated",
+        ACTIVITIES_UPDATED_EVENT,
         handleActivitiesUpdated,
       );
     };

@@ -11,6 +11,11 @@ import useActivityForm from "../core/hooks/useActivityForm";
 import useEventDetailsModal from "../core/hooks/useEventDetailsModal";
 import useSchedulerEvents from "../core/hooks/useSchedulerEvents";
 import useSchedulerFilters from "../core/hooks/useSchedulerFilters";
+import { emitActivitiesUpdated } from "../core/utils/activityEvents";
+import {
+  resolveAssignmentMeta,
+  resolveSessionMeta,
+} from "../core/utils/bookingMeta";
 import { useCurrentActor } from "@zoplanner/app-hooks";
 import { assignmentService, sessionService } from "@zoplanner/api";
 import "../core/index.css";
@@ -167,45 +172,6 @@ export function AllSchedulesScheduler({ user }) {
     }
 
     handleCloseEventModal();
-  }
-
-  function resolveSessionMeta(eventItem) {
-    const directSessionId = eventItem?.sessionId;
-    const directAssignmentId = eventItem?.assignmentId;
-
-    if (directSessionId != null) {
-      return {
-        assignmentId: directAssignmentId ?? null,
-        sessionId: directSessionId,
-      };
-    }
-
-    const match = String(eventItem?.id || "").match(/^session-(.*?)-(.*)$/);
-    if (!match) return null;
-    return {
-      assignmentId: match[1] || null,
-      sessionId: match[2] || null,
-    };
-  }
-
-  function resolveAssignmentMeta(eventItem) {
-    const directAssignmentId = eventItem?.assignmentId;
-    if (directAssignmentId != null) {
-      return { assignmentId: directAssignmentId };
-    }
-
-    const match = String(eventItem?.id || "").match(/^assignment-(.*)$/);
-    if (!match) return null;
-    return { assignmentId: match[1] || null };
-  }
-
-  function emitActivitiesUpdated(userId) {
-    if (typeof window === "undefined") return;
-    window.dispatchEvent(
-      new CustomEvent("zoplanner:activities:updated", {
-        detail: { userId },
-      }),
-    );
   }
 
   async function handleSaveBookingEdit(nextValues) {
