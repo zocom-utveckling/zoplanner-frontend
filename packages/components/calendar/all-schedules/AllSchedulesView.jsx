@@ -9,7 +9,7 @@ import {
   startOfMonth,
 } from "date-fns";
 import sv from "date-fns/locale/sv";
-import { getAllSchedulesEventColorVars } from "../core/utils/eventColors";
+import { getAllSchedulesEventColorVars } from "@zoplanner/activity-creation";
 
 const HOURS_START = 6;
 const HOURS_END = 21;

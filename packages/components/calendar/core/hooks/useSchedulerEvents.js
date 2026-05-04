@@ -13,7 +13,7 @@ import {
 import {
   DEFAULT_ACTIVITY_COLOR,
   normalizeActivityColor,
-} from "../utils/eventColors";
+} from "@zoplanner/activity-creation";
 
 const ACTIVITY_COLOR_STORAGE_KEY = "zoplanner:activity-color-map:v1";
 

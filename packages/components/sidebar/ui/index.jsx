@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import "./index.css";
 import { UserProfile } from "@zoplanner/user-profile";
 import { ProfileCard } from "@zoplanner/profile-card";
-import { AddActivityButton } from "@zoplanner/add-activity-button";
-import { MonthCalendar } from "@zoplanner/month-calender-sidebar";
+import { AddActivityButton } from "@zoplanner/activity-creation";
+import { MonthCalendar } from "@zoplanner/month-calendar";
 
 function Sidebar({ user, onSelectCalendarUser }) {
   const roleValue =

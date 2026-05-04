@@ -1,7 +1,7 @@
 import {
   getDashboardEventColorVars,
   getBookingWeekdayColorVars,
-} from "../core/utils/eventColors";
+} from "@zoplanner/activity-creation";
 
 export default function EventBlock({
   event,

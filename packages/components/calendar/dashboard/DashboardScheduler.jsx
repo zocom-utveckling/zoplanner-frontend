@@ -3,12 +3,14 @@ import { format } from "date-fns";
 import "./DashboardScheduler.css";
 import DashboardTopbar from "./DashboardTopbar";
 import DashboardCalendarContent from "./DashboardCalendarContent";
-import ActivityModal from "../core/ui/modals/ActivityModal";
+import {
+  ActivityModal,
+  ModalOverlay,
+  useActivityForm,
+} from "@zoplanner/activity-creation";
 import EventDetailsModal from "../core/ui/modals/EventDetailsModal";
 import BookingEditModal from "../core/ui/modals/BookingEditModal";
-import ModalOverlay from "../core/ui/modals/ModalOverlay";
 import useSchedulerNavigation from "../core/hooks/useSchedulerNavigation";
-import useActivityForm from "../core/hooks/useActivityForm";
 import useEventDetailsModal from "../core/hooks/useEventDetailsModal";
 import useSchedulerEvents from "../core/hooks/useSchedulerEvents";
 import useSchedulerFilters from "../core/hooks/useSchedulerFilters";

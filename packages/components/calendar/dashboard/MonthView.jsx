@@ -11,7 +11,7 @@ import {
 import {
   getDashboardEventColorVars,
   getBookingWeekdayColorVars,
-} from "../core/utils/eventColors";
+} from "@zoplanner/activity-creation";
 
 const MAX_VISIBLE = 3;
 
