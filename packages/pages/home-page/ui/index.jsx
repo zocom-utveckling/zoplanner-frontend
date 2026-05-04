@@ -4,11 +4,12 @@ import { Dashboard } from "@zoplanner/dashboard";
 import { AllSchedulesScheduler } from "@zoplanner/calendar";
 import { CoursesPage } from "@zoplanner/courses-page";
 import { MessagesPage } from "@zoplanner/messages-page";
+import { Profile_Page } from "@zoplanner/profile-page";
+import { userService } from "@zoplanner/api";
 import "./index.css";
 
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Profile_Page } from "../../profile-page/ui";
 
 function DashboardLayout({
   user,
@@ -51,21 +52,14 @@ function HomePage() {
 
   // Funktion för att återställa kalendern till manager
   const handleResetCalendarUser = () => setCalendarUser(null);
-  console.log(localStorage.getItem("managerId"));
 
   useEffect(() => {
     if (!id) return;
 
     const fetchUser = async () => {
       try {
-        const res = await fetch(`http://localhost:5027/api/User/${id}`);
-        const data = await res.json();
-        if (res.ok) {
-          setUser(data);
-          console.log(data.name);
-        } else {
-          console.log("Could not fetch user");
-        }
+        const data = await userService.getById(id);
+        setUser(data);
       } catch (error) {
         console.error(error);
       }
