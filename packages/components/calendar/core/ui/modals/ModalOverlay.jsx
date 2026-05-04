@@ -38,10 +38,7 @@ export default function ModalOverlay({
 
   if (!renderContentWrapper) {
     return (
-      <div
-        className="scheduler-modal-overlay"
-        onClick={handleOverlayClick}
-      >
+      <div className="scheduler-modal-overlay" onClick={handleOverlayClick}>
         {children}
       </div>
     );

@@ -316,10 +316,7 @@ export default function useSchedulerEvents(user, options = {}) {
       }
     }
 
-    window.addEventListener(
-      ACTIVITIES_UPDATED_EVENT,
-      handleActivitiesUpdated,
-    );
+    window.addEventListener(ACTIVITIES_UPDATED_EVENT, handleActivitiesUpdated);
 
     return () => {
       window.removeEventListener(
