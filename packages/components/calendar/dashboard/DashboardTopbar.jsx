@@ -1,5 +1,6 @@
 import "./DashboardTopbar.css";
 import { memo, useState } from "react";
+import Switch from "@mui/material/Switch";
 import QuickMessageModal from "./QuickMessageModal";
 
 function DashboardTopbar({
@@ -69,16 +70,11 @@ function DashboardTopbar({
             title="Visa bokningar i veckofärger"
           >
             <span className="dashboard-topbar__toggle-text">Veckofärger</span>
-            <span
-              className={`dashboard-topbar__toggle-track ${bookingWeekColors ? "dashboard-topbar__toggle-track--on" : ""}`}
-            >
-              <span className="dashboard-topbar__toggle-thumb" />
-            </span>
-            <input
-              type="checkbox"
-              className="dashboard-topbar__toggle-input"
+            <Switch
+              size="small"
               checked={bookingWeekColors}
               onChange={onToggleBookingWeekColors}
+              inputProps={{ "aria-label": "Veckofärger" }}
             />
           </label>
           <button className="dashboard-topbar__today-btn" onClick={onGoToday}>
