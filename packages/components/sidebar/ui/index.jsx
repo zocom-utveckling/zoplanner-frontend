@@ -4,6 +4,8 @@ import { UserProfile } from "@zoplanner/user-profile";
 import { ProfileCard } from "@zoplanner/profile-card";
 import { AddActivityButton } from "@zoplanner/activity-creation";
 import { MonthCalendar } from "@zoplanner/month-calendar";
+import { activityService, userService } from "@zoplanner/api";
+import { emitActivitiesUpdated } from "@zoplanner/calendar";
 
 function Sidebar({ user, onSelectCalendarUser }) {
   const roleValue =
@@ -15,7 +17,6 @@ function Sidebar({ user, onSelectCalendarUser }) {
   const isManager =
     normalizedRoles.includes("manager") || normalizedRoles.includes("both");
 
-  const [highlightedDates, setHighlightedDates] = useState([]);
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [isUsersOpen, setIsUsersOpen] = useState(true);
@@ -36,8 +37,7 @@ function Sidebar({ user, onSelectCalendarUser }) {
       setIsLoadingUsers(true);
 
       try {
-        const res = await fetch(`http://localhost:5027/api/User`);
-        const data = res.ok ? await res.json() : [];
+        const data = await userService.getAll();
         if (!isCancelled) {
           setUsers(Array.isArray(data) ? data : []);
         }
@@ -59,114 +59,8 @@ function Sidebar({ user, onSelectCalendarUser }) {
     };
   }, [isManager]);
 
-  useEffect(() => {
-    let isCancelled = false;
-
-    const toDateKey = (date) => {
-      if (!date) return null;
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    };
-
-    const parseDate = (value) => {
-      if (!value) return null;
-      if (value instanceof Date && !Number.isNaN(value.getTime())) {
-        return value;
-      }
-      if (typeof value === "string") {
-        const normalized = value.split("T")[0];
-        const parsed = new Date(`${normalized}T00:00:00`);
-        return Number.isNaN(parsed.getTime()) ? null : parsed;
-      }
-      return null;
-    };
-
-    async function loadAssignments() {
-      if (!user?.id) {
-        if (!isCancelled) setHighlightedDates([]);
-        return;
-      }
-
-      let consultantId = user?.consultantId || user?.consultant?.id;
-
-      if (!consultantId) {
-        try {
-          const consultantsRes = await fetch(
-            `http://localhost:5027/api/Consultant`,
-          );
-          const consultants = consultantsRes.ok
-            ? await consultantsRes.json()
-            : [];
-          const match = consultants.find(
-            (consultant) => consultant?.userId === user?.id,
-          );
-          consultantId = match?.id;
-        } catch {
-          consultantId = null;
-        }
-      }
-
-      if (!consultantId) {
-        if (!isCancelled) setHighlightedDates([]);
-        return;
-      }
-
-      try {
-        const assignmentsRes = await fetch(
-          `http://localhost:5027/api/Assignment/consultant/${consultantId}`,
-        );
-        const assignments = assignmentsRes.ok
-          ? await assignmentsRes.json()
-          : [];
-
-        const dateSet = new Set();
-
-        assignments.forEach((assignment) => {
-          const startValue =
-            assignment?.course?.dateStart ||
-            assignment?.dateStart ||
-            assignment?.startDate;
-          const endValue =
-            assignment?.course?.dateEnd ||
-            assignment?.dateEnd ||
-            assignment?.endDate ||
-            startValue;
-
-          const start = parseDate(startValue);
-          const end = parseDate(endValue);
-
-          if (!start || !end) return;
-
-          const current = new Date(start);
-          const last = new Date(end);
-          while (current <= last) {
-            const key = toDateKey(current);
-            if (key) dateSet.add(key);
-            current.setDate(current.getDate() + 1);
-          }
-        });
-
-        if (!isCancelled) {
-          setHighlightedDates(Array.from(dateSet));
-        }
-      } catch {
-        if (!isCancelled) setHighlightedDates([]);
-      }
-    }
-
-    loadAssignments();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [user?.id, user?.consultantId, user?.consultant?.id]);
-
   const handleSubmitActivity = async (activityData) => {
     if (!user?.id) return false;
-
-    const userId = user?.id || null;
 
     const payload = {
       title: activityData?.title || "Aktivitet",
@@ -176,27 +70,14 @@ function Sidebar({ user, onSelectCalendarUser }) {
       startTime: activityData?.startTime,
       endTime: activityData?.endTime,
       description: activityData?.description || "",
-      ...(userId ? { userId } : {}),
+      userId: user.id,
     };
 
     try {
-      const response = await fetch(`http://localhost:5027/api/Activities`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok && typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("zoplanner:activities:updated", {
-            detail: { userId },
-          }),
-        );
-      }
-
-      return response.ok;
+      await activityService.create(payload);
+      // Signalera till andra kalendervyer att de ska ladda om sin data.
+      emitActivitiesUpdated(user.id);
+      return true;
     } catch {
       return false;
     }

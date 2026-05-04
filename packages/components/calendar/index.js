@@ -15,6 +15,13 @@ export { default as BookingEditModal } from "./core/ui/modals/BookingEditModal";
 // Datum-/tidshjälpare
 export { toLocalDateTime } from "./core/utils/dateTimeUtils";
 
+// Event-bus så externa konsumenter (t.ex. sidebar) kan signalera att
+// aktiviteter förändrats utan att skriva egna dispatchEvent-anrop.
+export {
+  ACTIVITIES_UPDATED_EVENT,
+  emitActivitiesUpdated,
+} from "./core/utils/activityEvents";
+
 // OBS: Allt som handlar om att skapa/redigera en aktivitet (ActivityModal,
 // useActivityForm, MonthCalendar, AddActivityButton, färgpaletten, ModalOverlay)
 // bor i @zoplanner/activity-creation.
