@@ -1,0 +1,5 @@
+{
+  "name": "@zoplanner/button",
+  "main": "index.js",
+  "style": "buttons.css"
+}

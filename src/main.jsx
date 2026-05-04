@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
-import "./buttons.css";
+import "@zoplanner/button/buttons.css";
 import App from "./App.jsx";
 
 const savedTheme = localStorage.getItem("theme");
