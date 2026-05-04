@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "./index.css";
 import { ConfirmPopup } from "../../../../components/confirm-popup/ui";
-import { Button } from "@zoplanner/button";
 
 const cities = ["GÖTEBORG", "MALMÖ", "STOCKHOLM"];
 const roles = ["MANAGER", "CONSULTANT", "BOTH"];
@@ -205,19 +204,21 @@ function Edit_Profile({ user, onClose, setUser }) {
             </section>
 
             <footer className="edit-profile-footer">
-              <Button
-                type={"button"}
+              <button
+                type="button"
+                className="button button_delete-btn"
                 onClick={handleOpenCancelConfirm}
-                style={"delete-btn"}
-                text={"Avbryt"}
-              />
-              <Button
-                type={"button"}
+              >
+                Avbryt
+              </button>
+              <button
+                type="button"
+                className="button button_reply-btn"
                 onClick={handleOpenSubmitConfirm}
-                style={"reply-btn"}
-                text={loading ? "Sparar..." : "Spara ändringar"}
                 disabled={loading}
-              />
+              >
+                {loading ? "Sparar..." : "Spara ändringar"}
+              </button>
             </footer>
           </div>
         </div>

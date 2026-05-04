@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Button } from "@zoplanner/button";
 import { authService, consultantService, userService } from "@zoplanner/api";
 import { FaEnvelope, FaLock, FaUser } from "react-icons/fa";
 import { LoginPage } from "@zoplanner/login-page";
@@ -211,7 +210,9 @@ export function ConsultantOnboarding() {
           </div>
 
           <div className="register-page__button-group">
-            <Button text="Skapa konto" type={"submit"} style={"submit"} />
+            <button type="submit" className="button button_submit">
+              Skapa konto
+            </button>
           </div>
           <p className="customer-registry__modal-future-note">
             Detta formulär är tänkt att nås via konsultens inbjudningslänk. I

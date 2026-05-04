@@ -1,4 +1,3 @@
-import { Button } from "@zoplanner/button";
 import { useEffect, useState } from "react";
 import "./index.css";
 
@@ -41,7 +40,13 @@ function SendMessagePopup({ onClose, user }) {
       <div className="sendOverlay-content">
         <header className="sendOverlay-header">
           <h2>New Message</h2>
-          <Button text="×" onClick={onClose} type="button" style="close-btn" />
+          <button
+            type="button"
+            className="button button_close-btn"
+            onClick={onClose}
+          >
+            ×
+          </button>
         </header>
 
         <main className="sendOverlay-main">
@@ -100,8 +105,16 @@ function SendMessagePopup({ onClose, user }) {
         </main>
 
         <footer className="sendOverlay-footer">
-          <Button text="Avbryt" type="button" style="cancel" onClick={onClose} />
-          <Button text="Skicka" type="submit" style="send" />
+          <button
+            type="button"
+            className="button button_cancel"
+            onClick={onClose}
+          >
+            Avbryt
+          </button>
+          <button type="submit" className="button button_send">
+            Skicka
+          </button>
         </footer>
       </div>
     </div>

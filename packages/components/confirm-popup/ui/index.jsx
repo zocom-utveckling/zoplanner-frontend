@@ -1,4 +1,3 @@
-import { Button } from "@zoplanner/button";
 import "./index.css";
 
 function ConfirmPopup({ text, onConfirm, onCancel }) {
@@ -9,22 +8,24 @@ function ConfirmPopup({ text, onConfirm, onCancel }) {
         <p>Denna åtgärd kan inte ångras.</p>
 
         <div className="confirm-popup__actions">
-          <Button
+          <button
             type="button"
+            className="button button_reply-btn"
             onClick={() => {
               onConfirm();
               onCancel();
             }}
-            text="Bekräfta"
-            style="reply-btn"
-          />
+          >
+            Bekräfta
+          </button>
 
-          <Button
+          <button
             type="button"
+            className="button button_delete-btn"
             onClick={onCancel}
-            text="Avbryt"
-            style="delete-btn"
-          />
+          >
+            Avbryt
+          </button>
         </div>
       </div>
     </div>
