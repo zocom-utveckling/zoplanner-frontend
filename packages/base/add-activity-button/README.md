@@ -78,5 +78,5 @@ hooken vidare in).
 - BEM-klassnamn för CSS (`month-calendar-modal__header` osv).
 - All UI-text och kommentarer på svenska.
 - CSS för `<ActivityModal />` ligger fortfarande i
-  `@zoplanner/calendar/core/index.css` och importeras av sidor som renderar
+  `@zoplanner/calendar/ui/scheduler.css` och importeras av sidor som renderar
   modalen (Dashboard, AllSchedules, profile-page).

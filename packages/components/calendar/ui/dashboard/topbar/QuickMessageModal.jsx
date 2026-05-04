@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./QuickMessageModal.css";
-import { SendDirectMessage } from "../../notis-knapp/hooks/notisHook";
+import { SendDirectMessage } from "../../../../notis-knapp/hooks/notisHook";
 
 export default function QuickMessageModal({
   open,
@@ -42,7 +42,7 @@ export default function QuickMessageModal({
     <div className="quick-message-modal-backdrop">
       <div className="quick-message-modal">
         <h3>Skicka meddelande till {recipient?.name}</h3>
-        
+
         <input
           type="text"
           className="quick-message-subject"

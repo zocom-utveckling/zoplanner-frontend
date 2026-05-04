@@ -1,5 +1,5 @@
 import "./index.css";
-import "../../../components/calendar/core/index.css";
+import "../../../components/calendar/ui/scheduler.css";
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
 import { FaCamera } from "react-icons/fa";

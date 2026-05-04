@@ -14,13 +14,22 @@ Det är skrivet i React och använder `date-fns` för datumhantering.
 ```
 calendar/
 ├── index.js              ← Publika exporter (det enda externa filer ska importera)
-├── dashboard/            ← Schemavy för en användare (Dashboard-sidan)
-├── all-schedules/        ← Schemavy för flera konsulter (Hem-sidan, admin)
-└── core/                 ← Delade byggstenar för båda vyerna
-    ├── data/             ← Datahämtning & normalisering från API
-    ├── hooks/            ← React-hooks (state, navigation, filter, CRUD)
-    ├── ui/modals/        ← Modaler (skapa/visa/redigera aktivitet & bokning)
-    └── utils/            ← Rena hjälpfunktioner (datum, färg, meta-parsning)
+├── package.json
+└── ui/                   ← All logik och CSS
+    ├── scheduler.css     ← Global scheduler-styling (delas av båda vyerna + profile-page)
+    ├── dashboard/        ← Schemavy för en användare (Dashboard-sidan)
+    │   ├── DashboardScheduler.{jsx,css}
+    │   ├── topbar/       ← DashboardTopbar + QuickMessageModal
+    │   └── views/        ← MonthView, TimeGridView, EventBlock, DashboardCalendarContent
+    ├── all-schedules/    ← Schemavy för flera konsulter (Hem-sidan, admin)
+    │   ├── AllSchedulesScheduler.{jsx,css}
+    │   ├── topbar/       ← AllSchedulesTopbar
+    │   └── views/        ← AllSchedulesView, AllSchedulesCalendarContent
+    └── core/             ← Delade byggstenar för båda vyerna
+        ├── data/         ← Datahämtning & normalisering från API
+        ├── hooks/        ← React-hooks (state, navigation, filter, CRUD)
+        ├── modals/       ← Modaler (EventDetailsModal, BookingEditModal)
+        └── utils/        ← Rena hjälpfunktioner (datum, färg, meta-parsning)
 ```
 
 ### Två vyer – två toppnivåkomponenter
@@ -85,17 +94,19 @@ import {
 När en aktivitet skapas/uppdateras/raderas dispatchas
 `zoplanner:activities:updated` på `window`. Andra `useSchedulerEvents`-instanser
 i appen lyssnar och laddar om sin data. All sådan eventing går genom
-[`core/utils/activityEvents.js`](./core/utils/activityEvents.js) — använd
+[`core/utils/activityEvents.js`](./ui/core/utils/activityEvents.js) — använd
 `emitActivitiesUpdated(userId)` därifrån, **skriv aldrig egna `dispatchEvent`-anrop**.
 
 ---
 
 ## Var hör en ny ändring hemma?
 
+> Sökvägarna nedan är relativa till `ui/`.
+
 | Du vill ändra…                            | Filen du letar efter                                                                           |
 | ----------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Hur ett aktivitets-event ser ut visuellt  | `dashboard/EventBlock.jsx`                                                                     |
-| Hur dagar/timmar ritas ut                 | `dashboard/MonthView.jsx`, `dashboard/TimeGridView.jsx`                                        |
+| Hur ett aktivitets-event ser ut visuellt  | `dashboard/views/EventBlock.jsx`                                                               |
+| Hur dagar/timmar ritas ut                 | `dashboard/views/MonthView.jsx`, `dashboard/views/TimeGridView.jsx`                            |
 | Filtreringen i Hem-vyn                    | `core/hooks/useSchedulerFilters.js`                                                            |
 | API-anropen som hämtar events             | `core/data/schedulerData.js`                                                                   |
 | Tolkning av API-fält (namnsynonymer m.m.) | `core/data/fieldNormalizers.js`                                                                |
