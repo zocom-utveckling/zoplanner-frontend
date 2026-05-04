@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import {
   ACTIVITY_COLOR_OPTIONS,
   DEFAULT_ACTIVITY_COLOR,
-} from "../../../components/calendar/core/utils/eventColors";
+} from "@zoplanner/calendar";
 import "./index.css";
 import ZoTimePicker from "@zoplanner/time-picker";
 

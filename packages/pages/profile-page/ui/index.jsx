@@ -7,8 +7,11 @@ import { FiLogOut } from "react-icons/fi";
 import { Navbar } from "@zoplanner/navbar";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProfilePicture, useUserById } from "@zoplanner/app-hooks";
-import { ActivityModal, EventDetailsModal } from "@zoplanner/calendar";
-import BookingEditModal from "../../../components/calendar/core/ui/modals/BookingEditModal";
+import {
+  ActivityModal,
+  BookingEditModal,
+  EventDetailsModal,
+} from "@zoplanner/calendar";
 import { assignmentService } from "@zoplanner/api";
 import { ConfirmPopup } from "../../../components/confirm-popup/ui";
 import { ProfileCard } from "@zoplanner/profile-card";
