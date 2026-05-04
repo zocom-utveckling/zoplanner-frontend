@@ -6,6 +6,30 @@ export default defineConfig({
   base: "/",
   plugins: [react()],
 
+  build: {
+    // Bryt upp den stora bundlen i mindre vendor-chunks så att browsern kan
+    // cacha tunga bibliotek mellan deploys och så att första sidladdningen
+    // inte behöver hämta hela appen på en gång.
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+          "mui-vendor": [
+            "@mui/material",
+            "@mui/x-date-pickers",
+            "@emotion/react",
+            "@emotion/styled",
+          ],
+          "date-vendor": ["date-fns"],
+          "holidays-vendor": ["date-holidays"],
+          "pdf-vendor": ["jspdf", "jspdf-autotable"],
+          "icons-vendor": ["react-icons"],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 800,
+  },
+
   preview: {
     port: 5173,
     strictPort: true,
