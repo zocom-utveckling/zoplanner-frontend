@@ -1,7 +1,6 @@
 import { Navbar } from "@zoplanner/navbar";
 import { Sidebar } from "@zoplanner/sidebar";
-import { Dashboard } from "@zoplanner/dashboard";
-import { AllSchedulesScheduler } from "@zoplanner/calendar";
+import { AllSchedulesScheduler, DashboardScheduler } from "@zoplanner/calendar";
 import { CoursesPage } from "@zoplanner/courses-page";
 import { MessagesPage } from "@zoplanner/messages-page";
 import { Profile_Page } from "@zoplanner/profile-page";
@@ -101,7 +100,7 @@ function HomePage() {
     case "dashboard":
     default:
       pageContent = (
-        <Dashboard
+        <DashboardScheduler
           user={calendarUser || user}
           calendarUser={calendarUser}
           managerUser={user}

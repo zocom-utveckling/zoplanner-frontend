@@ -6,7 +6,6 @@ import {
 import { LoginPage } from "@zoplanner/login-page";
 import { HomePage } from "@zoplanner/home-page";
 import { AdminPage } from "@zoplanner/admin-page";
-import { Dashboard } from "@zoplanner/dashboard";
 import { CoursesPage } from "@zoplanner/courses-page";
 import { Profile_Page } from "../../../pages/profile-page/ui";
 import { MessagesPage } from "@zoplanner/messages-page";

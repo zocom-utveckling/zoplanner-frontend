@@ -55,8 +55,8 @@ Konsumerar:
 
 - `@zoplanner/navbar` — toppmeny (`<Navbar />`).
 - `@zoplanner/sidebar` — vänsterpanel (`<Sidebar />`).
-- `@zoplanner/dashboard` — default-vyn.
-- `@zoplanner/calendar` — `<AllSchedulesScheduler />` för manager-vyn.
+- `@zoplanner/calendar` — `<DashboardScheduler />` (default-vyn) och
+  `<AllSchedulesScheduler />` (manager-vyn).
 - `@zoplanner/courses-page`, `@zoplanner/messages-page` — sidvyer.
 - `@zoplanner/profile-page` — `Profile_Page`.
 - `@zoplanner/api` — `userService.getById()` för profilhämtning.
