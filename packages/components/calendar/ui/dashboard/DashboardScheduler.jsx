@@ -3,11 +3,8 @@ import { format } from "date-fns";
 import "./DashboardScheduler.css";
 import DashboardTopbar from "./topbar/DashboardTopbar";
 import DashboardCalendarContent from "./views/DashboardCalendarContent";
-import {
-  ActivityModal,
-  ModalOverlay,
-  useActivityForm,
-} from "@zoplanner/activity-creation";
+import { ActivityModal, useActivityForm } from "@zoplanner/activity-creation";
+import { Modal } from "@zoplanner/modal";
 import EventDetailsModal from "../core/modals/EventDetailsModal";
 import BookingEditModal from "../core/modals/BookingEditModal";
 import useSchedulerNavigation from "../core/hooks/useSchedulerNavigation";
@@ -319,10 +316,7 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
       />
 
       {selectedRequest ? (
-        <ModalOverlay
-          onClose={() => setSelectedRequest(null)}
-          renderContentWrapper={false}
-        >
+        <Modal onClose={() => setSelectedRequest(null)}>
           <RequestActivityModal
             activity={selectedRequest}
             onClose={() => setSelectedRequest(null)}
@@ -330,7 +324,7 @@ export function DashboardScheduler({ user, calendarUser, managerUser }) {
               updateEvent({ ...selectedRequest, id, title: newTitle });
             }}
           />
-        </ModalOverlay>
+        </Modal>
       ) : null}
     </main>
   );

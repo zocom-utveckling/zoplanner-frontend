@@ -23,5 +23,5 @@ export {
 } from "./ui/core/utils/activityEvents";
 
 // OBS: Allt som handlar om att skapa/redigera en aktivitet (ActivityModal,
-// useActivityForm, MonthCalendar, AddActivityButton, färgpaletten, ModalOverlay)
+// useActivityForm, MonthCalendar, AddActivityButton, färgpaletten)
 // bor i @zoplanner/activity-creation.

@@ -17,8 +17,7 @@ add-activity-button/
 ├── index.js              ← Publika exporter (det enda externa filer ska importera)
 ├── ui/                   ← <AddActivityButton /> – knappen i sidopanelen
 ├── modals/
-│   ├── ActivityModal.jsx ← Skapa/redigera/visa aktivitet
-│   └── ModalOverlay.jsx  ← Delad overlay-komponent (används även av kalender-modaler)
+│   └── ActivityModal.jsx ← Skapa/redigera/visa aktivitet
 ├── hooks/
 │   └── useActivityForm.js ← Formulär-state-hook (create/edit/view)
 └── utils/
@@ -37,7 +36,6 @@ import {
   // Komponenter
   AddActivityButton,
   ActivityModal,
-  ModalOverlay,
 
   // Hook
   useActivityForm,
@@ -58,7 +56,7 @@ import {
 ## Hur paketet hänger ihop med övriga paket
 
 - **`@zoplanner/calendar`** importerar härifrån (`ActivityModal`,
-  `useActivityForm`, `ModalOverlay`, färger). Paketet är alltså _basen_ —
+  `useActivityForm`, färger). Paketet är alltså _basen_ —
   kalendern bygger ovanpå.
 - **`@zoplanner/month-calendar`** importerar färgpaletten härifrån.
 - **`@zoplanner/sidebar`** monterar `<AddActivityButton />` (och

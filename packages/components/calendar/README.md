@@ -61,8 +61,10 @@ import {
 ```
 
 > Allt som rör att **skapa/redigera en aktivitet** (ActivityModal,
-> `useActivityForm`, `MonthCalendar`, `AddActivityButton`, färgpaletten,
-> `ModalOverlay`) bor i [@zoplanner/activity-creation](../../base/add-activity-button/README.md).
+> `useActivityForm`, `MonthCalendar`, `AddActivityButton`, färgpaletten)
+> bor i [@zoplanner/activity-creation](../../base/add-activity-button/README.md).
+> Den delade modal-overlayen (`Modal` med compound-API) bor i
+> [@zoplanner/modal](../../base/modal/).
 
 ---
 
@@ -111,7 +113,7 @@ i appen lyssnar och laddar om sin data. All sådan eventing går genom
 | API-anropen som hämtar events             | `core/data/schedulerData.js`                                                                   |
 | Tolkning av API-fält (namnsynonymer m.m.) | `core/data/fieldNormalizers.js`                                                                |
 | Korskalender-synk (manager ↔ medarbetare) | `core/hooks/useCrossCalendarSync.js`                                                           |
-| Modal-overlay (gemensam för alla modaler) | Bor i `@zoplanner/activity-creation` (`modals/ModalOverlay.jsx`)                               |
+| Modal-overlay (gemensam för alla modaler) | Bor i `@zoplanner/modal` (compound-komponent: `<Modal>` + `<Modal.Content>`)                   |
 | Datum-/tidsformatering                    | `core/utils/dateTimeUtils.js`                                                                  |
 | Att skapa/uppdatera/radera en aktivitet   | `core/hooks/useSchedulerEvents.js`                                                             |
 | Aktivitetsformuläret (steg, validering)   | Bor i `@zoplanner/activity-creation` (`hooks/useActivityForm.js` + `modals/ActivityModal.jsx`) |

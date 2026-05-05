@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import sv from "date-fns/locale/sv";
-import { ModalOverlay } from "@zoplanner/activity-creation";
+import { Modal } from "@zoplanner/modal";
 
 function resolveStatus(start, end) {
   const now = new Date();
@@ -91,76 +91,73 @@ export default function EventDetailsModal({
   }
 
   return (
-    <ModalOverlay
-      onClose={onClose}
-      closeOnEscape
-      role="dialog"
-      ariaLabel="Detaljer"
-    >
-      <div className="scheduler-modal-header">
-        <h2>Detaljer</h2>
-        <button className="scheduler-close-btn" onClick={onClose}>
-          ×
-        </button>
-      </div>
+    <Modal onClose={onClose} closeOnEscape>
+      <Modal.Content role="dialog" ariaLabel="Detaljer">
+        <div className="scheduler-modal-header">
+          <h2>Detaljer</h2>
+          <button className="scheduler-close-btn" onClick={onClose}>
+            ×
+          </button>
+        </div>
 
-      <div className="scheduler-event-details scheduler-event-details-view">
-        <Section title="Information">
-          <InfoRow label="Kurs" value={event?.title} />
-          <InfoRow label="Datum/tid" value={dateTimeLabel} />
-        </Section>
+        <div className="scheduler-event-details scheduler-event-details-view">
+          <Section title="Information">
+            <InfoRow label="Kurs" value={event?.title} />
+            <InfoRow label="Datum/tid" value={dateTimeLabel} />
+          </Section>
 
-        <Section title="Status">
-          <div className="scheduler-event-row">
-            <span className="scheduler-event-label">Aktuell status</span>
-            <span
-              className={`scheduler-status-badge scheduler-status-${status.tone}`}
-            >
-              {status.label}
-            </span>
-          </div>
-        </Section>
+          <Section title="Status">
+            <div className="scheduler-event-row">
+              <span className="scheduler-event-label">Aktuell status</span>
+              <span
+                className={`scheduler-status-badge scheduler-status-${status.tone}`}
+              >
+                {status.label}
+              </span>
+            </div>
+          </Section>
 
-        <Section title="Plats">
-          <ComingSoonNotice text="Platsinformation kommer inom kort" />
-        </Section>
+          <Section title="Plats">
+            <ComingSoonNotice text="Platsinformation kommer inom kort" />
+          </Section>
 
-        <Section title="Uppdraget">
-          <ComingSoonNotice text="Uppdragsinformation kommer inom kort" />
-        </Section>
+          <Section title="Uppdraget">
+            <ComingSoonNotice text="Uppdragsinformation kommer inom kort" />
+          </Section>
 
-        <Section title="Beskrivning">
-          <p className="scheduler-description-text">{description}</p>
-        </Section>
-      </div>
+          <Section title="Beskrivning">
+            <p className="scheduler-description-text">{description}</p>
+          </Section>
+        </div>
 
-      <div className="scheduler-modal-actions">
-        {isManager ? (
-          <>
-            <button
-              type="button"
-              className="scheduler-btn-cancel"
-              onClick={handleEditClick}
-            >
-              Redigera
-            </button>
-            <button
-              type="button"
-              className="scheduler-btn-cancel"
-              onClick={handleDeleteClick}
-            >
-              Ta bort
-            </button>
-          </>
-        ) : null}
-        <button
-          type="button"
-          className="scheduler-btn-submit"
-          onClick={onClose}
-        >
-          Stäng
-        </button>
-      </div>
-    </ModalOverlay>
+        <div className="scheduler-modal-actions">
+          {isManager ? (
+            <>
+              <button
+                type="button"
+                className="scheduler-btn-cancel"
+                onClick={handleEditClick}
+              >
+                Redigera
+              </button>
+              <button
+                type="button"
+                className="scheduler-btn-cancel"
+                onClick={handleDeleteClick}
+              >
+                Ta bort
+              </button>
+            </>
+          ) : null}
+          <button
+            type="button"
+            className="scheduler-btn-submit"
+            onClick={onClose}
+          >
+            Stäng
+          </button>
+        </div>
+      </Modal.Content>
+    </Modal>
   );
 }

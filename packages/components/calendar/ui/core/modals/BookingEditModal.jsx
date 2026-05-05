@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import ZoTimePicker from "@zoplanner/time-picker";
-import { ModalOverlay } from "@zoplanner/activity-creation";
+import { Modal } from "@zoplanner/modal";
 
 const initialForm = {
   date: "",
@@ -63,76 +63,78 @@ export default function BookingEditModal({
   }
 
   return (
-    <ModalOverlay onClose={onClose}>
-      <div className="scheduler-modal-header">
-        <h2>Redigera bokning</h2>
-        <button className="scheduler-close-btn" onClick={onClose}>
-          ×
-        </button>
-      </div>
-
-      <form onSubmit={handleSubmit} className="scheduler-activity-form">
-        <div className="scheduler-form-group">
-          <label htmlFor="booking-date">Datum *</label>
-          <input
-            id="booking-date"
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="scheduler-form-row">
-          <ZoTimePicker
-            label="Starttid *"
-            name="startTime"
-            value={formData.startTime}
-            onChange={handleChange}
-            required
-          />
-          <ZoTimePicker
-            label="Sluttid *"
-            name="endTime"
-            value={formData.endTime}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="scheduler-form-group">
-          <label htmlFor="booking-description">Beskrivning</label>
-          <textarea
-            id="booking-description"
-            name="description"
-            rows="4"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Lägg till beskrivning..."
-          />
-        </div>
-
-        <div className="scheduler-modal-actions">
-          <button
-            type="button"
-            className="scheduler-btn-cancel"
-            onClick={onClose}
-          >
-            Avbryt
-          </button>
-          <button
-            type="button"
-            className="scheduler-btn-cancel"
-            onClick={() => onDelete?.(event)}
-          >
-            Ta bort
-          </button>
-          <button type="submit" className="scheduler-btn-submit">
-            Spara
+    <Modal onClose={onClose}>
+      <Modal.Content>
+        <div className="scheduler-modal-header">
+          <h2>Redigera bokning</h2>
+          <button className="scheduler-close-btn" onClick={onClose}>
+            ×
           </button>
         </div>
-      </form>
-    </ModalOverlay>
+
+        <form onSubmit={handleSubmit} className="scheduler-activity-form">
+          <div className="scheduler-form-group">
+            <label htmlFor="booking-date">Datum *</label>
+            <input
+              id="booking-date"
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="scheduler-form-row">
+            <ZoTimePicker
+              label="Starttid *"
+              name="startTime"
+              value={formData.startTime}
+              onChange={handleChange}
+              required
+            />
+            <ZoTimePicker
+              label="Sluttid *"
+              name="endTime"
+              value={formData.endTime}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="scheduler-form-group">
+            <label htmlFor="booking-description">Beskrivning</label>
+            <textarea
+              id="booking-description"
+              name="description"
+              rows="4"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Lägg till beskrivning..."
+            />
+          </div>
+
+          <div className="scheduler-modal-actions">
+            <button
+              type="button"
+              className="scheduler-btn-cancel"
+              onClick={onClose}
+            >
+              Avbryt
+            </button>
+            <button
+              type="button"
+              className="scheduler-btn-cancel"
+              onClick={() => onDelete?.(event)}
+            >
+              Ta bort
+            </button>
+            <button type="submit" className="scheduler-btn-submit">
+              Spara
+            </button>
+          </div>
+        </form>
+      </Modal.Content>
+    </Modal>
   );
 }
