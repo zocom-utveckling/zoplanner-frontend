@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { userService } from "@zoplanner/api";
 import "./index.css";
 function MessagesSidebar({ user, onConsultantClick }) {
   const [consultants, setConsultants] = useState([]);
@@ -8,15 +9,10 @@ function MessagesSidebar({ user, onConsultantClick }) {
     async function fetchUsers() {
       setIsLoading(true);
       try {
-        const res = await fetch(`http://localhost:5027/api/User`);
-        const data = await res.json();
-        if (res.ok) {
-          // Filter out the logged-in user
-          const filteredUsers = data.filter((u) => u.id !== user?.id);
-          setConsultants(filteredUsers);
-        } else {
-          console.log("Could not get users");
-        }
+        const data = await userService.getAll();
+        // Filter out the logged-in user
+        const filteredUsers = data.filter((u) => u.id !== user?.id);
+        setConsultants(filteredUsers);
       } catch (err) {
         console.error("Error fetching users:", err);
       } finally {

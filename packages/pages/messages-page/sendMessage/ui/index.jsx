@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { userService } from "@zoplanner/api";
 import "./index.css";
 
 function SendMessagePopup({ onClose, user }) {
@@ -9,20 +10,18 @@ function SendMessagePopup({ onClose, user }) {
   const [users, setUsers] = useState([]);
 
   const filteredUsers = users.filter(
-    (u) => u.username !== user.username || u.name !== recipient
+    (u) => u.username !== user.username || u.name !== recipient,
   );
 
   const output = filteredUsers.filter((u) =>
-    u.name.toLowerCase().includes(recipientInput.toLowerCase())
+    u.name.toLowerCase().includes(recipientInput.toLowerCase()),
   );
 
   useEffect(() => {
     async function getUsers() {
       try {
-        const res = await fetch(`http://localhost:5027/api/User`);
-        const data = await res.json();
-        if (res.ok) setUsers(data);
-        else console.log("Could not get users");
+        const data = await userService.getAll();
+        setUsers(data);
       } catch (err) {
         console.error("Error fetching users:", err);
       }
