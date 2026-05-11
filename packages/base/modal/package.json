@@ -1,9 +1,4 @@
 {
   "name": "@zoplanner/modal",
-  "version": "1.0.0",
-  "main": "index.js",
-  "peerDependencies": {
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
-  }
+  "main": "./index.js"
 }
