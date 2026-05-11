@@ -29,6 +29,7 @@ import {
 } from "date-fns";
 import { buildScheduleSummary } from "../utils/scheduleSummary.helpers";
 import { exportSchedulePdf } from "../utils/exportSchedulePdf";
+import { notificationService } from "@zoplanner/api";
 
 export function PlannerWorkspace({
   managerId,
@@ -133,7 +134,8 @@ export function PlannerWorkspace({
     });
   }, [selectedAssignmentForMatching]);
 
-  const hasUnsavedPlanning = Boolean(courseDraft) && !isSaving;
+  const hasUnsavedPlanning =
+    Boolean(courseDraft) && !isSaving && !courseDraft?.assignmentId;
 
   useEffect(() => {
     function handleBeforeUnload(event) {
