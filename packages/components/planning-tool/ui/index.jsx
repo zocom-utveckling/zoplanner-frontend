@@ -29,6 +29,7 @@ import {
 } from "date-fns";
 import { buildScheduleSummary } from "../utils/scheduleSummary.helpers";
 import { exportSchedulePdf } from "../utils/exportSchedulePdf";
+import { notificationService } from "@zoplanner/api";
 
 export function PlannerWorkspace({
   managerId,
