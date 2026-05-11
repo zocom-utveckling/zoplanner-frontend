@@ -260,6 +260,8 @@ async function handlePublishDraft() {
 
       setActiveAssignment(nextAssignment);
 
+      const previousDraftId = courseDraft?.id;
+
       setCourseDraft((previousDraft) => {
         if (!previousDraft) return previousDraft;
 
@@ -275,7 +277,10 @@ async function handlePublishDraft() {
       });
 
       setPlannerMode("matching");
-// removePlanningDraft(courseDraft.id);
+
+          if (previousDraftId && previousDraftId !== resolvedAssignmentId) {
+            removePlanningDraft(previousDraftId);
+          }
 
 console.log("🔥 RETURNING ASSIGNMENT", nextAssignment);
 
