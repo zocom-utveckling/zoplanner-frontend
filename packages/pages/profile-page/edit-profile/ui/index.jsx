@@ -1,33 +1,11 @@
 import { useState } from "react";
+import { userService } from "@zoplanner/api";
+import { normalizeProfilePictureUrl } from "@zoplanner/app-hooks";
 import "./index.css";
 import { ConfirmPopup } from "../../../../components/confirm-popup/ui";
-import { Button } from "@zoplanner/button";
 
 const cities = ["GÖTEBORG", "MALMÖ", "STOCKHOLM"];
 const roles = ["MANAGER", "CONSULTANT", "BOTH"];
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5027";
-const FILES_BASE_URL =
-  import.meta.env.VITE_FILES_BASE_URL || "http://localhost:8080";
-
-const normalizeProfilePictureUrl = (value) => {
-  if (typeof value !== "string") return null;
-  const url = value.trim();
-  if (!url) return null;
-
-  if (/^(https?:|data:|blob:)/i.test(url)) return url;
-
-  if (url.startsWith("/files/") || url.startsWith("files/")) {
-    const normalizedPath = url.startsWith("/") ? url : `/${url}`;
-    return `${FILES_BASE_URL}${normalizedPath}`;
-  }
-
-  if (url.startsWith("/")) {
-    return `${API_BASE_URL}${url}`;
-  }
-
-  return `${API_BASE_URL}/${url}`;
-};
 
 function Edit_Profile({ user, onClose, setUser }) {
   const [loading, setLoading] = useState(false);
@@ -50,18 +28,7 @@ function Edit_Profile({ user, onClose, setUser }) {
     setLoading(true);
 
     try {
-      const res = await fetch(
-        `http://localhost:5027/api/User/${newUserinfo.id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newUserinfo),
-        },
-      );
-
-      if (!res.ok) {
-        throw new Error("Redigering misslyckades");
-      }
+      await userService.update(newUserinfo.id, newUserinfo);
 
       setUser((prev) => ({
         ...prev,
@@ -205,19 +172,21 @@ function Edit_Profile({ user, onClose, setUser }) {
             </section>
 
             <footer className="edit-profile-footer">
-              <Button
-                type={"button"}
+              <button
+                type="button"
+                className="button button_delete-btn"
                 onClick={handleOpenCancelConfirm}
-                style={"delete-btn"}
-                text={"Avbryt"}
-              />
-              <Button
-                type={"button"}
+              >
+                Avbryt
+              </button>
+              <button
+                type="button"
+                className="button button_reply-btn"
                 onClick={handleOpenSubmitConfirm}
-                style={"reply-btn"}
-                text={loading ? "Sparar..." : "Spara ändringar"}
                 disabled={loading}
-              />
+              >
+                {loading ? "Sparar..." : "Spara ändringar"}
+              </button>
             </footer>
           </div>
         </div>

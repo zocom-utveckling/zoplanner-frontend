@@ -1,4 +1,3 @@
-import { Button } from "@zoplanner/button";
 import "./index.css";
 
 function MessageOverlay({ message, onClose, status }) {
@@ -7,12 +6,13 @@ function MessageOverlay({ message, onClose, status }) {
       <div className="message-overlay__content">
         <header className="message-overlay__header">
           <h2>{status == "recieved" ? message.sender : message.recipient}</h2>
-          <Button
-            text={"×"}
+          <button
+            type="button"
+            className="button button_close-btn"
             onClick={() => onClose()}
-            type={"button"}
-            style={"close-btn"}
-          />
+          >
+            ×
+          </button>
         </header>
 
         <main className="message-overlay__main">
@@ -24,9 +24,13 @@ function MessageOverlay({ message, onClose, status }) {
         </main>
 
         <footer className="message-overlay__footer">
-          <Button text={"Delete"} type={"button"} style={"delete-btn"} />
+          <button type="button" className="button button_delete-btn">
+            Delete
+          </button>
           {status === "recieved" && (
-            <Button text={"Reply"} type={"button"} style={"reply-btn"} />
+            <button type="button" className="button button_reply-btn">
+              Reply
+            </button>
           )}
         </footer>
       </div>

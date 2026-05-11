@@ -1,14 +1,14 @@
 import { Navbar } from "@zoplanner/navbar";
 import { Sidebar } from "@zoplanner/sidebar";
-import { Dashboard } from "@zoplanner/dashboard";
-import { AllSchedulesPage } from "@zoplanner/all-schedules-page";
+import { AllSchedulesScheduler, DashboardScheduler } from "@zoplanner/calendar";
 import { CoursesPage } from "@zoplanner/courses-page";
 import { MessagesPage } from "@zoplanner/messages-page";
+import { Profile_Page } from "@zoplanner/profile-page";
+import { userService } from "@zoplanner/api";
 import "./index.css";
 
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Profile_Page } from "../../profile-page/ui";
 
 function DashboardLayout({
   user,
@@ -51,21 +51,14 @@ function HomePage() {
 
   // Funktion för att återställa kalendern till manager
   const handleResetCalendarUser = () => setCalendarUser(null);
-  console.log(localStorage.getItem("managerId"));
 
   useEffect(() => {
     if (!id) return;
 
     const fetchUser = async () => {
       try {
-        const res = await fetch(`http://localhost:5027/api/User/${id}`);
-        const data = await res.json();
-        if (res.ok) {
-          setUser(data);
-          console.log(data.name);
-        } else {
-          console.log("Could not fetch user");
-        }
+        const data = await userService.getById(id);
+        setUser(data);
       } catch (error) {
         console.error(error);
       }
@@ -90,6 +83,31 @@ function HomePage() {
   const resolvedActivePage =
     activePage === "allSchedules" && !isManager ? "dashboard" : activePage;
 
+  let pageContent;
+  switch (resolvedActivePage) {
+    case "allSchedules":
+      pageContent = <AllSchedulesScheduler user={user} />;
+      break;
+    case "courses":
+      pageContent = <CoursesPage />;
+      break;
+    case "messages":
+      pageContent = <MessagesPage user={user} />;
+      break;
+    case "profile":
+      pageContent = <Profile_Page user={user} />;
+      break;
+    case "dashboard":
+    default:
+      pageContent = (
+        <DashboardScheduler
+          user={calendarUser || user}
+          calendarUser={calendarUser}
+          managerUser={user}
+        />
+      );
+  }
+
   return (
     <DashboardLayout
       user={user}
@@ -98,11 +116,7 @@ function HomePage() {
       onSelectCalendarUser={setCalendarUser}
       onResetCalendarUser={handleResetCalendarUser}
     >
-      <Dashboard
-        user={calendarUser || user}
-        calendarUser={calendarUser}
-        managerUser={user}
-      />
+      {pageContent}
     </DashboardLayout>
   );
 }

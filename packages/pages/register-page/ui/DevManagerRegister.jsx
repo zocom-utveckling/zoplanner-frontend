@@ -5,7 +5,6 @@
 import { useState } from "react";
 import "./index.css";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@zoplanner/button";
 import { authService, managerService, userService } from "@zoplanner/api";
 import { FaLock, FaEnvelope, FaUser } from "react-icons/fa";
 
@@ -155,11 +154,9 @@ function DevManagerRegister() {
           </div>
 
           <div className="register-page__button-group">
-            <Button
-              text={loading ? "Loading..." : "Skapa managerkonto"}
-              type="submit"
-              style="submit"
-            />
+            <button type="submit" className="button button_submit">
+              {loading ? "Loading..." : "Skapa managerkonto"}
+            </button>
           </div>
           <p className="customer-registry__modal-future-note">
             Gör det möjligt att skapa ett managerkonto i demo utan att sätta upp

@@ -18,6 +18,8 @@ export function createNotificationService(api) {
       teacherName,
       assignmentDescription,
       assignmentDueDate,
+      assignmentId,
+      timestamp,
     }) => {
       if (
         !teacherEmail ||
@@ -33,19 +35,31 @@ export function createNotificationService(api) {
         teacherName,
         assignmentDescription,
         assignmentDueDate,
+        assignmentId,
+        timestamp,
         eventType: "NEW_ASSIGNMENT",
       });
     },
 
-    sendScheduleUpdated: async ({ teacherEmail, message }) => {
-      if (!teacherEmail || !message) {
+    sendScheduleUpdated: async ({
+      teacherEmail,
+      message,
+      recipient,
+      subject,
+      eventTime,
+    }) => {
+      const targetRecipient = recipient ?? teacherEmail;
+      if (!targetRecipient || !message) {
         throw new Error("Email and message are required");
       }
 
       return api.post("/Notification/send-schedule-updated", {
-        teacherEmail,
-        message,
         eventType: "SCHEDULE_UPDATED",
+        recipient: targetRecipient,
+        teacherEmail,
+        subject,
+        eventTime,
+        message,
       });
     },
 

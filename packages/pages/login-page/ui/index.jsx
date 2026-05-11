@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "./index.css";
 import { dev } from "@zoplanner/admin";
-import { Button } from "@zoplanner/button";
 import {
   authService,
   managerService,
@@ -140,11 +139,9 @@ function LoginPage() {
           </div>
 
           <div className="login-page__button-group">
-            <Button
-              text={loading ? "Laddar..." : "Logga in"}
-              type="submit"
-              style="submit"
-            />
+            <button type="submit" className="button button_submit">
+              {loading ? "Laddar..." : "Logga in"}
+            </button>
             <p>Registrering sker via inbjudan. Använd länken i mejlet.</p>
           </div>
         </form>

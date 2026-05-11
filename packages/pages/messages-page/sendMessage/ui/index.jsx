@@ -1,5 +1,5 @@
-import { Button } from "@zoplanner/button";
 import { useEffect, useState } from "react";
+import { userService } from "@zoplanner/api";
 import "./index.css";
 
 function SendMessagePopup({ onClose, user }) {
@@ -10,20 +10,18 @@ function SendMessagePopup({ onClose, user }) {
   const [users, setUsers] = useState([]);
 
   const filteredUsers = users.filter(
-    (u) => u.username !== user.username || u.name !== recipient
+    (u) => u.username !== user.username || u.name !== recipient,
   );
 
   const output = filteredUsers.filter((u) =>
-    u.name.toLowerCase().includes(recipientInput.toLowerCase())
+    u.name.toLowerCase().includes(recipientInput.toLowerCase()),
   );
 
   useEffect(() => {
     async function getUsers() {
       try {
-        const res = await fetch(`http://localhost:5027/api/User`);
-        const data = await res.json();
-        if (res.ok) setUsers(data);
-        else console.log("Could not get users");
+        const data = await userService.getAll();
+        setUsers(data);
       } catch (err) {
         console.error("Error fetching users:", err);
       }
@@ -41,7 +39,13 @@ function SendMessagePopup({ onClose, user }) {
       <div className="sendOverlay-content">
         <header className="sendOverlay-header">
           <h2>New Message</h2>
-          <Button text="×" onClick={onClose} type="button" style="close-btn" />
+          <button
+            type="button"
+            className="button button_close-btn"
+            onClick={onClose}
+          >
+            ×
+          </button>
         </header>
 
         <main className="sendOverlay-main">
@@ -100,8 +104,16 @@ function SendMessagePopup({ onClose, user }) {
         </main>
 
         <footer className="sendOverlay-footer">
-          <Button text="Avbryt" type="button" style="cancel" onClick={onClose} />
-          <Button text="Skicka" type="submit" style="send" />
+          <button
+            type="button"
+            className="button button_cancel"
+            onClick={onClose}
+          >
+            Avbryt
+          </button>
+          <button type="submit" className="button button_send">
+            Skicka
+          </button>
         </footer>
       </div>
     </div>

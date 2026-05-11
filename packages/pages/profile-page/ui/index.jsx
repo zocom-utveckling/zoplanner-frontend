@@ -1,5 +1,5 @@
 import "./index.css";
-import "../../../components/calendar/core/index.css";
+import "../../../components/calendar/ui/scheduler.css";
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
 import { FaCamera } from "react-icons/fa";
@@ -7,8 +7,8 @@ import { FiLogOut } from "react-icons/fi";
 import { Navbar } from "@zoplanner/navbar";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProfilePicture, useUserById } from "@zoplanner/app-hooks";
-import { ActivityModal, EventDetailsModal } from "@zoplanner/calendar";
-import BookingEditModal from "../../../components/calendar/core/ui/modals/BookingEditModal";
+import { BookingEditModal, EventDetailsModal } from "@zoplanner/calendar";
+import { ActivityModal } from "@zoplanner/activity-creation";
 import { assignmentService } from "@zoplanner/api";
 import { ConfirmPopup } from "../../../components/confirm-popup/ui";
 import { ProfileCard } from "@zoplanner/profile-card";

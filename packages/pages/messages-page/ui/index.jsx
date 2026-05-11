@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { userService } from "@zoplanner/api";
 import "./index.css";
 import { RecievedMessagesPage } from "@zoplanner/recieved-messages";
 import { SentMessagesPage } from "@zoplanner/sent-messages";
@@ -382,13 +383,8 @@ function MessagesPage({ user: initialUser }) {
 
     const fetchUser = async () => {
       try {
-        const res = await fetch(`http://localhost:5027/api/User/${id}`);
-        const data = await res.json();
-        if (res.ok) {
-          setUser(data);
-        } else {
-          console.error("Could not fetch user");
-        }
+        const data = await userService.getById(id);
+        setUser(data);
       } catch (error) {
         console.error(error);
       }

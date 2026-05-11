@@ -1,5 +1,6 @@
 import { activityService } from "@zoplanner/api";
-import { toLocalDateTime, useActivityForm } from "@zoplanner/calendar";
+import { toLocalDateTime } from "@zoplanner/calendar";
+import { useActivityForm } from "@zoplanner/activity-creation";
 
 function useProfileActivityModal(setActivities) {
   async function updateActivity(updatedEvent) {
