@@ -134,7 +134,8 @@ export function PlannerWorkspace({
     });
   }, [selectedAssignmentForMatching]);
 
-  const hasUnsavedPlanning = Boolean(courseDraft) && !isSaving;
+  const hasUnsavedPlanning =
+    Boolean(courseDraft) && !isSaving && !courseDraft?.assignmentId;
 
   useEffect(() => {
     function handleBeforeUnload(event) {
